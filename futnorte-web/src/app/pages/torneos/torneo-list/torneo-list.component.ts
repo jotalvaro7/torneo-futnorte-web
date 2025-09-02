@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { NgFor, DatePipe, NgClass } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
+import { DatePipe, NgClass } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TorneoService } from '../../../services/torneo.service';
 import { Torneo, EstadoTorneo } from '../../../models';
@@ -7,12 +7,12 @@ import { Torneo, EstadoTorneo } from '../../../models';
 @Component({
   selector: 'app-torneo-list',
   standalone: true,
-  imports: [NgFor, DatePipe, NgClass, RouterModule],
+  imports: [DatePipe, NgClass, RouterModule],
   templateUrl: './torneo-list.component.html',
   styleUrl: './torneo-list.component.css'
 })
 export class TorneoListComponent implements OnInit {
-  constructor(private readonly torneoService: TorneoService) {}
+  private readonly torneoService = inject(TorneoService);
   
   torneos: Torneo[] = [];
   loading = false;

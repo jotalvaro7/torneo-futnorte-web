@@ -11,13 +11,10 @@
             {{ isEditMode ? 'Modifica los datos del torneo' : 'Crea un nuevo torneo de fútbol' }}
           </p>
         </div>
-        <button
-          type="button"
-          (click)="onCancel()"
-          class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
-        >
+        <button type="button" (click)="onCancel()"
+          class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
           Volver
         </button>
@@ -28,11 +25,14 @@
     <div class="max-w-2xl mx-auto">
       <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
         <!-- Success Message -->
-        <div *ngIf="success" class="bg-success-50 border-l-4 border-success-400 p-6">
+        @if (success) {
+        <div class="bg-success-50 border-l-4 border-success-400 p-6">
           <div class="flex items-center">
             <div class="flex-shrink-0">
               <svg class="h-5 w-5 text-success-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clip-rule="evenodd" />
               </svg>
             </div>
             <div class="ml-3">
@@ -42,13 +42,17 @@
             </div>
           </div>
         </div>
+        }
 
         <!-- Error Message -->
-        <div *ngIf="error" class="bg-danger-50 border-l-4 border-danger-400 p-6">
+        @if (error) {
+        <div class="bg-danger-50 border-l-4 border-danger-400 p-6">
           <div class="flex items-center">
             <div class="flex-shrink-0">
               <svg class="h-5 w-5 text-danger-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clip-rule="evenodd" />
               </svg>
             </div>
             <div class="ml-3">
@@ -56,9 +60,11 @@
             </div>
           </div>
         </div>
+        }
 
         <!-- Loading State -->
-        <div *ngIf="loading && !success" class="bg-primary-50 border-l-4 border-primary-400 p-6">
+        @if (loading && !success) {
+        <div class="bg-primary-50 border-l-4 border-primary-400 p-6">
           <div class="flex items-center">
             <div class="flex-shrink-0">
               <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-600"></div>
@@ -70,6 +76,7 @@
             </div>
           </div>
         </div>
+        }
 
         <!-- Form -->
         <form [formGroup]="torneoForm" (ngSubmit)="onSubmit()" class="p-8 space-y-6">
@@ -78,19 +85,15 @@
             <label for="nombre" class="block text-sm font-semibold text-gray-900 mb-2">
               Nombre del Torneo *
             </label>
-            <input
-              type="text"
-              id="nombre"
-              formControlName="nombre"
-              placeholder="Ej: Copa de Verano 2024"
+            <input type="text" id="nombre" formControlName="nombre" placeholder="Ej: Copa de Verano 2024"
               class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
-              [class.border-danger-300]="isFieldInvalid('nombre')"
-              [class.border-gray-300]="!isFieldInvalid('nombre')"
-              [class.focus:ring-danger-500]="isFieldInvalid('nombre')"
-            >
-            <p *ngIf="isFieldInvalid('nombre')" class="mt-2 text-sm text-danger-600">
+              [class.border-danger-300]="isFieldInvalid('nombre')" [class.border-gray-300]="!isFieldInvalid('nombre')"
+              [class.focus:ring-danger-500]="isFieldInvalid('nombre')">
+            @if (isFieldInvalid('nombre')) {
+            <p class="mt-2 text-sm text-danger-600">
               {{ getFieldError('nombre') }}
             </p>
+            }
           </div>
 
           <!-- Description -->
@@ -98,19 +101,17 @@
             <label for="descripcion" class="block text-sm font-semibold text-gray-900 mb-2">
               Descripción
             </label>
-            <textarea
-              id="descripcion"
-              formControlName="descripcion"
-              rows="4"
+            <textarea id="descripcion" formControlName="descripcion" rows="4"
               placeholder="Describe los detalles del torneo, reglas especiales, premios..."
               class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 resize-none"
               [class.border-danger-300]="isFieldInvalid('descripcion')"
               [class.border-gray-300]="!isFieldInvalid('descripcion')"
-              [class.focus:ring-danger-500]="isFieldInvalid('descripcion')"
-            ></textarea>
-            <p *ngIf="isFieldInvalid('descripcion')" class="mt-2 text-sm text-danger-600">
+              [class.focus:ring-danger-500]="isFieldInvalid('descripcion')"></textarea>
+            @if (isFieldInvalid('descripcion')) {
+            <p class="mt-2 text-sm text-danger-600">
               {{ getFieldError('descripcion') }}
             </p>
+            }
           </div>
 
           <!-- Date Fields -->
@@ -120,18 +121,16 @@
               <label for="fechaInicio" class="block text-sm font-semibold text-gray-900 mb-2">
                 Fecha de Inicio *
               </label>
-              <input
-                type="date"
-                id="fechaInicio"
-                formControlName="fechaInicio"
+              <input type="date" id="fechaInicio" formControlName="fechaInicio"
                 class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
                 [class.border-danger-300]="isFieldInvalid('fechaInicio')"
                 [class.border-gray-300]="!isFieldInvalid('fechaInicio')"
-                [class.focus:ring-danger-500]="isFieldInvalid('fechaInicio')"
-              >
-              <p *ngIf="isFieldInvalid('fechaInicio')" class="mt-2 text-sm text-danger-600">
+                [class.focus:ring-danger-500]="isFieldInvalid('fechaInicio')">
+              @if (isFieldInvalid('fechaInicio')) {
+              <p class="mt-2 text-sm text-danger-600">
                 {{ getFieldError('fechaInicio') }}
               </p>
+              }
             </div>
 
             <!-- End Date -->
@@ -139,43 +138,39 @@
               <label for="fechaFin" class="block text-sm font-semibold text-gray-900 mb-2">
                 Fecha de Fin
               </label>
-              <input
-                type="date"
-                id="fechaFin"
-                formControlName="fechaFin"
+              <input type="date" id="fechaFin" formControlName="fechaFin"
                 class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
                 [class.border-danger-300]="isFieldInvalid('fechaFin')"
                 [class.border-gray-300]="!isFieldInvalid('fechaFin')"
-                [class.focus:ring-danger-500]="isFieldInvalid('fechaFin')"
-              >
-              <p *ngIf="isFieldInvalid('fechaFin')" class="mt-2 text-sm text-danger-600">
+                [class.focus:ring-danger-500]="isFieldInvalid('fechaFin')">
+              @if (isFieldInvalid('fechaFin')) {
+              <p class="mt-2 text-sm text-danger-600">
                 {{ getFieldError('fechaFin') }}
               </p>
+              }
             </div>
           </div>
 
           <!-- Form Actions -->
           <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
-            <button
-              type="button"
-              (click)="onCancel()"
+            <button type="button" (click)="onCancel()"
               class="px-6 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200"
-              [disabled]="loading"
-            >
+              [disabled]="loading">
               Cancelar
             </button>
-            <button
-              type="submit"
+            <button type="submit"
               class="px-8 py-3 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-              [disabled]="loading || torneoForm.invalid"
-            >
-              <span *ngIf="!loading">
+              [disabled]="loading || torneoForm.invalid">
+              @if (!loading) {
+              <span>
                 {{ isEditMode ? 'Actualizar Torneo' : 'Crear Torneo' }}
               </span>
-              <span *ngIf="loading" class="flex items-center">
+              } @else {
+              <span class="flex items-center">
                 <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                 {{ isEditMode ? 'Actualizando...' : 'Creando...' }}
               </span>
+              }
             </button>
           </div>
         </form>

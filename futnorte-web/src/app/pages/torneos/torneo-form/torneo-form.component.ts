@@ -1,24 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-import { NgIf, NgClass } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TorneoService } from '../../../services/torneo.service';
-import { Torneo, EstadoTorneo } from '../../../models';
+import { EstadoTorneo } from '../../../models';
 
 @Component({
   selector: 'app-torneo-form',
   standalone: true,
-  imports: [NgIf, NgClass, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './torneo-form.component.html',
   styleUrl: './torneo-form.component.css'
 })
 export class TorneoFormComponent implements OnInit {
-  constructor(
-    private readonly fb: FormBuilder,
-    private readonly router: Router,
-    private readonly route: ActivatedRoute,
-    private readonly torneoService: TorneoService
-  ) {}
+  private readonly fb = inject(FormBuilder);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly torneoService = inject(TorneoService);
 
   torneoForm!: FormGroup;
   isEditMode = false;

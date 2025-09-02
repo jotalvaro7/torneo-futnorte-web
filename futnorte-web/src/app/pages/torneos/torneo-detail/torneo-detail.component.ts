@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { NgIf, NgClass, DatePipe } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { TorneoService } from '../../../services/torneo.service';
 import { Torneo, EstadoTorneo } from '../../../models';
@@ -7,16 +7,14 @@ import { Torneo, EstadoTorneo } from '../../../models';
 @Component({
   selector: 'app-torneo-detail',
   standalone: true,
-  imports: [NgIf, NgClass, DatePipe, RouterModule],
+  imports: [DatePipe, RouterModule],
   templateUrl: './torneo-detail.component.html',
   styleUrl: './torneo-detail.component.css'
 })
 export class TorneoDetailComponent implements OnInit {
-  constructor(
-    private readonly route: ActivatedRoute,
-    private readonly router: Router,
-    private readonly torneoService: TorneoService
-  ) {}
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly torneoService = inject(TorneoService);
 
   torneo: Torneo | null = null;
   loading = false;
