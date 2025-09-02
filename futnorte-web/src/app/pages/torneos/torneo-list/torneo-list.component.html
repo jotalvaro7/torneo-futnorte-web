@@ -1,0 +1,107 @@
+<div class="container">
+  <div class="header">
+    <h1>Gestión de Torneos</h1>
+    <button 
+      type="button" 
+      class="btn btn-primary"
+      routerLink="/torneos/crear">
+      + Crear Torneo
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    Cargando torneos...
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+    <button type="button" class="btn-close" (click)="error = null"></button>
+  </div>
+
+  <div *ngIf="!loading && torneos.length === 0" class="empty-state">
+    <h3>No hay torneos creados</h3>
+    <p>Crea tu primer torneo para comenzar</p>
+    <button 
+      type="button" 
+      class="btn btn-primary"
+      routerLink="/torneos/crear">
+      Crear Primer Torneo
+    </button>
+  </div>
+
+  <div *ngIf="!loading && torneos.length > 0" class="torneos-grid">
+    <div *ngFor="let torneo of torneos" class="torneo-card">
+      <div class="card-header">
+        <h3>{{ torneo.nombre }}</h3>
+        <span class="estado" [ngClass]="'estado-' + torneo.estado.toLowerCase()">
+          {{ torneo.estado }}
+        </span>
+      </div>
+      
+      <div class="card-body">
+        <p *ngIf="torneo.descripcion" class="descripcion">
+          {{ torneo.descripcion }}
+        </p>
+        
+        <div class="fechas" *ngIf="torneo.fechaInicio || torneo.fechaFin">
+          <div *ngIf="torneo.fechaInicio" class="fecha">
+            <strong>Inicio:</strong> {{ torneo.fechaInicio | date:'short' }}
+          </div>
+          <div *ngIf="torneo.fechaFin" class="fecha">
+            <strong>Fin:</strong> {{ torneo.fechaFin | date:'short' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button 
+          type="button" 
+          class="btn btn-outline-primary btn-sm"
+          [routerLink]="['/torneos', torneo.id]">
+          Ver Detalles
+        </button>
+        
+        <button 
+          type="button" 
+          class="btn btn-outline-secondary btn-sm"
+          [routerLink]="['/torneos', torneo.id, 'editar']">
+          Editar
+        </button>
+
+        <!-- Botones de cambio de estado -->
+        <button 
+          *ngIf="torneo.estado === EstadoTorneo.CREADO"
+          type="button" 
+          class="btn btn-success btn-sm"
+          (click)="cambiarEstadoTorneo(torneo, 'iniciar')">
+          Iniciar
+        </button>
+
+        <button 
+          *ngIf="torneo.estado === EstadoTorneo.EN_CURSO"
+          type="button" 
+          class="btn btn-warning btn-sm"
+          (click)="cambiarEstadoTorneo(torneo, 'finalizar')">
+          Finalizar
+        </button>
+
+        <button 
+          *ngIf="torneo.estado !== EstadoTorneo.FINALIZADO"
+          type="button" 
+          class="btn btn-danger btn-sm"
+          (click)="cambiarEstadoTorneo(torneo, 'cancelar')">
+          Cancelar
+        </button>
+
+        <!-- Eliminar solo si está cancelado o finalizado -->
+        <button 
+          *ngIf="torneo.estado === EstadoTorneo.CANCELADO || torneo.estado === EstadoTorneo.FINALIZADO"
+          type="button" 
+          class="btn btn-outline-danger btn-sm"
+          (click)="eliminarTorneo(torneo.id!)">
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
