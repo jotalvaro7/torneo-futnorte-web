@@ -1,5 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { NgFor, DatePipe, NgClass } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TorneoService } from '../../../services/torneo.service';
 import { Torneo, EstadoTorneo } from '../../../models';
@@ -7,12 +7,12 @@ import { Torneo, EstadoTorneo } from '../../../models';
 @Component({
   selector: 'app-torneo-list',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [NgFor, DatePipe, NgClass, RouterModule],
   templateUrl: './torneo-list.component.html',
   styleUrl: './torneo-list.component.css'
 })
 export class TorneoListComponent implements OnInit {
-  private readonly torneoService = inject(TorneoService);
+  constructor(private readonly torneoService: TorneoService) {}
   
   torneos: Torneo[] = [];
   loading = false;
@@ -22,6 +22,14 @@ export class TorneoListComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarTorneos();
+  }
+
+  trackByTorneo(index: number, torneo: Torneo): number {
+    return torneo.id || index;
+  }
+
+  getTorneosByEstado(estado: string): number {
+    return this.torneos.filter(torneo => torneo.estado === estado).length;
   }
 
   cargarTorneos(): void {
