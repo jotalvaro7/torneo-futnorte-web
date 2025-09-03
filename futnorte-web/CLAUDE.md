@@ -57,7 +57,7 @@ ng generate guard guard-name
 
 ### Key Architectural Patterns to Follow
 
-#### Standalone Components
+#### Standalone Components with Signals
 ```typescript
 @Component({
   selector: 'app-feature',
@@ -65,6 +65,22 @@ ng generate guard guard-name
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './feature.component.html'
 })
+export class FeatureComponent {
+  private readonly service = inject(FeatureService);
+  
+  // Use signals for all component state
+  data = signal<Feature[]>([]);
+  loading = signal(false);
+  error = signal<string | null>(null);
+  
+  // Use computed signals for derived state
+  filteredData = computed(() => 
+    this.data().filter(item => item.active)
+  );
+  
+  // Use computed for business logic
+  hasData = computed(() => this.data().length > 0);
+}
 ```
 
 #### Dependency Injection
@@ -73,9 +89,11 @@ ng generate guard guard-name
 - Use `provideRouter()`, `provideHttpClient()` in app config
 
 #### State Management
-- Implement reactive patterns with RxJS
-- Use Angular Signals for local state
-- Consider NgRx for complex state scenarios
+- **Primary approach**: Use Angular 18 Signals for all component state management
+- Implement reactive patterns with RxJS for data streams
+- Use computed signals for derived state and business logic
+- Consider NgRx only for very complex global state scenarios
+- Prefer signal-based patterns over traditional reactive forms where possible
 
 #### Clean Architecture Principles
 - Feature-based folder structure
@@ -91,8 +109,101 @@ ng generate guard guard-name
 - Use meaningful component and service naming
 
 ### Performance Best Practices
-- OnPush change detection strategy
+- **Signals-first approach**: Use signals for optimal change detection performance
+- OnPush change detection strategy (automatically optimized with signals)
 - Lazy loading for routes
 - Tree shaking optimization
 - Bundle size monitoring (500kB warning, 1MB error)
 - Component style budget: 2kB warning, 4kB error
+
+## Angular 18 Signals Best Practices
+
+### Signal Usage Guidelines
+- **State Management**: Use `signal()` for all mutable component state
+- **Derived State**: Use `computed()` for calculated values and business logic
+- **Template Integration**: Always call signals as functions in templates: `{{ data() }}`
+- **Conditional Logic**: Use computed signals for complex conditional rendering logic
+
+### Signal Patterns
+```typescript
+// ✅ Good: Signal-based component state
+export class ComponentExample {
+  // Primitive state
+  loading = signal(false);
+  error = signal<string | null>(null);
+  
+  // Complex state
+  items = signal<Item[]>([]);
+  selectedItem = signal<Item | null>(null);
+  
+  // Derived state with computed
+  filteredItems = computed(() => 
+    this.items().filter(item => item.status === 'active')
+  );
+  
+  // Business logic with computed
+  canSubmit = computed(() => 
+    this.selectedItem() !== null && !this.loading()
+  );
+  
+  // Update signals
+  updateItems(newItems: Item[]) {
+    this.items.set(newItems);
+  }
+  
+  addItem(item: Item) {
+    this.items.update(current => [...current, item]);
+  }
+}
+```
+
+### Template Best Practices
+```html
+<!-- ✅ Good: Signal function calls -->
+@if (loading()) {
+  <div>Loading...</div>
+}
+
+@if (error()) {
+  <div class="error">{{ error() }}</div>
+}
+
+@for (item of filteredItems(); track item.id) {
+  <div>{{ item.name }}</div>
+}
+
+<button [disabled]="!canSubmit()">
+  Submit
+</button>
+
+<!-- ✅ Good: Use computed signals for complex logic -->
+<div [class]="itemStatusClass()">
+  {{ selectedItem()?.name }}
+</div>
+```
+
+### Service Integration with Signals
+```typescript
+@Injectable({ providedIn: 'root' })
+export class DataService {
+  private readonly http = inject(HttpClient);
+  
+  // Cache with signals
+  private cache = signal<Data[]>([]);
+  private refreshTrigger = new BehaviorSubject<void>(undefined);
+  
+  // Reactive stream with signal integration
+  readonly data$ = this.refreshTrigger.pipe(
+    switchMap(() => this.http.get<Data[]>('/api/data')),
+    tap(data => this.cache.set(data)),
+    shareReplay(1)
+  );
+  
+  // Signal-based cache access
+  readonly cachedData = this.cache.asReadonly();
+  
+  refresh() {
+    this.refreshTrigger.next();
+  }
+}
+```

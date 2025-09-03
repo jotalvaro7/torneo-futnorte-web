@@ -84,6 +84,13 @@ export class TorneoFormComponent implements OnInit {
     return date.toISOString().split('T')[0];
   }
 
+  private formatDateForBackend(dateString: string): string {
+    if (!dateString) return '';
+    // Convertir fecha YYYY-MM-DD a LocalDateTime formato: YYYY-MM-DDTHH:MM:SS
+    const date = new Date(dateString + 'T00:00:00');
+    return date.toISOString().slice(0, 19); // Remover la Z y milisegundos
+  }
+
   onSubmit(): void {
     if (this.torneoForm.valid) {
       this.loading.set(true);
@@ -93,7 +100,8 @@ export class TorneoFormComponent implements OnInit {
       const formData = this.torneoForm.value;
       const torneoData = {
         ...formData,
-        estado: EstadoTorneo.CREADO
+        fechaInicio: formData.fechaInicio ? this.formatDateForBackend(formData.fechaInicio) : null,
+        fechaFin: formData.fechaFin ? this.formatDateForBackend(formData.fechaFin) : null,
       };
 
       const request = this.isEditMode()
