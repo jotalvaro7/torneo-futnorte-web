@@ -5,10 +5,10 @@
       <div class="flex items-center justify-between">
         <div>
           <h1 class="text-3xl font-bold text-gray-900">
-            {{ isEditMode ? 'Editar Torneo' : 'Nuevo Torneo' }}
+            {{ pageTitle() }}
           </h1>
           <p class="mt-2 text-gray-600">
-            {{ isEditMode ? 'Modifica los datos del torneo' : 'Crea un nuevo torneo de fútbol' }}
+            {{ isEditMode() ? 'Modifica los datos del torneo' : 'Crea un nuevo torneo de fútbol' }}
           </p>
         </div>
         <button type="button" (click)="onCancel()"
@@ -25,7 +25,7 @@
     <div class="max-w-2xl mx-auto">
       <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
         <!-- Success Message -->
-        @if (success) {
+        @if (success()) {
         <div class="bg-success-50 border-l-4 border-success-400 p-6">
           <div class="flex items-center">
             <div class="flex-shrink-0">
@@ -37,7 +37,7 @@
             </div>
             <div class="ml-3">
               <p class="text-sm text-success-700 font-medium">
-                ¡Torneo {{ isEditMode ? 'actualizado' : 'creado' }} exitosamente! Redirigiendo...
+                ¡Torneo {{ isEditMode() ? 'actualizado' : 'creado' }} exitosamente! Redirigiendo...
               </p>
             </div>
           </div>
@@ -45,7 +45,7 @@
         }
 
         <!-- Error Message -->
-        @if (error) {
+        @if (error()) {
         <div class="bg-danger-50 border-l-4 border-danger-400 p-6">
           <div class="flex items-center">
             <div class="flex-shrink-0">
@@ -56,14 +56,14 @@
               </svg>
             </div>
             <div class="ml-3">
-              <p class="text-sm text-danger-700">{{ error }}</p>
+              <p class="text-sm text-danger-700">{{ error() }}</p>
             </div>
           </div>
         </div>
         }
 
         <!-- Loading State -->
-        @if (loading && !success) {
+        @if (loading() && !success()) {
         <div class="bg-primary-50 border-l-4 border-primary-400 p-6">
           <div class="flex items-center">
             <div class="flex-shrink-0">
@@ -71,7 +71,7 @@
             </div>
             <div class="ml-3">
               <p class="text-sm text-primary-700 font-medium">
-                {{ isEditMode ? 'Actualizando torneo...' : 'Creando torneo...' }}
+                {{ isEditMode() ? 'Actualizando torneo...' : 'Creando torneo...' }}
               </p>
             </div>
           </div>
@@ -155,20 +155,20 @@
           <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
             <button type="button" (click)="onCancel()"
               class="px-6 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200"
-              [disabled]="loading">
+              [disabled]="loading()">
               Cancelar
             </button>
             <button type="submit"
               class="px-8 py-3 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-              [disabled]="loading || torneoForm.invalid">
-              @if (!loading) {
+              [disabled]="loading() || torneoForm.invalid">
+              @if (!loading()) {
               <span>
-                {{ isEditMode ? 'Actualizar Torneo' : 'Crear Torneo' }}
+                {{ submitButtonText() }}
               </span>
               } @else {
               <span class="flex items-center">
                 <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                {{ isEditMode ? 'Actualizando...' : 'Creando...' }}
+                {{ submitButtonText() }}
               </span>
               }
             </button>

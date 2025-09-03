@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TorneoService } from '../../../services/torneo.service';
@@ -18,11 +18,21 @@ export class TorneoFormComponent implements OnInit {
   private readonly torneoService = inject(TorneoService);
 
   torneoForm!: FormGroup;
-  isEditMode = false;
-  torneoId: number | null = null;
-  loading = false;
-  error: string | null = null;
-  success = false;
+  isEditMode = signal(false);
+  torneoId = signal<number | null>(null);
+  loading = signal(false);
+  error = signal<string | null>(null);
+  success = signal(false);
+  
+  pageTitle = computed(() => 
+    this.isEditMode() ? 'Editar Torneo' : 'Crear Nuevo Torneo'
+  );
+  
+  submitButtonText = computed(() => 
+    this.loading() 
+      ? (this.isEditMode() ? 'Actualizando...' : 'Creando...') 
+      : (this.isEditMode() ? 'Actualizar' : 'Crear')
+  );
 
   ngOnInit(): void {
     this.initForm();
@@ -41,14 +51,16 @@ export class TorneoFormComponent implements OnInit {
   private checkEditMode(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.isEditMode = true;
-      this.torneoId = parseInt(id, 10);
-      this.cargarTorneo(this.torneoId);
+      this.isEditMode.set(true);
+      this.torneoId.set(parseInt(id, 10));
+      this.cargarTorneo(this.torneoId());
     }
   }
 
-  private cargarTorneo(id: number): void {
-    this.loading = true;
+  private cargarTorneo(id: number | null): void {
+    if (!id) return;
+    
+    this.loading.set(true);
     this.torneoService.obtenerTorneo(id).subscribe({
       next: (torneo) => {
         this.torneoForm.patchValue({
@@ -57,11 +69,11 @@ export class TorneoFormComponent implements OnInit {
           fechaInicio: this.formatDateForInput(torneo.fechaInicio),
           fechaFin: this.formatDateForInput(torneo.fechaFin)
         });
-        this.loading = false;
+        this.loading.set(false);
       },
       error: (error) => {
-        this.error = 'Error al cargar el torneo: ' + error.message;
-        this.loading = false;
+        this.error.set('Error al cargar el torneo: ' + error.message);
+        this.loading.set(false);
       }
     });
   }
@@ -72,33 +84,41 @@ export class TorneoFormComponent implements OnInit {
     return date.toISOString().split('T')[0];
   }
 
+  private formatDateForBackend(dateString: string): string {
+    if (!dateString) return '';
+    // Convertir fecha YYYY-MM-DD a LocalDateTime formato: YYYY-MM-DDTHH:MM:SS
+    const date = new Date(dateString + 'T00:00:00');
+    return date.toISOString().slice(0, 19); // Remover la Z y milisegundos
+  }
+
   onSubmit(): void {
     if (this.torneoForm.valid) {
-      this.loading = true;
-      this.error = null;
-      this.success = false;
+      this.loading.set(true);
+      this.error.set(null);
+      this.success.set(false);
 
       const formData = this.torneoForm.value;
       const torneoData = {
         ...formData,
-        estado: EstadoTorneo.CREADO
+        fechaInicio: formData.fechaInicio ? this.formatDateForBackend(formData.fechaInicio) : null,
+        fechaFin: formData.fechaFin ? this.formatDateForBackend(formData.fechaFin) : null,
       };
 
-      const request = this.isEditMode
-        ? this.torneoService.actualizarTorneo(this.torneoId!, torneoData)
+      const request = this.isEditMode()
+        ? this.torneoService.actualizarTorneo(this.torneoId()!, torneoData)
         : this.torneoService.crearTorneo(torneoData);
 
       request.subscribe({
         next: () => {
-          this.success = true;
-          this.loading = false;
+          this.success.set(true);
+          this.loading.set(false);
           setTimeout(() => {
             this.router.navigate(['/torneos']);
           }, 1500);
         },
         error: (error) => {
-          this.error = `Error al ${this.isEditMode ? 'actualizar' : 'crear'} el torneo: ` + error.message;
-          this.loading = false;
+          this.error.set(`Error al ${this.isEditMode() ? 'actualizar' : 'crear'} el torneo: ` + error.message);
+          this.loading.set(false);
         }
       });
     } else {

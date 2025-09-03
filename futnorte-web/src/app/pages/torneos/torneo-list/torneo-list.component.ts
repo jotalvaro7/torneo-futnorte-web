@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { DatePipe, NgClass } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TorneoService } from '../../../services/torneo.service';
@@ -14,9 +14,9 @@ import { Torneo, EstadoTorneo } from '../../../models';
 export class TorneoListComponent implements OnInit {
   private readonly torneoService = inject(TorneoService);
   
-  torneos: Torneo[] = [];
-  loading = false;
-  error: string | null = null;
+  torneos = signal<Torneo[]>([]);
+  loading = signal(false);
+  error = signal<string | null>(null);
 
   EstadoTorneo = EstadoTorneo;
 
@@ -28,22 +28,34 @@ export class TorneoListComponent implements OnInit {
     return torneo.id || index;
   }
 
-  getTorneosByEstado(estado: string): number {
-    return this.torneos.filter(torneo => torneo.estado === estado).length;
-  }
+  torneosCreados = computed(() => 
+    this.torneos().filter(torneo => torneo.estado === EstadoTorneo.CREADO).length
+  );
+  
+  torneosEnCurso = computed(() => 
+    this.torneos().filter(torneo => torneo.estado === EstadoTorneo.EN_CURSO).length
+  );
+  
+  torneosFinalizados = computed(() => 
+    this.torneos().filter(torneo => torneo.estado === EstadoTorneo.FINALIZADO).length
+  );
+  
+  torneosCancelados = computed(() => 
+    this.torneos().filter(torneo => torneo.estado === EstadoTorneo.CANCELADO).length
+  );
 
   cargarTorneos(): void {
-    this.loading = true;
-    this.error = null;
+    this.loading.set(true);
+    this.error.set(null);
     
     this.torneoService.obtenerTodosTorneos().subscribe({
       next: (torneos) => {
-        this.torneos = torneos;
-        this.loading = false;
+        this.torneos.set(torneos);
+        this.loading.set(false);
       },
       error: (error) => {
-        this.error = 'Error al cargar torneos: ' + error.message;
-        this.loading = false;
+        this.error.set('Error al cargar torneos: ' + error.message);
+        this.loading.set(false);
       }
     });
   }
@@ -55,7 +67,7 @@ export class TorneoListComponent implements OnInit {
           this.cargarTorneos();
         },
         error: (error) => {
-          this.error = 'Error al eliminar torneo: ' + error.message;
+          this.error.set('Error al eliminar torneo: ' + error.message);
         }
       });
     }
@@ -82,7 +94,7 @@ export class TorneoListComponent implements OnInit {
         this.cargarTorneos();
       },
       error: (error) => {
-        this.error = `Error al ${accion} torneo: ` + error.message;
+        this.error.set(`Error al ${accion} torneo: ` + error.message);
       }
     });
   }
