@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { TorneoService } from '../../../services/torneo.service';
@@ -16,9 +16,35 @@ export class TorneoDetailComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly torneoService = inject(TorneoService);
 
-  torneo: Torneo | null = null;
-  loading = false;
-  error: string | null = null;
+  torneo = signal<Torneo | null>(null);
+  loading = signal(false);
+  error = signal<string | null>(null);
+
+  torneoId = computed(() => this.torneo()?.id);
+  canStart = computed(() =>
+    this.torneo()?.estado === EstadoTorneo.CREADO
+  );
+  canFinalize = computed(() =>
+    this.torneo()?.estado === EstadoTorneo.EN_CURSO
+  );
+  canCancel = computed(() =>
+    this.torneo()?.estado !== EstadoTorneo.FINALIZADO
+  );
+  canDelete = computed(() => {
+    const estado = this.torneo()?.estado;
+    return estado === EstadoTorneo.CANCELADO || estado === EstadoTorneo.FINALIZADO;
+  });
+
+  estadoFormateado = computed(() => {
+    return this.torneo()?.estado?.replace('_', ' ') || '';
+  })
+
+  statusColor = computed(() =>
+    this.getEstadoColor(this.torneo()?.estado || '')
+  );
+  statusDotColor = computed(() =>
+    this.getEstadoDotColor(this.torneo()?.estado || '')
+  );
 
   EstadoTorneo = EstadoTorneo;
 
@@ -32,57 +58,59 @@ export class TorneoDetailComponent implements OnInit {
   }
 
   cargarTorneo(id: number): void {
-    this.loading = true;
-    this.error = null;
+    this.loading.set(true);
+    this.error.set(null);
 
     this.torneoService.obtenerTorneo(id).subscribe({
       next: (torneo) => {
-        this.torneo = torneo;
-        this.loading = false;
+        this.torneo.set(torneo);
+        this.loading.set(false);
       },
       error: (error) => {
-        this.error = 'Error al cargar el torneo: ' + error.message;
-        this.loading = false;
+        this.error.set('Error al cargar el torneo: ' + error.message);
+        this.loading.set(false);
       }
     });
   }
 
   cambiarEstadoTorneo(accion: 'iniciar' | 'cancelar' | 'finalizar'): void {
-    if (!this.torneo?.id) return;
+    const tournamentId = this.torneoId();
+    if (!tournamentId) return;
 
     let observable;
     switch (accion) {
       case 'iniciar':
-        observable = this.torneoService.iniciarTorneo(this.torneo.id);
+        observable = this.torneoService.iniciarTorneo(tournamentId);
         break;
       case 'cancelar':
-        observable = this.torneoService.cancelarTorneo(this.torneo.id);
+        observable = this.torneoService.cancelarTorneo(tournamentId);
         break;
       case 'finalizar':
-        observable = this.torneoService.finalizarTorneo(this.torneo.id);
+        observable = this.torneoService.finalizarTorneo(tournamentId);
         break;
     }
 
     observable.subscribe({
       next: () => {
-        this.cargarTorneo(this.torneo!.id!);
+        this.cargarTorneo(tournamentId);
       },
       error: (error) => {
-        this.error = `Error al ${accion} torneo: ` + error.message;
+        this.error.set(`Error al ${accion} torneo: ` + error.message);
       }
     });
   }
 
   eliminarTorneo(): void {
-    if (!this.torneo?.id) return;
+    const tournamentId = this.torneoId();
+    if (!tournamentId) return;
 
     if (confirm('¿Está seguro de que desea eliminar este torneo?')) {
-      this.torneoService.eliminarTorneo(this.torneo.id).subscribe({
+      this.torneoService.eliminarTorneo(tournamentId).subscribe({
         next: () => {
           this.router.navigate(['/torneos']);
         },
         error: (error) => {
-          this.error = 'Error al eliminar torneo: ' + error.message;
+          this.error.set('Error al eliminar torneo: ' + error.message);
         }
       });
     }

@@ -1,6 +1,6 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, BehaviorSubject, shareReplay, tap, switchMap } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 import { Torneo, TorneoRequest, ErrorResponse } from '../models';
 import { environment } from '../../environments/environment';
@@ -11,13 +11,26 @@ import { environment } from '../../environments/environment';
 export class TorneoService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/torneos`;
-
-  obtenerTodosTorneos(): Observable<Torneo[]> {
-    return this.http.get<Torneo[]>(this.baseUrl)
+  
+  private torneosCache = signal<Torneo[]>([]);
+  private readonly refreshTrigger = new BehaviorSubject<void>(undefined);
+  
+  readonly torneos$ = this.refreshTrigger.pipe(
+    switchMap(() => this.http.get<Torneo[]>(this.baseUrl)
       .pipe(
         retry(2),
+        tap(torneos => this.torneosCache.set(torneos)),
         catchError(this.handleError)
-      );
+      )
+    ),
+    shareReplay(1)
+  );
+  
+  readonly torneosSignal = this.torneosCache.asReadonly();
+
+  obtenerTodosTorneos(): Observable<Torneo[]> {
+    this.refreshTrigger.next();
+    return this.torneos$;
   }
 
   obtenerTorneo(id: number): Observable<Torneo> {
@@ -31,6 +44,7 @@ export class TorneoService {
   crearTorneo(torneo: TorneoRequest): Observable<Torneo> {
     return this.http.post<Torneo>(this.baseUrl, torneo)
       .pipe(
+        tap(() => this.refreshTrigger.next()),
         catchError(this.handleError)
       );
   }
@@ -38,6 +52,7 @@ export class TorneoService {
   actualizarTorneo(id: number, torneo: TorneoRequest): Observable<Torneo> {
     return this.http.put<Torneo>(`${this.baseUrl}/${id}`, torneo)
       .pipe(
+        tap(() => this.refreshTrigger.next()),
         catchError(this.handleError)
       );
   }
@@ -45,6 +60,7 @@ export class TorneoService {
   eliminarTorneo(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`)
       .pipe(
+        tap(() => this.refreshTrigger.next()),
         catchError(this.handleError)
       );
   }
@@ -52,6 +68,7 @@ export class TorneoService {
   iniciarTorneo(id: number): Observable<Torneo> {
     return this.http.post<Torneo>(`${this.baseUrl}/${id}/iniciar`, {})
       .pipe(
+        tap(() => this.refreshTrigger.next()),
         catchError(this.handleError)
       );
   }
@@ -59,6 +76,7 @@ export class TorneoService {
   cancelarTorneo(id: number): Observable<Torneo> {
     return this.http.post<Torneo>(`${this.baseUrl}/${id}/cancelar`, {})
       .pipe(
+        tap(() => this.refreshTrigger.next()),
         catchError(this.handleError)
       );
   }
@@ -66,6 +84,7 @@ export class TorneoService {
   finalizarTorneo(id: number): Observable<Torneo> {
     return this.http.post<Torneo>(`${this.baseUrl}/${id}/finalizar`, {})
       .pipe(
+        tap(() => this.refreshTrigger.next()),
         catchError(this.handleError)
       );
   }
