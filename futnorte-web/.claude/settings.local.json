@@ -4,7 +4,12 @@
       "Bash(ng generate component:*)",
       "Bash(npm uninstall:*)",
       "Bash(npx tailwindcss init:*)",
-      "Bash(npx ng generate component:*)"
+      "Bash(npx ng generate component:*)",
+      "Read(/C:\\Users\\julio.osorio\\Desktop\\futnorte-front\\futnorte-web\\src\\app\\models/**)",
+      "Read(/C:\\Users\\julio.osorio\\Desktop\\futnorte-front\\futnorte-web\\src\\app/**)",
+      "Bash(git add:*)",
+      "Read(/C:\\Users\\julio.osorio\\Desktop\\futnorte-front\\futnorte-web\\src\\app\\pages\\torneos\\torneo-equipos/**)",
+      "Read(/C:\\Users\\julio.osorio\\Desktop\\futnorte-front\\futnorte-web\\src\\app\\pages\\torneos\\torneo-equipos/**)"
     ],
     "deny": [],
     "ask": []
