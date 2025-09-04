@@ -1,0 +1,169 @@
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+  <!-- Header Section -->
+  <div class="bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center space-x-4">
+          <button type="button" class="btn btn-ghost btn-sm gap-2" routerLink="/equipos">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Volver
+          </button>
+          <div class="flex-shrink-0">
+            <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+            </div>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">{{ pageTitle() }}</h1>
+            <p class="text-sm text-gray-500">Gestión de Equipos de Fútbol</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Loading State -->
+    @if (loading()) {
+    <div class="flex flex-col items-center justify-center py-16 animate-fade-in">
+      <div class="relative">
+        <div class="w-12 h-12 border-4 border-green-200 border-t-green-600 rounded-full animate-spin"></div>
+        <div class="absolute inset-0 w-12 h-12 border-4 border-transparent border-b-green-400 rounded-full animate-spin animation-delay-150"></div>
+      </div>
+      <p class="mt-4 text-gray-600 font-medium">Cargando datos del equipo...</p>
+    </div>
+    }
+
+    <!-- Error State -->
+    @if (error()) {
+    <div class="mb-6 animate-slide-up">
+      <div class="bg-danger-50 border border-danger-200 rounded-xl p-4">
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <svg class="w-5 h-5 text-danger-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <div class="ml-3 flex-1">
+            <h3 class="text-sm font-semibold text-danger-800">Ha ocurrido un error</h3>
+            <p class="mt-1 text-sm text-danger-700">{{ error() }}</p>
+          </div>
+          <button type="button" class="ml-auto flex-shrink-0 text-danger-400 hover:text-danger-600 transition-colors" (click)="error.set(null)">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Form Container -->
+    @if (!loading()) {
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden animate-fade-in">
+      <div class="p-8">
+        <form [formGroup]="equipoForm" (ngSubmit)="onSubmit()" class="space-y-6">
+          <!-- Nombre Field -->
+          <div>
+            <label for="nombre" class="block text-sm font-semibold text-gray-700 mb-2">
+              Nombre del Equipo
+              <span class="text-danger-500">*</span>
+            </label>
+            <input 
+              id="nombre"
+              type="text" 
+              formControlName="nombre"
+              class="input input-bordered w-full"
+              [class.input-error]="isFieldInvalid('nombre')"
+              placeholder="Ej: Real Madrid, Barcelona..."
+            />
+            @if (isFieldInvalid('nombre')) {
+            <p class="mt-1 text-sm text-danger-600">{{ getFieldError('nombre') }}</p>
+            }
+          </div>
+
+          <!-- Entrenador Field -->
+          <div>
+            <label for="entrenador" class="block text-sm font-semibold text-gray-700 mb-2">
+              Entrenador
+              <span class="text-danger-500">*</span>
+            </label>
+            <input 
+              id="entrenador"
+              type="text" 
+              formControlName="entrenador"
+              class="input input-bordered w-full"
+              [class.input-error]="isFieldInvalid('entrenador')"
+              placeholder="Ej: Carlos Pérez, María González..."
+            />
+            @if (isFieldInvalid('entrenador')) {
+            <p class="mt-1 text-sm text-danger-600">{{ getFieldError('entrenador') }}</p>
+            }
+          </div>
+
+          <!-- Torneo Field -->
+          <div>
+            <label for="torneoId" class="block text-sm font-semibold text-gray-700 mb-2">
+              Torneo
+              <span class="text-danger-500">*</span>
+            </label>
+            <select 
+              id="torneoId"
+              formControlName="torneoId"
+              class="select select-bordered w-full"
+              [class.select-error]="isFieldInvalid('torneoId')"
+            >
+              <option value="" disabled>Selecciona un torneo</option>
+              @for (torneo of torneos(); track torneo.id) {
+              <option [value]="torneo.id">{{ torneo.nombre }} ({{ torneo.fechaInicio | date:'yyyy' }})</option>
+              }
+            </select>
+            @if (isFieldInvalid('torneoId')) {
+            <p class="mt-1 text-sm text-danger-600">{{ getFieldError('torneoId') }}</p>
+            }
+            @if (torneos().length === 0) {
+            <p class="mt-1 text-sm text-warning-600">No hay torneos activos disponibles</p>
+            }
+          </div>
+
+          <!-- Form Actions -->
+          <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+            <button 
+              type="submit" 
+              class="btn btn-primary flex-1 gap-2"
+              [disabled]="equipoForm.invalid || saving()" (click)="onSubmit()"
+            >
+              @if (saving()) {
+              <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <span>{{ isEditing() ? 'Actualizando...' : 'Creando...' }}</span>
+              } @else {
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span>{{ submitButtonText() }}</span>
+              }
+            </button>
+
+            <button 
+              type="button" 
+              class="btn btn-outline flex-1 gap-2"
+              (click)="onCancel()"
+              [disabled]="saving()"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    }
+  </div>
+</div>
