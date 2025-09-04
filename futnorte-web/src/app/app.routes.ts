@@ -39,5 +39,14 @@ export const routes: Routes = [
   {
     path: 'equipos/:id/editar',
     loadComponent: () => import('./pages/equipos/equipo-form/equipo-form.component').then(c => c.EquipoFormComponent)
+  },
+  // Rutas de Jugadores
+  {
+    path: 'equipos/:equipoId/jugadores/nuevo',
+    loadComponent: () => import('./pages/equipos/jugador-form/jugador-form.component').then(c => c.JugadorFormComponent)
+  },
+  {
+    path: 'equipos/:equipoId/jugadores/:jugadorId/editar',
+    loadComponent: () => import('./pages/equipos/jugador-form/jugador-form.component').then(c => c.JugadorFormComponent)
   }
 ];

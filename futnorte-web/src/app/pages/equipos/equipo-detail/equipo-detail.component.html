@@ -235,6 +235,14 @@
           </div>
         </div>
       </div>
+
+      <!-- Players Section -->
+      <div class="mt-8">
+        <app-equipo-jugadores 
+          [equipoId]="equipoId()!" 
+          [equipoNombre]="equipo()?.nombre!">
+        </app-equipo-jugadores>
+      </div>
     </div>
     }
   </div>
