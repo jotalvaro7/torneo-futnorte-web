@@ -3,11 +3,12 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { EquipoService } from '../../../services/equipo.service';
 import { Equipo } from '../../../models';
+import { EquipoJugadoresComponent } from '../equipo-jugadores/equipo-jugadores.component';
 
 @Component({
   selector: 'app-equipo-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, EquipoJugadoresComponent],
   templateUrl: './equipo-detail.component.html',
   styleUrl: './equipo-detail.component.css'
 })
