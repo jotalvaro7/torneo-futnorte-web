@@ -103,6 +103,24 @@ export class TorneoEquiposComponent implements OnInit {
   }
 
   crearNuevoEquipo(): void {
-    this.router.navigate(['/equipos/nuevo']);
+    const id = this.torneoId();
+    if (id) {
+      this.router.navigate(['/equipos/nuevo'], { 
+        queryParams: { torneoId: id } 
+      });
+    } else {
+      this.router.navigate(['/equipos/nuevo']);
+    }
+  }
+
+  editarEquipo(equipoId: number): void {
+    const id = this.torneoId();
+    if (id) {
+      this.router.navigate(['/equipos', equipoId, 'editar'], {
+        queryParams: { torneoId: id }
+      });
+    } else {
+      this.router.navigate(['/equipos', equipoId, 'editar']);
+    }
   }
 }

@@ -25,6 +25,7 @@ export class EquipoFormComponent implements OnInit {
   saving = signal(false);
   error = signal<string | null>(null);
   torneos = signal<Torneo[]>([]);
+  torneoId = signal<string | null>(null);
   
   isEditing = computed(() => this.equipoId() !== null);
   pageTitle = computed(() => this.isEditing() ? 'Editar Equipo' : 'Nuevo Equipo');
@@ -39,6 +40,7 @@ export class EquipoFormComponent implements OnInit {
   ngOnInit(): void {
     this.cargarTorneos();
     this.verificarModoEdicion();
+    this.inicializarTorneoId();
   }
 
   private verificarModoEdicion(): void {
@@ -69,6 +71,7 @@ export class EquipoFormComponent implements OnInit {
           entrenador: equipo.entrenador,
           torneoId: equipo.torneoId
         });
+        this.actualizarTorneoId(equipo.torneoId.toString());
         this.loading.set(false);
       },
       error: (error) => {
@@ -76,6 +79,28 @@ export class EquipoFormComponent implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  private inicializarTorneoId(): void {
+    const torneoIdParam = this.route.snapshot.queryParamMap.get('torneoId');
+    if (torneoIdParam) {
+      this.actualizarTorneoId(torneoIdParam);
+      this.equipoForm.patchValue({ torneoId: +torneoIdParam });
+      
+      if (!this.isEditing()) {
+        this.equipoForm.get('torneoId')?.disable();
+      }
+    }
+
+    this.equipoForm.get('torneoId')?.valueChanges.subscribe(value => {
+      if (value) {
+        this.actualizarTorneoId(value.toString());
+      }
+    });
+  }
+
+  private actualizarTorneoId(torneoId: string): void {
+    this.torneoId.set(torneoId);
   }
 
   onSubmit(): void {
@@ -87,7 +112,13 @@ export class EquipoFormComponent implements OnInit {
     this.saving.set(true);
     this.error.set(null);
 
-    const equipoData: EquipoRequest = this.equipoForm.value;
+    const torneoControl = this.equipoForm.get('torneoId');
+    const equipoData: EquipoRequest = {
+      ...this.equipoForm.value,
+      torneoId: torneoControl?.disabled 
+        ? +this.torneoId()! 
+        : torneoControl?.value
+    };
 
     const operation = this.isEditing()
       ? this.equipoService.actualizarEquipo(this.equipoId()!, equipoData)
@@ -95,8 +126,8 @@ export class EquipoFormComponent implements OnInit {
 
     operation.subscribe({
       next: () => {
-        const torneoId = this.equipoForm.get('torneoId')?.value;
-        this.router.navigate(['/torneos', torneoId, "equipos"]);
+        this.actualizarTorneoId(this.equipoForm.get('torneoId')?.value);
+        this.router.navigate(['/torneos', this.torneoId(), "equipos"]);
       },
       error: (error) => {
         this.error.set('Error al guardar equipo: ' + error.message);
@@ -134,7 +165,16 @@ export class EquipoFormComponent implements OnInit {
   }
 
   onCancel(): void {
-    const torneoId = this.equipoForm.get('torneoId')?.value;
-    this.router.navigate(['/torneos', torneoId, "equipos"]);
+    const torneoIdValue = this.equipoForm.get('torneoId')?.value || this.torneoId();
+    this.actualizarTorneoId(torneoIdValue);
+    this.router.navigate(['/torneos', this.torneoId(), "equipos"]);
+  }
+
+  onVolver(): void {
+    const torneoIdValue = this.equipoForm.get('torneoId')?.value || this.torneoId();
+    
+    if (torneoIdValue) {
+      this.router.navigate(['/torneos', torneoIdValue, 'equipos']);
+    }
   }
 }
