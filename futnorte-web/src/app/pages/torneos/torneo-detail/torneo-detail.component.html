@@ -171,6 +171,43 @@
         </div>
       </div>
 
+      <!-- Teams Section -->
+      <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden mb-8">
+        <div class="px-8 py-6 border-b border-gray-100">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-xl font-bold text-gray-900 mb-2">Equipos del Torneo</h3>
+              <p class="text-gray-600">Gestiona los equipos participantes</p>
+            </div>
+            <button type="button" class="btn btn-primary btn-md gap-2" [routerLink]="['/torneos', torneoId(), 'equipos']">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+              Ver Equipos
+            </button>
+          </div>
+        </div>
+
+        <div class="p-8">
+          <div class="text-center py-8">
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+            </div>
+            <h4 class="text-lg font-semibold text-gray-900 mb-2">Administrar Equipos</h4>
+            <p class="text-gray-600 mb-6">Consulta y gestiona todos los equipos participantes en este torneo</p>
+            <button type="button" class="btn btn-primary gap-2" [routerLink]="['/torneos', torneoId(), 'equipos']">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+              Ver Equipos del Torneo
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Actions Card -->
       <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
         <div class="px-8 py-6 border-b border-gray-100">

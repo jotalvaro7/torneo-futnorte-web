@@ -3,7 +3,8 @@
     "allow": [
       "Bash(ng generate component:*)",
       "Bash(npm uninstall:*)",
-      "Bash(npx tailwindcss init:*)"
+      "Bash(npx tailwindcss init:*)",
+      "Bash(npx ng generate component:*)"
     ],
     "deny": [],
     "ask": []
