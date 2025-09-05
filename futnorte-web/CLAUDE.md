@@ -108,6 +108,14 @@ export class FeatureComponent {
 - Write comprehensive unit tests with Jasmine/Karma
 - Use meaningful component and service naming
 
+### Git Commit Guidelines
+- **IMPORTANT**: Do not include Claude AI attribution in commit messages
+- Write clear, concise commit messages that describe the changes
+- Focus on the "what" and "why" of the changes, not who created them
+- Use conventional commit format when possible (feat:, fix:, docs:, etc.)
+- Example of good commit: `feat: add player search functionality with CRUD operations`
+- Example to avoid: `feat: add player search with Claude Code assistance`
+
 ### Performance Best Practices
 - **Signals-first approach**: Use signals for optimal change detection performance
 - OnPush change detection strategy (automatically optimized with signals)
