@@ -1,0 +1,268 @@
+<div class="max-w-4xl mx-auto">
+  <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+    <div class="bg-blue-600 text-white px-6 py-4">
+      <h4 class="text-xl font-semibold flex items-center">
+        <i class="fas fa-search mr-2"></i>
+        Buscar Jugador por Identificación
+      </h4>
+    </div>
+      <div class="p-6">
+          
+        <!-- Formulario de búsqueda -->
+        <form [formGroup]="searchForm" (ngSubmit)="buscarJugador()" class="mb-6">
+          <div class="flex flex-col md:flex-row gap-4 items-end">
+            <div class="flex-1">
+              <label for="identificacion" class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="fas fa-id-card mr-1"></i>
+                Número de Identificación
+              </label>
+              <input
+                type="text"
+                id="identificacion"
+                formControlName="identificacion"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                [class.border-red-500]="searchForm.get('identificacion')?.invalid && searchForm.get('identificacion')?.touched"
+                placeholder="Ingrese el número de identificación...">
+              @if (searchForm.get('identificacion')?.invalid && searchForm.get('identificacion')?.touched) {
+                <p class="mt-1 text-sm text-red-600">La identificación es requerida</p>
+              }
+            </div>
+            <div class="w-full md:w-auto">
+              <button
+                type="submit"
+                class="w-full md:w-auto px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                [disabled]="!canSearch()">
+                @if (isLoading()) {
+                  <span class="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-r-transparent mr-2"></span>
+                  Buscando...
+                } @else {
+                  <i class="fas fa-search mr-2"></i>
+                  Buscar
+                }
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Error de búsqueda -->
+        @if (searchError()) {
+          <div class="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+            <div class="flex items-center">
+              <i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>
+              <p class="text-red-800">{{ searchError() }}</p>
+            </div>
+          </div>
+        }
+
+        <!-- Jugador encontrado -->
+        @if (hasJugador()) {
+          <div class="bg-white border-2 border-green-500 rounded-lg shadow-lg">
+            <div class="bg-green-600 text-white px-6 py-4 flex justify-between items-center rounded-t-lg">
+              <h5 class="text-lg font-semibold flex items-center">
+                <i class="fas fa-user mr-2"></i>
+                Jugador Encontrado
+              </h5>
+              @if (!isEditing()) {
+                <div class="flex space-x-2">
+                  <button
+                    type="button"
+                    class="px-3 py-1 bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-medium rounded transition-colors"
+                    (click)="iniciarEdicion()">
+                    <i class="fas fa-edit mr-1"></i>
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white font-medium rounded transition-colors"
+                    (click)="eliminarJugador()">
+                    <i class="fas fa-trash mr-1"></i>
+                    Eliminar
+                  </button>
+                </div>
+              }
+            </div>
+            <div class="p-6">
+              
+              <!-- Modo Vista -->
+              @if (!isEditing()) {
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="space-y-4">
+                    <div>
+                      <label class="block text-sm font-semibold text-gray-600 mb-1">Nombre Completo:</label>
+                      <p class="text-gray-900">{{ jugadorEncontrado()!.nombre }} {{ jugadorEncontrado()!.apellido }}</p>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-semibold text-gray-600 mb-1">Identificación:</label>
+                      <p class="text-gray-900">{{ jugadorEncontrado()!.identificacion }}</p>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-semibold text-gray-600 mb-1">Nacionalidad:</label>
+                      <p class="text-gray-900">{{ jugadorEncontrado()!.nacionalidad }}</p>
+                    </div>
+                  </div>
+                  <div class="space-y-4">
+                    <div>
+                      <label class="block text-sm font-semibold text-gray-600 mb-1">Equipo:</label>
+                      <p class="text-gray-900">{{ getEquipoNombre(jugadorEncontrado()!.equipoId) }}</p>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-semibold text-gray-600 mb-1">Número de Goles:</label>
+                      <span class="inline-block bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                        {{ jugadorEncontrado()!.numeroGoles }}
+                      </span>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-semibold text-gray-600 mb-1">ID Jugador:</label>
+                      <p class="text-gray-500">#{{ jugadorEncontrado()!.id }}</p>
+                    </div>
+                  </div>
+                </div>
+              }
+
+              <!-- Modo Edición -->
+              @if (isEditing()) {
+                <form [formGroup]="editForm" (ngSubmit)="guardarCambios()">
+                  
+                  <!-- Error de edición -->
+                  @if (editError()) {
+                    <div class="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+                      <div class="flex items-center">
+                        <i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>
+                        <p class="text-red-800">{{ editError() }}</p>
+                      </div>
+                    </div>
+                  }
+
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                      <div>
+                        <label for="nombre" class="block text-sm font-medium text-gray-700 mb-2">
+                          <i class="fas fa-user mr-1"></i>
+                          Nombre
+                        </label>
+                        <input
+                          type="text"
+                          id="nombre"
+                          formControlName="nombre"
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          [class.border-red-500]="editForm.get('nombre')?.invalid && editForm.get('nombre')?.touched">
+                        @if (editForm.get('nombre')?.invalid && editForm.get('nombre')?.touched) {
+                          <p class="mt-1 text-sm text-red-600">El nombre es requerido</p>
+                        }
+                      </div>
+                      
+                      <div>
+                        <label for="apellido" class="block text-sm font-medium text-gray-700 mb-2">
+                          <i class="fas fa-user mr-1"></i>
+                          Apellido
+                        </label>
+                        <input
+                          type="text"
+                          id="apellido"
+                          formControlName="apellido"
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          [class.border-red-500]="editForm.get('apellido')?.invalid && editForm.get('apellido')?.touched">
+                        @if (editForm.get('apellido')?.invalid && editForm.get('apellido')?.touched) {
+                          <p class="mt-1 text-sm text-red-600">El apellido es requerido</p>
+                        }
+                      </div>
+
+                      <div>
+                        <label for="editIdentificacion" class="block text-sm font-medium text-gray-700 mb-2">
+                          <i class="fas fa-id-card mr-1"></i>
+                          Identificación
+                        </label>
+                        <input
+                          type="text"
+                          id="editIdentificacion"
+                          formControlName="identificacion"
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          [class.border-red-500]="editForm.get('identificacion')?.invalid && editForm.get('identificacion')?.touched">
+                        @if (editForm.get('identificacion')?.invalid && editForm.get('identificacion')?.touched) {
+                          <p class="mt-1 text-sm text-red-600">La identificación es requerida</p>
+                        }
+                      </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                      <div>
+                        <label for="nacionalidad" class="block text-sm font-medium text-gray-700 mb-2">
+                          <i class="fas fa-flag mr-1"></i>
+                          Nacionalidad
+                        </label>
+                        <input
+                          type="text"
+                          id="nacionalidad"
+                          formControlName="nacionalidad"
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          [class.border-red-500]="editForm.get('nacionalidad')?.invalid && editForm.get('nacionalidad')?.touched">
+                        @if (editForm.get('nacionalidad')?.invalid && editForm.get('nacionalidad')?.touched) {
+                          <p class="mt-1 text-sm text-red-600">La nacionalidad es requerida</p>
+                        }
+                      </div>
+
+                      <div>
+                        <label for="equipoId" class="block text-sm font-medium text-gray-700 mb-2">
+                          <i class="fas fa-users mr-1"></i>
+                          Equipo
+                        </label>
+                        <select
+                          id="equipoId"
+                          formControlName="equipoId"
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          [class.border-red-500]="editForm.get('equipoId')?.invalid && editForm.get('equipoId')?.touched">
+                          <option value="0">Seleccione un equipo</option>
+                          @for (equipo of equipos(); track equipo.id) {
+                            <option [value]="equipo.id">{{ equipo.nombre }}</option>
+                          }
+                        </select>
+                        @if (editForm.get('equipoId')?.invalid && editForm.get('equipoId')?.touched) {
+                          <p class="mt-1 text-sm text-red-600">Debe seleccionar un equipo</p>
+                        }
+                      </div>
+
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                          <i class="fas fa-futbol mr-1"></i>
+                          Número de Goles
+                        </label>
+                        <div class="flex items-center space-x-2">
+                          <span class="inline-block bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                            {{ jugadorEncontrado()!.numeroGoles }}
+                          </span>
+                          <small class="text-gray-500">(No editable)</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-col sm:flex-row gap-3 justify-end mt-6">
+                    <button
+                      type="button"
+                      class="px-6 py-2 border border-gray-300 text-gray-700 font-medium rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      (click)="cancelarEdicion()"
+                      [disabled]="isLoading()">
+                      <i class="fas fa-times mr-1"></i>
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      class="px-6 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      [disabled]="!canEdit()">
+                      @if (isLoading()) {
+                        <span class="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-r-transparent mr-2"></span>
+                        Guardando...
+                      } @else {
+                        <i class="fas fa-save mr-1"></i>
+                        Guardar Cambios
+                      }
+                    </button>
+                  </div>
+                </form>
+              }
+            </div>
+          </div>
+        }
+    </div>
+  </div>
+</div>
