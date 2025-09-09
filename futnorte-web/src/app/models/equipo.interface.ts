@@ -10,6 +10,7 @@ export interface Equipo {
   partidosPerdidos?: number;
   golesAFavor?: number;
   golesEnContra?: number;
+  diferenciaGoles?: number;
 }
 
 export interface EquipoRequest {
