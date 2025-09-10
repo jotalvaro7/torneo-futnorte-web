@@ -47,10 +47,10 @@ export const routes: Routes = [
   },
   {
     path: 'equipos/:equipoId/jugadores/nuevo',
-    loadComponent: () => import('./pages/equipos/jugador-form/jugador-form.component').then(c => c.JugadorFormComponent)
+    loadComponent: () => import('./pages/jugadores/jugador-form/jugador-form.component').then(c => c.JugadorFormComponent)
   },
   {
     path: 'equipos/:equipoId/jugadores/:jugadorId/editar',
-    loadComponent: () => import('./pages/equipos/jugador-form/jugador-form.component').then(c => c.JugadorFormComponent)
+    loadComponent: () => import('./pages/jugadores/jugador-form/jugador-form.component').then(c => c.JugadorFormComponent)
   }
 ];
