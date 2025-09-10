@@ -28,12 +28,8 @@ export class EquipoDetailComponent implements OnInit {
   });
 
   // Computed statistics
-  partidosEmpatados = computed(() => this.equipo()?.partidosEmpatados || 0);
-  partidosPerdidos = computed(() => this.equipo()?.partidosPerdidos || 0);
   diferenciadeGoles = computed(() => {
-    const equipo = this.equipo();
-    if (!equipo) return 0;
-    return (equipo.golesAFavor || 0) - (equipo.golesEnContra || 0);
+    return (this.equipo()) ? this.equipo()?.diferenciaGoles! : 0;
   });
 
   porcentajeVictorias = computed(() => {

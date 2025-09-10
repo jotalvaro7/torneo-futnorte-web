@@ -49,30 +49,17 @@
   <!-- Tournament Detail -->
   @if (torneo() && !loading()) {
   <div class="animate-fade-in">
-    <!-- Header -->
-    <div class="bg-white shadow-sm border-b border-gray-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
-          <div class="flex items-center space-x-4">
-            <button type="button" class="p-2 text-gray-400 hover:text-gray-600 transition-colors" routerLink="/torneos">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18">
-                </path>
-              </svg>
-            </button>
-            <div>
-              <h1 class="text-xl font-semibold text-gray-900">{{ torneo()?.nombre }}</h1>
-              <p class="text-sm text-gray-500">Detalle del torneo</p>
-            </div>
+    <!-- Content -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Tournament Info Card -->
+      <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden mb-8">
+        <div class="flex flex-col min-[426px]:flex-row  min-[426px]:items-center justify-between px-8 py-6 border-b border-gray-100">
+          <div class="flex flex-col">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">{{ torneo()?.nombre }}</h2>
+            <p class="text-sm text-gray-500">Detalle del torneo</p>
+            <p class="text-sm text-gray-500">Información general del torneo</p>
           </div>
-
-          <div class="flex items-center space-x-3">
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold"
-              [class]="statusColor()">
-              <span class="w-2 h-2 mr-2 rounded-full" [class]="statusDotColor()"></span>
-              {{ estadoFormateado() }}
-            </span>
-            <button type="button" class="btn btn-secondary btn-sm gap-2"
+          <button type="button" class="btn btn-secondary btn-sm gap-2 h-10"
               [routerLink]="['/torneos', torneoId(), 'editar']">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -80,19 +67,7 @@
                 </path>
               </svg>
               Editar
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Content -->
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <!-- Tournament Info Card -->
-      <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden mb-8">
-        <div class="px-8 py-6 border-b border-gray-100">
-          <h2 class="text-2xl font-bold text-gray-900 mb-2">{{ torneo()?.nombre }}</h2>
-          <p class="text-gray-600">Información general del torneo</p>
+          </button>
         </div>
 
         <div class="p-8">
@@ -174,12 +149,12 @@
       <!-- Teams Section -->
       <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden mb-8">
         <div class="px-8 py-6 border-b border-gray-100">
-          <div class="flex items-center justify-between">
+          <div class="flex flex-col min-[426px]:flex-row min-[426px]:items-center justify-between">
             <div>
               <h3 class="text-xl font-bold text-gray-900 mb-2">Equipos del Torneo</h3>
               <p class="text-gray-600">Gestiona los equipos participantes</p>
             </div>
-            <button type="button" class="btn btn-primary btn-md gap-2" [routerLink]="['/torneos', torneoId(), 'equipos']">
+            <button type="button" class="btn btn-primary btn-md gap-2 mt-1" [routerLink]="['/torneos', torneoId(), 'equipos']">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
               </svg>
