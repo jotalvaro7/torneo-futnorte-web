@@ -1,0 +1,524 @@
+<div class="min-h-screen">
+
+  <!-- Main Content -->
+  <div class="max-w-6xl mx-auto p-4 md:p-6">
+    <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl shadow-purple-900/20 overflow-hidden">
+
+    <!-- Loading State -->
+    @if (loading()) {
+    <div class="flex flex-col items-center justify-center py-16 animate-fade-in">
+      <div class="relative">
+        <div class="w-12 h-12 border-4 border-green-200 border-t-green-600 rounded-full animate-spin"></div>
+      </div>
+      <p class="mt-4 text-gray-600 font-medium">Cargando fixture del torneo...</p>
+    </div>
+    }
+
+    <!-- Error State -->
+    @if (error()) {
+    <div class="mb-6 animate-slide-up">
+      <div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+        <div class="flex flex-col items-center">
+          <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-red-800 mb-2">Error</h3>
+          <p class="text-sm text-red-700 mb-4">{{ error() }}</p>
+          <button type="button" class="btn btn-danger btn-sm" (click)="onBack()">
+            Volver a Torneos
+          </button>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Header -->
+    @if (torneo() && !loading()) {
+    <div class="bg-gradient-to-r from-slate-500 to-slate-700 text-white p-8 relative overflow-hidden">
+      <!-- Background Pattern -->
+      <div class="absolute inset-0 opacity-10">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-green-400 rounded-full transform translate-x-32 -translate-y-32"></div>
+        <div class="absolute bottom-0 left-0 w-48 h-48 bg-green-300 rounded-full transform -translate-x-24 translate-y-24"></div>
+      </div>
+
+      <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex-1">
+          <div class="flex items-center gap-6 mb-4 lg:mb-0">
+            <button type="button" class="flex items-center gap-2 text-white/80 hover:text-white transition-colors" (click)="onBack()">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+              </svg>
+              <span class="font-medium">Volver</span>
+            </button>
+            <div class="border-l border-white/30 pl-6">
+              <h1 class="text-3xl lg:text-4xl font-black mb-2 tracking-tight">{{ torneo()?.nombre }}</h1>
+              <p class="text-purple-100 text-lg">Fixture de Partidos</p>
+            </div>
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <button type="button"
+                  class="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white px-4 py-2 rounded-xl font-medium hover:bg-white/20 transition-all duration-200"
+                  (click)="mostrarFiltros.set(!mostrarFiltros())">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+            </svg>
+            Filtrar
+          </button>
+          <button type="button"
+                  class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl font-medium transition-all duration-200 transform hover:scale-105"
+                  (click)="mostrarFormularioCreacion()">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Nuevo Partido
+          </button>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Create Form Modal -->
+    @if (showCreateForm()) {
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-2xl shadow-xl max-w-md w-full mx-4">
+        <div class="p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-semibold text-gray-900">Nuevo Enfrentamiento</h3>
+            <button type="button" class="text-gray-400 hover:text-gray-600" (click)="ocultarFormularioCreacion()">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+
+          <form [formGroup]="createForm" (ngSubmit)="crearEnfrentamiento()">
+            <!-- Equipo Local -->
+            <div class="mb-4">
+              <label for="equipoLocal" class="block text-sm font-medium text-gray-700 mb-2">
+                Equipo Local *
+              </label>
+              <select id="equipoLocal" formControlName="equipoLocalId"
+                      class="form-select w-full"
+                      [class.border-red-500]="getFieldError('equipoLocalId')">
+                <option value="">Seleccionar equipo local</option>
+                @for (equipo of equiposDisponiblesLocal(); track equipo.id) {
+                <option [value]="equipo.id">{{ equipo.nombre }}</option>
+                }
+              </select>
+              @if (getFieldError('equipoLocalId')) {
+              <p class="text-red-500 text-sm mt-1">{{ getFieldError('equipoLocalId') }}</p>
+              }
+            </div>
+
+            <!-- Equipo Visitante -->
+            <div class="mb-4">
+              <label for="equipoVisitante" class="block text-sm font-medium text-gray-700 mb-2">
+                Equipo Visitante *
+              </label>
+              <select id="equipoVisitante" formControlName="equipoVisitanteId"
+                      class="form-select w-full"
+                      [class.border-red-500]="getFieldError('equipoVisitanteId')">
+                <option value="">Seleccionar equipo visitante</option>
+                @for (equipo of equiposDisponiblesVisitante(); track equipo.id) {
+                <option [value]="equipo.id">{{ equipo.nombre }}</option>
+                }
+              </select>
+              @if (getFieldError('equipoVisitanteId')) {
+              <p class="text-red-500 text-sm mt-1">{{ getFieldError('equipoVisitanteId') }}</p>
+              }
+            </div>
+
+            <!-- Fecha y Hora -->
+            <div class="mb-4">
+              <label for="fechaHora" class="block text-sm font-medium text-gray-700 mb-2">
+                Fecha y Hora *
+              </label>
+              <input type="datetime-local" id="fechaHora" formControlName="fechaHora"
+                     class="form-input w-full"
+                     [class.border-red-500]="getFieldError('fechaHora')">
+              @if (getFieldError('fechaHora')) {
+              <p class="text-red-500 text-sm mt-1">{{ getFieldError('fechaHora') }}</p>
+              }
+            </div>
+
+            <!-- Cancha -->
+            <div class="mb-6">
+              <label for="cancha" class="block text-sm font-medium text-gray-700 mb-2">
+                Cancha *
+              </label>
+              <input type="text" id="cancha" formControlName="cancha"
+                     class="form-input w-full" placeholder="Nombre de la cancha"
+                     maxlength="100"
+                     [class.border-red-500]="getFieldError('cancha')">
+              @if (getFieldError('cancha')) {
+              <p class="text-red-500 text-sm mt-1">{{ getFieldError('cancha') }}</p>
+              }
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex gap-3">
+              <button type="button" class="btn btn-secondary flex-1" (click)="ocultarFormularioCreacion()">
+                Cancelar
+              </button>
+              <button type="submit" class="btn btn-primary flex-1" [disabled]="creating()">
+                @if (creating()) {
+                <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                Creando...
+                } @else {
+                Crear
+                }
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Panel de Filtros -->
+    @if (mostrarFiltros() && torneo() && !loading()) {
+    <div class="bg-slate-50 border-b border-slate-200 p-6">
+      <h3 class="text-lg font-bold text-purple-900 mb-4">Filtrar Partidos</h3>
+
+      <!-- Filtros Rápidos -->
+      <div class="flex flex-wrap gap-3 mb-6">
+        <button type="button"
+                class="px-4 py-2 bg-white border-2 border-slate-200 text-slate-600 rounded-xl font-medium hover:border-green-400 hover:text-green-600 hover:bg-green-50 transition-all duration-200"
+                (click)="establecerFiltroSemana()">
+          Fin de Semana
+        </button>
+        <button type="button"
+                class="px-4 py-2 bg-white border-2 border-slate-200 text-slate-600 rounded-xl font-medium hover:border-green-400 hover:text-green-600 hover:bg-green-50 transition-all duration-200"
+                (click)="establecerFiltroMes()">
+          Este Mes
+        </button>
+        <button type="button"
+                class="px-4 py-2 bg-white border-2 border-slate-200 text-slate-600 rounded-xl font-medium hover:border-green-400 hover:text-green-600 hover:bg-green-50 transition-all duration-200"
+                (click)="limpiarFiltros()">
+          Todos los Partidos
+        </button>
+      </div>
+
+      <!-- Filtro Personalizado -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+        <div>
+          <label for="fechaInicio" class="block text-sm font-semibold text-purple-900 mb-2">
+            Fecha Inicio
+          </label>
+          <input type="date" id="fechaInicio"
+                 class="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl focus:border-purple-500 focus:ring-0 font-medium"
+                 [value]="fechaInicio()"
+                 (input)="fechaInicio.set($any($event.target).value)">
+        </div>
+
+        <div>
+          <label for="fechaFin" class="block text-sm font-semibold text-purple-900 mb-2">
+            Fecha Fin
+          </label>
+          <input type="date" id="fechaFin"
+                 class="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl focus:border-purple-500 focus:ring-0 font-medium"
+                 [value]="fechaFin()"
+                 (input)="fechaFin.set($any($event.target).value)">
+        </div>
+
+        <div class="flex gap-3">
+          <button type="button"
+                  class="flex-1 flex items-center justify-center gap-2 bg-purple-900 hover:bg-purple-800 text-white px-4 py-3 rounded-xl font-medium transition-all duration-200 transform hover:scale-105"
+                  (click)="filtrarPorFecha()"
+                  [disabled]="filtrandoPorFecha()">
+            @if (filtrandoPorFecha()) {
+            <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            Filtrando...
+            } @else {
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            Buscar
+            }
+          </button>
+
+          <button type="button"
+                  class="px-4 py-3 bg-white border-2 border-slate-200 text-slate-600 rounded-xl font-medium hover:bg-slate-50 transition-all duration-200"
+                  (click)="limpiarFiltros()">
+            Limpiar
+          </button>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Enfrentamientos principales -->
+    @if (!loading() && torneo()) {
+
+    <!-- Información del período actual -->
+    <div class="bg-white border-b border-slate-200 p-6">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+        <div>
+          <h2 class="text-2xl text-slate-950 mb-2">
+            @if (fechaInicio() && fechaFin()) {
+            {{ formatDate(fechaInicio()) }} - {{ formatDate(fechaFin()) }}
+            } @else {
+            Todos los Partidos
+            }
+          </h2>
+          <p class="text-slate-600 font-medium">{{ enfrentamientosOrdenados().length }} partidos programados</p>
+        </div>
+        <div class="flex gap-8">
+          <div class="text-center">
+            <div class="text-3xl font-black text-blue-600 mb-1">{{ enfrentamientosProgramados().length }}</div>
+            <div class="text-xs uppercase tracking-wider font-bold text-slate-500">Por Jugar</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-black text-green-600 mb-1">{{ enfrentamientosFinalizados().length }}</div>
+            <div class="text-xs uppercase tracking-wider font-bold text-slate-500">Finalizados</div>
+          </div>
+          @if (enfrentamientosCancelados().length > 0) {
+          <div class="text-center">
+            <div class="text-3xl font-black text-red-600 mb-1">{{ enfrentamientosCancelados().length }}</div>
+            <div class="text-xs uppercase tracking-wider font-bold text-slate-500">Cancelados</div>
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    @if (enfrentamientosOrdenados().length === 0) {
+    <!-- Empty state -->
+    <div class="bg-white p-16 text-center">
+      <div class="w-20 h-20 bg-gradient-to-br from-purple-100 to-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <svg class="w-10 h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+        </svg>
+      </div>
+      <h3 class="text-2xl font-black text-purple-900 mb-3">No hay partidos programados</h3>
+      <p class="text-slate-600 mb-8 max-w-md mx-auto">Comienza creando el primer partido del torneo y organiza la competencia</p>
+      <button type="button"
+              class="bg-gradient-to-r from-purple-900 to-purple-800 hover:from-purple-800 hover:to-purple-700 text-white px-8 py-4 rounded-2xl font-bold transition-all duration-200 transform hover:scale-105"
+              (click)="mostrarFormularioCreacion()">
+        Crear Primer Partido
+      </button>
+    </div>
+    } @else {
+
+    <!-- Todos los Partidos Unificados -->
+    <div class="bg-white">
+      @for (enfrentamiento of enfrentamientosOrdenados(); track enfrentamiento.id) {
+      <div class="p-6 transition-colors border-b border-slate-100 group"
+           [class]="enfrentamiento.estado === 'PROGRAMADO' ? 'hover:bg-blue-50/30' : enfrentamiento.estado === 'FINALIZADO' ? 'hover:bg-green-50/30' : 'hover:bg-red-50/30'">
+
+        <!-- Match Layout Unificado -->
+        <div class="grid grid-cols-1 lg:grid-cols-9 gap-4 items-center">
+
+          <!-- Mobile Layout (visible only on small screens) -->
+          <div class="lg:hidden col-span-full">
+            @if (enfrentamiento.estado === 'PROGRAMADO') {
+            <!-- Programados Mobile -->
+            <div class="text-center mb-4">
+              <div class="text-2xl font-black text-slate-400 mb-2">VS</div>
+              <div class="text-sm font-bold text-slate-600">{{ formatDateTime(enfrentamiento.fechaHora) }}</div>
+              <div class="text-xs text-slate-500 mt-1">{{ enfrentamiento.cancha }}</div>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="font-bold text-lg text-slate-900">{{ enfrentamiento.equipoLocal }}</div>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="font-bold text-lg text-slate-900">{{ enfrentamiento.equipoVisitante }}</div>
+              </div>
+            </div>
+            } @else if (enfrentamiento.estado === 'FINALIZADO') {
+            <!-- Finalizados Mobile -->
+            <div class="text-center mb-4">
+              <div class="text-2xl font-black text-green-600 mb-2">
+                {{ enfrentamiento.golesLocal }} - {{ enfrentamiento.golesVisitante }}
+              </div>
+              <div class="text-sm font-bold text-slate-600">{{ formatDateTime(enfrentamiento.fechaHora) }}</div>
+              <div class="text-xs text-slate-500 mt-1">{{ enfrentamiento.cancha }}</div>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="font-bold text-lg text-slate-900">{{ enfrentamiento.equipoLocal }}</div>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="font-bold text-lg text-slate-900">{{ enfrentamiento.equipoVisitante }}</div>
+              </div>
+            </div>
+            } @else {
+            <!-- Cancelados Mobile -->
+            <div class="text-center mb-4 opacity-60">
+              <div class="text-2xl font-black text-red-500 mb-2">CANCELADO</div>
+              <div class="text-sm font-bold text-slate-500 line-through">{{ formatDateTime(enfrentamiento.fechaHora) }}</div>
+              <div class="text-xs text-slate-400 mt-1 line-through">{{ enfrentamiento.cancha }}</div>
+            </div>
+            <div class="flex items-center justify-between opacity-60">
+              <div class="font-bold text-lg text-slate-500 line-through">{{ enfrentamiento.equipoLocal }}</div>
+              <div class="font-bold text-lg text-slate-500 line-through">{{ enfrentamiento.equipoVisitante }}</div>
+            </div>
+            }
+          </div>
+
+          <!-- Desktop Layout (hidden on small screens) -->
+          @if (enfrentamiento.estado === 'PROGRAMADO') {
+          <!-- Programados Desktop -->
+          <div class="hidden lg:flex lg:col-span-2 items-center justify-end gap-3">
+            <div class="text-right">
+              <div class="font-bold text-lg text-slate-900">{{ enfrentamiento.equipoLocal }}</div>
+            </div>
+          </div>
+          <div class="hidden lg:block lg:col-span-3 text-center">
+            <div class="text-2xl font-black text-slate-400 mb-2">VS</div>
+            <div class="text-sm font-bold text-slate-600">{{ formatDateTime(enfrentamiento.fechaHora) }}</div>
+            <div class="text-xs text-slate-500 mt-1">{{ enfrentamiento.cancha }}</div>
+          </div>
+          <div class="hidden lg:flex lg:col-span-2 items-center justify-start gap-3">
+            <div class="text-left">
+              <div class="font-bold text-lg text-slate-900">{{ enfrentamiento.equipoVisitante }}</div>
+            </div>
+          </div>
+          <div class="hidden lg:flex lg:col-span-1 items-center justify-end">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-100 text-blue-800">
+              Por Jugar
+            </span>
+          </div>
+          <div class="hidden lg:flex lg:col-span-1 items-center justify-end gap-2">
+            <button type="button" class="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-purple-600 transition-colors" title="Ver detalles">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+            </button>
+            @if (enfrentamiento.estado === 'PROGRAMADO') {
+            <button type="button" class="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-purple-600 transition-colors" title="Editar">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+            </button>
+            }
+          </div>
+          } @else if (enfrentamiento.estado === 'FINALIZADO') {
+          <!-- Finalizados Desktop -->
+          <div class="hidden lg:flex lg:col-span-2 items-center justify-end gap-3">
+            <div class="text-right">
+              <div class="font-bold text-lg text-slate-900">{{ enfrentamiento.equipoLocal }}</div>
+            </div>
+          </div>
+          <div class="hidden lg:block lg:col-span-3 text-center">
+            <div class="text-2xl font-black text-green-600 mb-2">
+              {{ enfrentamiento.golesLocal }} - {{ enfrentamiento.golesVisitante }}
+            </div>
+            <div class="text-sm font-bold text-slate-600">{{ formatDateTime(enfrentamiento.fechaHora) }}</div>
+            <div class="text-xs text-slate-500 mt-1">{{ enfrentamiento.cancha }}</div>
+          </div>
+          <div class="hidden lg:flex lg:col-span-2 items-center justify-start gap-3">
+            <div class="text-left">
+              <div class="font-bold text-lg text-slate-900">{{ enfrentamiento.equipoVisitante }}</div>
+            </div>
+          </div>
+          <div class="hidden lg:flex lg:col-span-1 items-center justify-end">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-green-100 text-green-800">
+              Finalizado
+            </span>
+          </div>
+          <div class="hidden lg:flex lg:col-span-1 items-center justify-end gap-2">
+            <button type="button" class="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-purple-600 transition-colors" title="Ver detalles">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+            </button>
+          </div>
+          } @else {
+          <!-- Cancelados Desktop -->
+          <div class="hidden lg:flex lg:col-span-2 items-center justify-end gap-3 opacity-60">
+            <div class="text-right">
+              <div class="font-bold text-lg text-slate-500 line-through">{{ enfrentamiento.equipoLocal }}</div>
+            </div>
+          </div>
+          <div class="hidden lg:block lg:col-span-3 text-center opacity-60">
+            <div class="text-2xl font-black text-red-500 mb-2">CANCELADO</div>
+            <div class="text-sm font-bold text-slate-500 line-through">{{ formatDateTime(enfrentamiento.fechaHora) }}</div>
+            <div class="text-xs text-slate-400 mt-1 line-through">{{ enfrentamiento.cancha }}</div>
+          </div>
+          <div class="hidden lg:flex lg:col-span-2 items-center justify-start gap-3 opacity-60">
+            <div class="text-left">
+              <div class="font-bold text-lg text-slate-500 line-through">{{ enfrentamiento.equipoVisitante }}</div>
+            </div>
+          </div>
+          <div class="hidden lg:flex lg:col-span-1 items-center justify-end opacity-60">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-red-100 text-red-800">
+              Cancelado
+            </span>
+          </div>
+          <div class="hidden lg:flex lg:col-span-1 items-center justify-end gap-2 opacity-60">
+            <button type="button" class="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-purple-600 transition-colors" title="Ver detalles">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 616 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+            </button>
+          </div>
+          }
+
+        </div>
+
+        <!-- Status y acciones -->
+        <!-- Status y acciones (Mobile only) -->
+        <div class="lg:hidden flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4 pt-4 border-t border-slate-100">
+          @if (enfrentamiento.estado === 'PROGRAMADO') {
+          <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-100 text-blue-800">
+            Por Jugar
+          </span>
+          } @else if (enfrentamiento.estado === 'FINALIZADO') {
+          <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-green-100 text-green-800">
+            Finalizado
+          </span>
+          } @else {
+          <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-red-100 text-red-800">
+            Cancelado
+          </span>
+          }
+
+          <div class="flex gap-2 justify-center sm:justify-end transition-opacity">
+            <button type="button" class="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-purple-600 transition-colors" title="Ver detalles">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 616 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+            </button>
+            @if (enfrentamiento.estado === 'PROGRAMADO') {
+            <button type="button" class="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-purple-600 transition-colors" title="Editar">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+            </button>
+            }
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+    }
+    }
+
+    </div> <!-- Close bg-white/95 backdrop-blur-sm container -->
+  </div> <!-- Close max-w-6xl container -->
+
+</div> <!-- Close main gradient background -->

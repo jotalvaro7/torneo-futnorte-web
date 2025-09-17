@@ -73,6 +73,20 @@
               </div>
             </div>
             <div class="flex gap-2 flex-col items-center md:flex-row">
+              <button type="button" class="btn btn-primary btn-md gap-2" (click)="cargarHistorialEnfrentamientos()"
+                [disabled]="loadingEnfrentamientos()">
+                @if (loadingEnfrentamientos()) {
+                <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>Cargando...</span>
+                } @else {
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4">
+                  </path>
+                </svg>
+                <span>Ver historial de partidos</span>
+                }
+              </button>
               <button type="button" class="btn btn-secondary btn-md gap-2" (click)="onEdit()">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -171,7 +185,8 @@
           <div class="flex items-center">
             <div class="p-3 bg-blue-100 rounded-lg">
               <svg class="w-6 h-6 text-blue-600" fill="currentColor" stroke="none" viewBox="0 0 24 24">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z">
+                </path>
               </svg>
             </div>
             <div class="ml-4">
@@ -241,6 +256,128 @@
       <div class="mt-8">
         <app-equipo-jugadores [equipoId]="equipoId()!" [equipoNombre]="equipo()?.nombre!">
         </app-equipo-jugadores>
+      </div>
+    </div>
+    }
+
+    <!-- Modal de Historial de Enfrentamientos -->
+    @if (mostrarHistorial()) {
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-2xl shadow-xl max-w-5xl w-full h-[85vh] flex flex-col overflow-hidden">
+        <!-- Header del Modal -->
+        <div class="bg-gradient-to-r from-green-600 to-green-700 text-white p-4 md:p-6 flex-shrink-0">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-xl md:text-2xl font-bold mb-1 md:mb-2">Historial de Enfrentamientos</h3>
+              <p class="text-green-100 text-sm md:text-base">{{ equipo()?.nombre }} - {{ totalEnfrentamientos() }}
+                partidos</p>
+            </div>
+            <button type="button" class="text-white hover:text-green-200 transition-colors" (click)="cerrarHistorial()">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Lista de Enfrentamientos -->
+        <div class="flex-1 overflow-y-auto min-h-0">
+          @if (loadingEnfrentamientos()) {
+          <div class="p-8 text-center">
+            <div class="w-8 h-8 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4">
+            </div>
+            <p class="text-gray-600">Cargando historial de enfrentamientos...</p>
+          </div>
+          } @else if (enfrentamientosOrdenados().length === 0) {
+          <div class="p-8 text-center">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
+                </path>
+              </svg>
+            </div>
+            <h4 class="text-lg font-semibold text-gray-900 mb-2">Sin historial</h4>
+            <p class="text-gray-600">Este equipo aún no ha jugado ningún partido</p>
+          </div>
+          } @else {
+          @for (enfrentamiento of enfrentamientosOrdenados(); track enfrentamiento.id) {
+          <div class="p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors">
+            <div class="flex items-center justify-between">
+              <div class="flex-1">
+                <div class="flex items-center justify-between mb-2">
+                  <div class="flex items-center gap-4">
+                    @if (esEquipoLocal(enfrentamiento)) {
+                    <div class="font-bold text-green-600">{{ enfrentamiento.equipoLocal }} </div>
+                    <div class="text-gray-500">vs</div>
+                    <div class="font-semibold text-gray-900">{{ enfrentamiento.equipoVisitante }}</div>
+                    } @else {
+                    <div class="font-semibold text-gray-900">{{ enfrentamiento.equipoLocal }}</div>
+                    <div class="text-gray-500">vs</div>
+                    <div class="font-bold text-green-600">{{ enfrentamiento.equipoVisitante }}</div>
+                    }
+                  </div>
+                  <div class="text-center">
+                    @if (enfrentamiento.estado === 'FINALIZADO') {
+                    <span class="text-lg font-bold text-gray-900">
+                      {{ enfrentamiento.golesLocal }} - {{ enfrentamiento.golesVisitante }}
+                    </span>
+                    } @else {
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold"
+                      [class]="getEstadoClass(enfrentamiento.estado)">
+                      {{ enfrentamiento.estado }}
+                    </span>
+                    }
+                  </div>
+                </div>
+                <div class="flex items-center justify-between text-sm text-gray-600">
+                  <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-1">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                        </path>
+                      </svg>
+                      {{ formatDateTime(enfrentamiento.fechaHora) }}
+                    </div>
+                    <div class="flex items-center gap-1">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      </svg>
+                      {{ enfrentamiento.cancha }}
+                    </div>
+                  </div>
+                  @if (enfrentamiento.estado === 'FINALIZADO') {
+                  <div class="text-xs font-medium">
+                    @if (esEquipoLocal(enfrentamiento)) {
+                    @if ((enfrentamiento.golesLocal ?? 0) > (enfrentamiento.golesVisitante ?? 0)) {
+                    <span class="text-green-600">VICTORIA</span>
+                    } @else if ((enfrentamiento.golesLocal ?? 0) < (enfrentamiento.golesVisitante ?? 0)) { <span
+                      class="text-red-600">DERROTA</span>
+                      } @else {
+                      <span class="text-yellow-600">EMPATE</span>
+                      }
+                      } @else {
+                      @if ((enfrentamiento.golesVisitante ?? 0) > (enfrentamiento.golesLocal ?? 0)) {
+                      <span class="text-green-600">VICTORIA</span>
+                      } @else if ((enfrentamiento.golesVisitante ?? 0) < (enfrentamiento.golesLocal ?? 0)) { <span
+                        class="text-red-600">DERROTA</span>
+                        } @else {
+                        <span class="text-yellow-600">EMPATE</span>
+                        }
+                        }
+                  </div>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+          }
+          }
+        </div>
       </div>
     </div>
     }

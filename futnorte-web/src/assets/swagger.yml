@@ -1,0 +1,2415 @@
+openapi: 3.0.3
+info:
+  title: Torneo FutNorte API
+  description: |
+    API REST para la gestión completa de torneos de fútbol siguiendo arquitectura hexagonal.
+    
+    Esta API permite administrar:
+    - **Torneos**: Crear, gestionar y controlar el ciclo de vida de torneos
+    - **Equipos**: Registrar equipos participantes en torneos
+    - **Jugadores**: Gestionar jugadores asociados a equipos
+    - **Enfrentamientos**: Programar y registrar partidos entre equipos
+    - **Estadísticas**: Seguimiento de goles y estadísticas de jugadores
+    
+    ## Arquitectura
+    Implementa **Arquitectura Hexagonal (Puertos y Adaptadores)** con:
+    - Dominio puro sin dependencias externas
+    - Casos de uso bien definidos
+    - Adaptadores para persistencia y web
+    - Sistema de excepciones personalizado con trazabilidad
+    
+    ## Manejo de Errores
+    Todos los errores incluyen:
+    - Código de error específico
+    - Mensaje descriptivo
+    - Trace ID para trazabilidad
+    - Timestamp del error
+    - Detalles adicionales cuando aplique
+  version: 1.0.0
+  contact:
+    name: Equipo FutNorte
+    email: dev@futnorte.com
+    url: https://github.com/jotalvaro7/torneo-futnorte-api
+  license:
+    name: MIT License
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8080/api
+    description: Servidor de Desarrollo
+  - url: https://api.futnorte.com/api
+    description: Servidor de Producción
+
+paths:
+  /torneos:
+    get:
+      tags:
+        - Torneos
+      summary: Obtener todos los torneos
+      description: Recupera la lista completa de todos los torneos registrados en el sistema
+      operationId: obtenerTodosTorneos
+      responses:
+        '200':
+          description: Lista de torneos obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Torneo'
+              example:
+                - id: 1
+                  nombre: "Liga Premier 2024"
+                  descripcion: "Torneo de temporada de fútbol profesional"
+                  fechaInicio: "2024-03-01T10:00:00"
+                  fechaFin: "2024-06-30T18:00:00"
+                  estado: "EN_CURSO"
+                - id: 2
+                  nombre: "Copa de Verano 2024"
+                  descripcion: "Torneo eliminatorio de verano"
+                  fechaInicio: "2024-07-01T10:00:00"
+                  fechaFin: "2024-08-15T20:00:00"
+                  estado: "CREADO"
+    post:
+      tags:
+        - Torneos
+      summary: Crear un nuevo torneo
+      description: Crea un nuevo torneo de fútbol con la información proporcionada
+      operationId: crearTorneo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TorneoRequest'
+            example:
+              nombre: "Liga Premier 2024"
+              descripcion: "Torneo de temporada de fútbol profesional"
+              fechaInicio: "2024-03-01T10:00:00"
+              fechaFin: "2024-06-30T18:00:00"
+      responses:
+        '201':
+          description: Torneo creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Torneo'
+              example:
+                id: 1
+                nombre: "Liga Premier 2024"
+                descripcion: "Torneo de temporada de fútbol profesional"
+                fechaInicio: "2024-03-01T10:00:00"
+                fechaFin: "2024-06-30T18:00:00"
+                estado: "CREADO"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /torneos/{id}:
+    get:
+      tags:
+        - Torneos
+      summary: Obtener torneo por ID
+      description: Recupera la información de un torneo específico por su identificador
+      operationId: obtenerTorneo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del torneo
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Torneo encontrado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Torneo'
+              example:
+                id: 1
+                nombre: "Liga Premier 2024"
+                descripcion: "Torneo de temporada de fútbol profesional"
+                fechaInicio: "2024-03-01T10:00:00"
+                fechaFin: "2024-06-30T18:00:00"
+                estado: "EN_CURSO"
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    
+    put:
+      tags:
+        - Torneos
+      summary: Actualizar torneo
+      description: Actualiza la información de un torneo existente
+      operationId: actualizarTorneo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del torneo
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TorneoRequest'
+            example:
+              nombre: "Liga Premier 2024 - Actualizada"
+              descripcion: "Torneo de temporada actualizado"
+              fechaInicio: "2024-03-01T10:00:00"
+              fechaFin: "2024-07-30T18:00:00"
+      responses:
+        '200':
+          description: Torneo actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Torneo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    
+    delete:
+      tags:
+        - Torneos
+      summary: Eliminar torneo
+      description: |
+        Elimina un torneo del sistema. Solo se pueden eliminar torneos en estado 
+        CANCELADO o FINALIZADO para mantener la integridad de los datos.
+      operationId: eliminarTorneo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del torneo
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '204':
+          description: Torneo eliminado exitosamente
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /torneos/{id}/iniciar:
+    post:
+      tags:
+        - Torneos
+      summary: Iniciar torneo
+      description: |
+        Inicia un torneo cambiando su estado a EN_CURSO. Solo se pueden iniciar 
+        torneos en estado CREADO o CANCELADO que tengan al menos 2 equipos.
+      operationId: iniciarTorneo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del torneo
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Torneo iniciado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Torneo'
+              example:
+                id: 1
+                nombre: "Liga Premier 2024"
+                descripcion: "Torneo de temporada"
+                fechaInicio: "2024-03-01T10:00:00"
+                fechaFin: "2024-06-30T18:00:00"
+                estado: "EN_CURSO"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /torneos/{id}/cancelar:
+    post:
+      tags:
+        - Torneos
+      summary: Cancelar torneo
+      description: |
+        Cancela un torneo cambiando su estado a CANCELADO. No se pueden cancelar 
+        torneos que ya han sido finalizados.
+      operationId: cancelarTorneo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del torneo
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Torneo cancelado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Torneo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /torneos/{id}/finalizar:
+    post:
+      tags:
+        - Torneos
+      summary: Finalizar torneo
+      description: |
+        Finaliza un torneo cambiando su estado a FINALIZADO. Solo se pueden 
+        finalizar torneos que estén EN_CURSO.
+      operationId: finalizarTorneo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del torneo
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Torneo finalizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Torneo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /equipos:
+    get:
+      tags:
+        - Equipos
+      summary: Obtener todos los equipos
+      description: Recupera la lista completa de todos los equipos registrados en el sistema
+      operationId: buscarTodosLosEquipos
+      responses:
+        '200':
+          description: Lista de equipos obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Equipo'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Equipos
+      summary: Crear un nuevo equipo
+      description: Crea un nuevo equipo asociado a un torneo específico
+      operationId: crearEquipo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EquipoRequest'
+      responses:
+        '201':
+          description: Equipo creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Equipo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /equipos/{id}:
+    get:
+      tags:
+        - Equipos
+      summary: Obtener equipo por ID
+      description: Recupera la información de un equipo específico por su identificador
+      operationId: buscarEquipoPorId
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del equipo
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Equipo encontrado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Equipo'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Equipos
+      summary: Actualizar equipo
+      description: Actualiza la información de un equipo existente
+      operationId: actualizarEquipo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del equipo
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EquipoRequest'
+      responses:
+        '200':
+          description: Equipo actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Equipo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Equipos
+      summary: Eliminar equipo
+      description: Elimina un equipo del sistema junto con todos sus jugadores
+      operationId: eliminarEquipo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del equipo
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '204':
+          description: Equipo eliminado exitosamente
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /equipos/torneo/{torneoId}:
+    get:
+      tags:
+        - Equipos
+      summary: Obtener equipos por torneo
+      description: Recupera todos los equipos que pertenecen a un torneo específico
+      operationId: buscarEquiposPorTorneo
+      parameters:
+        - name: torneoId
+          in: path
+          required: true
+          description: Identificador único del torneo
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Lista de equipos del torneo obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Equipo'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /jugadores:
+    get:
+      tags:
+        - Jugadores
+      summary: Obtener todos los jugadores
+      description: Recupera la lista completa de todos los jugadores registrados
+      operationId: buscarTodosLosJugadores
+      responses:
+        '200':
+          description: Lista de jugadores obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Jugador'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Jugadores
+      summary: Crear un nuevo jugador
+      description: Crea un nuevo jugador asociado a un equipo específico
+      operationId: crearJugador
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JugadorRequest'
+      responses:
+        '201':
+          description: Jugador creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Jugador'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /jugadores/{id}:
+    get:
+      tags:
+        - Jugadores
+      summary: Obtener jugador por ID
+      description: Recupera la información de un jugador específico por su identificador
+      operationId: buscarJugadorPorId
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del jugador
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Jugador encontrado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Jugador'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Jugadores
+      summary: Actualizar jugador
+      description: Actualiza la información de un jugador existente
+      operationId: actualizarJugador
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del jugador
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JugadorRequest'
+      responses:
+        '200':
+          description: Jugador actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Jugador'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Jugadores
+      summary: Eliminar jugador
+      description: Elimina un jugador del sistema
+      operationId: eliminarJugador
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del jugador
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '204':
+          description: Jugador eliminado exitosamente
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /jugadores/equipo/{equipoId}:
+    get:
+      tags:
+        - Jugadores
+      summary: Obtener jugadores por equipo
+      description: Recupera todos los jugadores que pertenecen a un equipo específico
+      operationId: buscarJugadoresPorEquipo
+      parameters:
+        - name: equipoId
+          in: path
+          required: true
+          description: Identificador único del equipo
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Lista de jugadores del equipo obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Jugador'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /jugadores/identificacion/{identificacion}:
+    get:
+      tags:
+        - Jugadores
+      summary: Buscar jugador por identificación
+      description: Recupera un jugador específico por su número de identificación
+      operationId: buscarJugadorPorIdentificacion
+      parameters:
+        - name: identificacion
+          in: path
+          required: true
+          description: Número de identificación del jugador
+          schema:
+            type: string
+            example: "12345678"
+      responses:
+        '200':
+          description: Jugador encontrado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Jugador'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /jugadores/goleadores/torneo/{torneoId}:
+    get:
+      tags:
+        - Jugadores
+      summary: Obtener goleadores por torneo
+      description: Recupera la lista de goleadores de un torneo ordenados por cantidad de goles
+      operationId: obtenerGoleadoresPorTorneo
+      parameters:
+        - name: torneoId
+          in: path
+          required: true
+          description: Identificador único del torneo
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Lista de goleadores obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GoleadorResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /jugadores/{id}/cambiar-equipo:
+    put:
+      tags:
+        - Jugadores
+      summary: Cambiar equipo de jugador
+      description: Transfiere un jugador de un equipo a otro
+      operationId: cambiarEquipo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del jugador
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                equipoId:
+                  type: integer
+                  format: int64
+                  description: ID del nuevo equipo
+                  example: 2
+              required:
+                - equipoId
+      responses:
+        '200':
+          description: Jugador transferido exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Jugador'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /enfrentamientos:
+    post:
+      tags:
+        - Enfrentamientos
+      summary: Crear un nuevo enfrentamiento
+      description: Programa un nuevo enfrentamiento entre dos equipos de un torneo
+      operationId: crearEnfrentamiento
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearEnfrentamientoRequest'
+      responses:
+        '201':
+          description: Enfrentamiento creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnfrentamientoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /enfrentamientos/{id}:
+    get:
+      tags:
+        - Enfrentamientos
+      summary: Obtener enfrentamiento por ID
+      description: Recupera la información de un enfrentamiento específico
+      operationId: obtenerEnfrentamiento
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del enfrentamiento
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Enfrentamiento encontrado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnfrentamientoResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Enfrentamientos
+      summary: Actualizar enfrentamiento
+      description: Actualiza fecha, hora y cancha de un enfrentamiento programado
+      operationId: actualizarEnfrentamiento
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del enfrentamiento
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActualizarEnfrentamientoRequest'
+      responses:
+        '200':
+          description: Enfrentamiento actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnfrentamientoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Enfrentamientos
+      summary: Eliminar enfrentamiento
+      description: Elimina un enfrentamiento que no haya sido finalizado
+      operationId: eliminarEnfrentamiento
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del enfrentamiento
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '204':
+          description: Enfrentamiento eliminado exitosamente
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /enfrentamientos/torneo/{torneoId}:
+    get:
+      tags:
+        - Enfrentamientos
+      summary: Obtener enfrentamientos por torneo
+      description: Recupera todos los enfrentamientos de un torneo específico
+      operationId: obtenerEnfrentamientosPorTorneo
+      parameters:
+        - name: torneoId
+          in: path
+          required: true
+          description: Identificador único del torneo
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Lista de enfrentamientos del torneo obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EnfrentamientoResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /enfrentamientos/equipo/{equipoId}:
+    get:
+      tags:
+        - Enfrentamientos
+      summary: Obtener enfrentamientos por equipo
+      description: Recupera todos los enfrentamientos donde participa un equipo específico
+      operationId: obtenerEnfrentamientosPorEquipo
+      parameters:
+        - name: equipoId
+          in: path
+          required: true
+          description: Identificador único del equipo
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Lista de enfrentamientos del equipo obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EnfrentamientoResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /enfrentamientos/fecha:
+    get:
+      tags:
+        - Enfrentamientos
+      summary: Obtener enfrentamientos por rango de fechas
+      description: Recupera enfrentamientos programados en un rango de fechas específico
+      operationId: obtenerEnfrentamientosPorFecha
+      parameters:
+        - name: fechaInicio
+          in: query
+          required: true
+          description: Fecha y hora de inicio del rango
+          schema:
+            type: string
+            format: date-time
+            example: "2024-03-01T00:00:00"
+        - name: fechaFin
+          in: query
+          required: true
+          description: Fecha y hora de fin del rango
+          schema:
+            type: string
+            format: date-time
+            example: "2024-03-31T23:59:59"
+      responses:
+        '200':
+          description: Lista de enfrentamientos en el rango de fechas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EnfrentamientoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /enfrentamientos/{id}/resultado:
+    post:
+      tags:
+        - Enfrentamientos
+      summary: Registrar resultado del enfrentamiento
+      description: Registra el resultado final de un enfrentamiento y actualiza estadísticas
+      operationId: registrarResultado
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del enfrentamiento
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrarResultadoRequest'
+      responses:
+        '200':
+          description: Resultado registrado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnfrentamientoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /enfrentamientos/{id}/goles-jugador:
+    post:
+      tags:
+        - Enfrentamientos
+      summary: Registrar goles de jugador
+      description: Registra los goles anotados por un jugador específico en un enfrentamiento
+      operationId: registrarGolesJugador
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del enfrentamiento
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrarGolesJugadorRequest'
+      responses:
+        '200':
+          description: Goles del jugador registrados exitosamente
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /enfrentamientos/{id}/cancelar:
+    post:
+      tags:
+        - Enfrentamientos
+      summary: Cancelar enfrentamiento
+      description: Cancela un enfrentamiento que no haya sido finalizado
+      operationId: cancelarEnfrentamiento
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del enfrentamiento
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Enfrentamiento cancelado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnfrentamientoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    Torneo:
+      type: object
+      description: Entidad que representa un torneo de fútbol
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Identificador único del torneo
+          example: 1
+          readOnly: true
+        nombre:
+          type: string
+          description: Nombre del torneo
+          example: "Liga Premier 2024"
+          maxLength: 100
+        descripcion:
+          type: string
+          description: Descripción del torneo
+          example: "Torneo de temporada de fútbol profesional"
+          maxLength: 500
+        fechaInicio:
+          type: string
+          format: date-time
+          description: Fecha y hora de inicio del torneo
+          example: "2024-03-01T10:00:00"
+        fechaFin:
+          type: string
+          format: date-time
+          description: Fecha y hora de finalización del torneo
+          example: "2024-06-30T18:00:00"
+        estado:
+          $ref: '#/components/schemas/EstadoTorneo'
+      required:
+        - nombre
+
+    TorneoRequest:
+      type: object
+      description: Datos requeridos para crear o actualizar un torneo
+      properties:
+        nombre:
+          type: string
+          description: Nombre del torneo
+          example: "Liga Premier 2024"
+          maxLength: 100
+        descripcion:
+          type: string
+          description: Descripción del torneo
+          example: "Torneo de temporada de fútbol profesional"
+          maxLength: 500
+        fechaInicio:
+          type: string
+          format: date-time
+          description: Fecha y hora de inicio del torneo
+          example: "2024-03-01T10:00:00"
+        fechaFin:
+          type: string
+          format: date-time
+          description: Fecha y hora de finalización del torneo
+          example: "2024-06-30T18:00:00"
+      required:
+        - nombre
+
+    EstadoTorneo:
+      type: string
+      description: Estados posibles de un torneo durante su ciclo de vida
+      enum:
+        - CREADO
+        - EN_CURSO
+        - FINALIZADO
+        - CANCELADO
+      example: "CREADO"
+      
+    ErrorResponse:
+      type: object
+      description: Respuesta estándar para errores de la API con trazabilidad
+      properties:
+        code:
+          type: string
+          description: Código específico del error para identificación programática
+          example: "ENTITY_NOT_FOUND"
+          enum:
+            - ENTITY_NOT_FOUND
+            - DUPLICATE_ENTITY
+            - VALIDATION_ERROR
+            - BUSINESS_RULE_VIOLATION
+            - DATABASE_ERROR
+            - ACCESS_DENIED
+            - INTERNAL_SERVER_ERROR
+        message:
+          type: string
+          description: Mensaje descriptivo del error para humanos
+          example: "Torneo con ID 1 no encontrado"
+        traceId:
+          type: string
+          description: Identificador único para rastrear el error en logs
+          example: "a1b2c3d4"
+          pattern: "^[a-f0-9]{8}$"
+        path:
+          type: string
+          description: Ruta del endpoint que generó el error
+          example: "/api/torneos/1"
+        timestamp:
+          type: string
+          format: date-time
+          description: Fecha y hora exacta cuando ocurrió el error
+          example: "2024-03-15T10:30:45"
+        details:
+          type: object
+          description: Detalles adicionales del error (opcional)
+          additionalProperties:
+            type: string
+          example:
+            field: "nombre"
+            reason: "es obligatorio"
+      required:
+        - code
+        - message
+        - timestamp
+
+    Equipo:
+      type: object
+      description: Entidad que representa un equipo de fútbol en un torneo
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Identificador único del equipo
+          example: 1
+          readOnly: true
+        nombre:
+          type: string
+          description: Nombre del equipo
+          example: "Real Madrid"
+          maxLength: 100
+        entrenador:
+          type: string
+          description: Nombre del entrenador del equipo
+          example: "Carlos Ancelotti"
+          maxLength: 100
+        torneoId:
+          type: integer
+          format: int64
+          description: ID del torneo al que pertenece el equipo
+          example: 1
+        puntos:
+          type: integer
+          description: Puntos acumulados en el torneo (calculado automáticamente)
+          example: 9
+          readOnly: true
+        partidosJugados:
+          type: integer
+          description: Número de partidos jugados (calculado automáticamente)
+          example: 3
+          readOnly: true
+        partidosGanados:
+          type: integer
+          description: Número de partidos ganados (calculado automáticamente)
+          example: 3
+          readOnly: true
+        partidosEmpatados:
+          type: integer
+          description: Número de partidos empatados (calculado automáticamente)
+          example: 0
+          readOnly: true
+        partidosPerdidos:
+          type: integer
+          description: Número de partidos perdidos (calculado automáticamente)
+          example: 0
+          readOnly: true
+        golesAFavor:
+          type: integer
+          description: Goles anotados por el equipo (calculado automáticamente)
+          example: 8
+          readOnly: true
+        golesEnContra:
+          type: integer
+          description: Goles recibidos por el equipo (calculado automáticamente)
+          example: 2
+          readOnly: true
+      required:
+        - nombre
+        - entrenador
+        - torneoId
+
+    EquipoRequest:
+      type: object
+      description: Datos requeridos para crear o actualizar un equipo
+      properties:
+        nombre:
+          type: string
+          description: Nombre del equipo
+          example: "Real Madrid"
+          maxLength: 100
+        entrenador:
+          type: string
+          description: Nombre del entrenador del equipo
+          example: "Carlos Ancelotti"
+          maxLength: 100
+        torneoId:
+          type: integer
+          format: int64
+          description: ID del torneo al que pertenece el equipo
+          example: 1
+      required:
+        - nombre
+        - entrenador
+        - torneoId
+
+    Jugador:
+      type: object
+      description: Entidad que representa un jugador de fútbol
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Identificador único del jugador
+          example: 1
+          readOnly: true
+        nombre:
+          type: string
+          description: Nombre del jugador
+          example: "Karim"
+          maxLength: 50
+        apellido:
+          type: string
+          description: Apellido del jugador
+          example: "Benzema"
+          maxLength: 50
+        identificacion:
+          type: string
+          description: Número de identificación único del jugador
+          example: "12345678"
+          maxLength: 20
+        nacionalidad:
+          type: string
+          description: Nacionalidad del jugador
+          example: "Francia"
+          maxLength: 50
+        equipoId:
+          type: integer
+          format: int64
+          description: ID del equipo al que pertenece el jugador
+          example: 1
+        numeroGoles:
+          type: integer
+          description: Número de goles anotados por el jugador
+          example: 12
+          readOnly: true
+      required:
+        - nombre
+        - apellido
+        - identificacion
+        - nacionalidad
+        - equipoId
+
+    JugadorRequest:
+      type: object
+      description: Datos requeridos para crear o actualizar un jugador
+      properties:
+        nombre:
+          type: string
+          description: Nombre del jugador
+          example: "Karim"
+          maxLength: 50
+        apellido:
+          type: string
+          description: Apellido del jugador
+          example: "Benzema"
+          maxLength: 50
+        identificacion:
+          type: string
+          description: Número de identificación único del jugador
+          example: "12345678"
+          maxLength: 20
+        nacionalidad:
+          type: string
+          description: Nacionalidad del jugador
+          example: "Francia"
+          maxLength: 50
+        equipoId:
+          type: integer
+          format: int64
+          description: ID del equipo al que pertenece el jugador
+          example: 1
+      required:
+        - nombre
+        - apellido
+        - identificacion
+        - nacionalidad
+        - equipoId
+
+    GoleadorResponse:
+      type: object
+      description: Información detallada de un goleador
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Identificador único del jugador
+          example: 1
+        nombre:
+          type: string
+          description: Nombre del jugador
+          example: "Karim"
+        apellido:
+          type: string
+          description: Apellido del jugador
+          example: "Benzema"
+        identificacion:
+          type: string
+          description: Número de identificación del jugador
+          example: "12345678"
+        nacionalidad:
+          type: string
+          description: Nacionalidad del jugador
+          example: "Francia"
+        numeroGoles:
+          type: integer
+          description: Número de goles anotados
+          example: 12
+        nombreEquipo:
+          type: string
+          description: Nombre del equipo al que pertenece
+          example: "Real Madrid"
+      required:
+        - id
+        - nombre
+        - apellido
+        - identificacion
+        - nacionalidad
+        - numeroGoles
+        - nombreEquipo
+
+    Enfrentamiento:
+      type: object
+      description: Entidad que representa un enfrentamiento entre dos equipos
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Identificador único del enfrentamiento
+          example: 1
+          readOnly: true
+        torneoId:
+          type: integer
+          format: int64
+          description: ID del torneo al que pertenece el enfrentamiento
+          example: 1
+        equipoLocalId:
+          type: integer
+          format: int64
+          description: ID del equipo local
+          example: 1
+        equipoVisitanteId:
+          type: integer
+          format: int64
+          description: ID del equipo visitante
+          example: 2
+        fechaHora:
+          type: string
+          format: date-time
+          description: Fecha y hora programada del enfrentamiento
+          example: "2024-03-15T20:00:00"
+        cancha:
+          type: string
+          description: Cancha donde se juega el enfrentamiento
+          example: "Estadio Santiago Bernabéu"
+          maxLength: 100
+        estado:
+          $ref: '#/components/schemas/EstadoEnfrentamiento'
+        golesLocal:
+          type: integer
+          description: Goles anotados por el equipo local (null si no se ha jugado)
+          example: 2
+          nullable: true
+        golesVisitante:
+          type: integer
+          description: Goles anotados por el equipo visitante (null si no se ha jugado)
+          example: 1
+          nullable: true
+      required:
+        - torneoId
+        - equipoLocalId
+        - equipoVisitanteId
+        - fechaHora
+        - cancha
+
+    EnfrentamientoResponse:
+      type: object
+      description: Respuesta detallada de un enfrentamiento con nombres de equipos
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Identificador único del enfrentamiento
+          example: 1
+        torneoId:
+          type: integer
+          format: int64
+          description: ID del torneo
+          example: 1
+        equipoLocal:
+          type: string
+          description: Nombre del equipo local
+          example: "Real Madrid"
+        equipoVisitante:
+          type: string
+          description: Nombre del equipo visitante
+          example: "Barcelona"
+        fechaHora:
+          type: string
+          format: date-time
+          description: Fecha y hora del enfrentamiento
+          example: "2024-03-15T20:00:00"
+        cancha:
+          type: string
+          description: Cancha donde se juega
+          example: "Estadio Santiago Bernabéu"
+        estado:
+          $ref: '#/components/schemas/EstadoEnfrentamiento'
+        golesLocal:
+          type: integer
+          description: Goles del equipo local
+          example: 2
+          nullable: true
+        golesVisitante:
+          type: integer
+          description: Goles del equipo visitante
+          example: 1
+          nullable: true
+      required:
+        - id
+        - torneoId
+        - equipoLocal
+        - equipoVisitante
+        - fechaHora
+        - cancha
+        - estado
+
+    EstadoEnfrentamiento:
+      type: string
+      description: Estados posibles de un enfrentamiento
+      enum:
+        - PROGRAMADO
+        - FINALIZADO
+        - CANCELADO
+      example: "PROGRAMADO"
+
+    CrearEnfrentamientoRequest:
+      type: object
+      description: Datos requeridos para crear un nuevo enfrentamiento
+      properties:
+        torneoId:
+          type: integer
+          format: int64
+          description: ID del torneo
+          example: 1
+        equipoLocalId:
+          type: integer
+          format: int64
+          description: ID del equipo local
+          example: 1
+        equipoVisitanteId:
+          type: integer
+          format: int64
+          description: ID del equipo visitante
+          example: 2
+        fechaHora:
+          type: string
+          format: date-time
+          description: Fecha y hora programada
+          example: "2024-03-15T20:00:00"
+        cancha:
+          type: string
+          description: Cancha donde se jugará
+          example: "Estadio Santiago Bernabéu"
+          maxLength: 100
+      required:
+        - torneoId
+        - equipoLocalId
+        - equipoVisitanteId
+        - fechaHora
+        - cancha
+
+    ActualizarEnfrentamientoRequest:
+      type: object
+      description: Datos para actualizar un enfrentamiento existente
+      properties:
+        fechaHora:
+          type: string
+          format: date-time
+          description: Nueva fecha y hora
+          example: "2024-03-16T21:00:00"
+        cancha:
+          type: string
+          description: Nueva cancha
+          example: "Estadio Camp Nou"
+          maxLength: 100
+      required:
+        - fechaHora
+        - cancha
+
+    RegistrarResultadoRequest:
+      type: object
+      description: Datos para registrar el resultado de un enfrentamiento
+      properties:
+        golesLocal:
+          type: integer
+          description: Goles anotados por el equipo local
+          example: 2
+          minimum: 0
+        golesVisitante:
+          type: integer
+          description: Goles anotados por el equipo visitante
+          example: 1
+          minimum: 0
+      required:
+        - golesLocal
+        - golesVisitante
+
+    RegistrarGolesJugadorRequest:
+      type: object
+      description: Datos para registrar goles de un jugador específico
+      properties:
+        jugadorId:
+          type: integer
+          format: int64
+          description: ID del jugador que anotó los goles
+          example: 1
+        cantidadGoles:
+          type: integer
+          description: Cantidad de goles anotados
+          example: 2
+          minimum: 1
+      required:
+        - jugadorId
+        - cantidadGoles
+
+  responses:
+    BadRequest:
+      description: Solicitud inválida - Error en datos de entrada o violación de reglas de negocio
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            ValidationError:
+              summary: Error de validación
+              value:
+                code: "VALIDATION_ERROR"
+                message: "El nombre del torneo es obligatorio"
+                traceId: "a1b2c3d4"
+                path: "/api/torneos"
+                timestamp: "2024-03-15T10:30:45"
+            BusinessRuleError:
+              summary: Violación de regla de negocio
+              value:
+                code: "BUSINESS_RULE_VIOLATION"
+                message: "El torneo solo puede iniciarse si está en estado CREADO O CANCELADO"
+                traceId: "b2c3d4e5"
+                path: "/api/torneos/1/iniciar"
+                timestamp: "2024-03-15T10:35:20"
+
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: "ENTITY_NOT_FOUND"
+            message: "Torneo con ID 999 no encontrado"
+            traceId: "c3d4e5f6"
+            path: "/api/torneos/999"
+            timestamp: "2024-03-15T10:32:15"
+
+    Conflict:
+      description: Conflicto - Recurso duplicado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: "DUPLICATE_ENTITY"
+            message: "Ya existe un torneo con ese nombre"
+            traceId: "d4e5f6a7"
+            path: "/api/torneos"
+            timestamp: "2024-03-15T10:33:45"
+
+    InternalServerError:
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: "INTERNAL_SERVER_ERROR"
+            message: "Ha ocurrido un error interno en el servidor"
+            traceId: "e5f6a7b8"
+            path: "/api/torneos"
+            timestamp: "2024-03-15T10:34:30"
+
+  /equipos:
+    get:
+      tags:
+        - Equipos
+      summary: Obtener todos los equipos
+      description: Recupera la lista completa de todos los equipos registrados en el sistema
+      operationId: buscarTodosLosEquipos
+      responses:
+        '200':
+          description: Lista de equipos obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Equipo'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Equipos
+      summary: Crear un nuevo equipo
+      description: Crea un nuevo equipo asociado a un torneo específico
+      operationId: crearEquipo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EquipoRequest'
+      responses:
+        '201':
+          description: Equipo creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Equipo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /equipos/{id}:
+    get:
+      tags:
+        - Equipos
+      summary: Obtener equipo por ID
+      description: Recupera la información de un equipo específico por su identificador
+      operationId: buscarEquipoPorId
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del equipo
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Equipo encontrado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Equipo'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Equipos
+      summary: Actualizar equipo
+      description: Actualiza la información de un equipo existente
+      operationId: actualizarEquipo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del equipo
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EquipoRequest'
+      responses:
+        '200':
+          description: Equipo actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Equipo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Equipos
+      summary: Eliminar equipo
+      description: Elimina un equipo del sistema junto con todos sus jugadores
+      operationId: eliminarEquipo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del equipo
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '204':
+          description: Equipo eliminado exitosamente
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /equipos/torneo/{torneoId}:
+    get:
+      tags:
+        - Equipos
+      summary: Obtener equipos por torneo
+      description: Recupera todos los equipos que pertenecen a un torneo específico
+      operationId: buscarEquiposPorTorneo
+      parameters:
+        - name: torneoId
+          in: path
+          required: true
+          description: Identificador único del torneo
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Lista de equipos del torneo obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Equipo'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /jugadores:
+    get:
+      tags:
+        - Jugadores
+      summary: Obtener todos los jugadores
+      description: Recupera la lista completa de todos los jugadores registrados
+      operationId: buscarTodosLosJugadores
+      responses:
+        '200':
+          description: Lista de jugadores obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Jugador'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Jugadores
+      summary: Crear un nuevo jugador
+      description: Crea un nuevo jugador asociado a un equipo específico
+      operationId: crearJugador
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JugadorRequest'
+      responses:
+        '201':
+          description: Jugador creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Jugador'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /jugadores/{id}:
+    get:
+      tags:
+        - Jugadores
+      summary: Obtener jugador por ID
+      description: Recupera la información de un jugador específico por su identificador
+      operationId: buscarJugadorPorId
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del jugador
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Jugador encontrado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Jugador'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Jugadores
+      summary: Actualizar jugador
+      description: Actualiza la información de un jugador existente
+      operationId: actualizarJugador
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del jugador
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JugadorRequest'
+      responses:
+        '200':
+          description: Jugador actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Jugador'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Jugadores
+      summary: Eliminar jugador
+      description: Elimina un jugador del sistema
+      operationId: eliminarJugador
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del jugador
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '204':
+          description: Jugador eliminado exitosamente
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /jugadores/equipo/{equipoId}:
+    get:
+      tags:
+        - Jugadores
+      summary: Obtener jugadores por equipo
+      description: Recupera todos los jugadores que pertenecen a un equipo específico
+      operationId: buscarJugadoresPorEquipo
+      parameters:
+        - name: equipoId
+          in: path
+          required: true
+          description: Identificador único del equipo
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Lista de jugadores del equipo obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Jugador'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /jugadores/identificacion/{identificacion}:
+    get:
+      tags:
+        - Jugadores
+      summary: Buscar jugador por identificación
+      description: Recupera un jugador específico por su número de identificación
+      operationId: buscarJugadorPorIdentificacion
+      parameters:
+        - name: identificacion
+          in: path
+          required: true
+          description: Número de identificación del jugador
+          schema:
+            type: string
+            example: "12345678"
+      responses:
+        '200':
+          description: Jugador encontrado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Jugador'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /jugadores/goleadores/torneo/{torneoId}:
+    get:
+      tags:
+        - Jugadores
+      summary: Obtener goleadores por torneo
+      description: Recupera la lista de goleadores de un torneo ordenados por cantidad de goles
+      operationId: obtenerGoleadoresPorTorneo
+      parameters:
+        - name: torneoId
+          in: path
+          required: true
+          description: Identificador único del torneo
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Lista de goleadores obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GoleadorResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /jugadores/{id}/cambiar-equipo:
+    put:
+      tags:
+        - Jugadores
+      summary: Cambiar equipo de jugador
+      description: Transfiere un jugador de un equipo a otro
+      operationId: cambiarEquipo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del jugador
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                equipoId:
+                  type: integer
+                  format: int64
+                  description: ID del nuevo equipo
+                  example: 2
+              required:
+                - equipoId
+      responses:
+        '200':
+          description: Jugador transferido exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Jugador'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /enfrentamientos:
+    post:
+      tags:
+        - Enfrentamientos
+      summary: Crear un nuevo enfrentamiento
+      description: Programa un nuevo enfrentamiento entre dos equipos de un torneo
+      operationId: crearEnfrentamiento
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearEnfrentamientoRequest'
+      responses:
+        '201':
+          description: Enfrentamiento creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnfrentamientoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /enfrentamientos/{id}:
+    get:
+      tags:
+        - Enfrentamientos
+      summary: Obtener enfrentamiento por ID
+      description: Recupera la información de un enfrentamiento específico
+      operationId: obtenerEnfrentamiento
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del enfrentamiento
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Enfrentamiento encontrado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnfrentamientoResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Enfrentamientos
+      summary: Actualizar enfrentamiento
+      description: Actualiza fecha, hora y cancha de un enfrentamiento programado
+      operationId: actualizarEnfrentamiento
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del enfrentamiento
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActualizarEnfrentamientoRequest'
+      responses:
+        '200':
+          description: Enfrentamiento actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnfrentamientoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Enfrentamientos
+      summary: Eliminar enfrentamiento
+      description: Elimina un enfrentamiento que no haya sido finalizado
+      operationId: eliminarEnfrentamiento
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del enfrentamiento
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '204':
+          description: Enfrentamiento eliminado exitosamente
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /enfrentamientos/torneo/{torneoId}:
+    get:
+      tags:
+        - Enfrentamientos
+      summary: Obtener enfrentamientos por torneo
+      description: Recupera todos los enfrentamientos de un torneo específico
+      operationId: obtenerEnfrentamientosPorTorneo
+      parameters:
+        - name: torneoId
+          in: path
+          required: true
+          description: Identificador único del torneo
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Lista de enfrentamientos del torneo obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EnfrentamientoResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /enfrentamientos/equipo/{equipoId}:
+    get:
+      tags:
+        - Enfrentamientos
+      summary: Obtener enfrentamientos por equipo
+      description: Recupera todos los enfrentamientos donde participa un equipo específico
+      operationId: obtenerEnfrentamientosPorEquipo
+      parameters:
+        - name: equipoId
+          in: path
+          required: true
+          description: Identificador único del equipo
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Lista de enfrentamientos del equipo obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EnfrentamientoResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /enfrentamientos/fecha:
+    get:
+      tags:
+        - Enfrentamientos
+      summary: Obtener enfrentamientos por rango de fechas
+      description: Recupera enfrentamientos programados en un rango de fechas específico
+      operationId: obtenerEnfrentamientosPorFecha
+      parameters:
+        - name: fechaInicio
+          in: query
+          required: true
+          description: Fecha y hora de inicio del rango
+          schema:
+            type: string
+            format: date-time
+            example: "2024-03-01T00:00:00"
+        - name: fechaFin
+          in: query
+          required: true
+          description: Fecha y hora de fin del rango
+          schema:
+            type: string
+            format: date-time
+            example: "2024-03-31T23:59:59"
+      responses:
+        '200':
+          description: Lista de enfrentamientos en el rango de fechas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EnfrentamientoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /enfrentamientos/{id}/resultado:
+    post:
+      tags:
+        - Enfrentamientos
+      summary: Registrar resultado del enfrentamiento
+      description: Registra el resultado final de un enfrentamiento y actualiza estadísticas
+      operationId: registrarResultado
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del enfrentamiento
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrarResultadoRequest'
+      responses:
+        '200':
+          description: Resultado registrado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnfrentamientoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /enfrentamientos/{id}/goles-jugador:
+    post:
+      tags:
+        - Enfrentamientos
+      summary: Registrar goles de jugador
+      description: Registra los goles anotados por un jugador específico en un enfrentamiento
+      operationId: registrarGolesJugador
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del enfrentamiento
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrarGolesJugadorRequest'
+      responses:
+        '200':
+          description: Goles del jugador registrados exitosamente
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /enfrentamientos/{id}/cancelar:
+    post:
+      tags:
+        - Enfrentamientos
+      summary: Cancelar enfrentamiento
+      description: Cancela un enfrentamiento que no haya sido finalizado
+      operationId: cancelarEnfrentamiento
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único del enfrentamiento
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Enfrentamiento cancelado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnfrentamientoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+tags:
+  - name: Torneos
+    description: |
+      Operaciones para la gestión completa del ciclo de vida de torneos.
+      
+      Un torneo pasa por los siguientes estados:
+      - **CREADO**: Recién creado, se pueden agregar equipos
+      - **EN_CURSO**: Torneo activo con enfrentamientos en desarrollo  
+      - **FINALIZADO**: Torneo completado con resultados finales
+      - **CANCELADO**: Torneo cancelado por circunstancias externas
+      
+      ### Reglas de Negocio:
+      - Un torneo necesita mínimo 2 equipos para poder iniciarse
+      - Solo se pueden eliminar torneos CANCELADOS o FINALIZADOS
+      - No se puede cancelar un torneo ya FINALIZADO
+      - Solo se pueden finalizar torneos EN_CURSO
+
+  - name: Equipos
+    description: |
+      Gestión de equipos participantes en torneos.
+      
+      ### Características:
+      - Cada equipo pertenece a un torneo específico
+      - Incluye estadísticas automáticas (puntos, partidos, goles)
+      - Mantenimiento de plantel de jugadores
+      
+      ### Reglas de Negocio:
+      - Un equipo debe tener nombre único dentro del torneo
+      - Al eliminar un equipo se eliminan todos sus jugadores
+      - Las estadísticas se calculan automáticamente
+
+  - name: Jugadores
+    description: |
+      Gestión de jugadores asociados a equipos.
+      
+      ### Características:
+      - Cada jugador pertenece a un equipo específico
+      - Seguimiento de goles anotados
+      - Identificación única en el sistema
+      - Información de nacionalidad
+      
+      ### Funcionalidades:
+      - Consulta de goleadores por torneo
+      - Transferencia entre equipos
+      - Búsqueda por identificación
+
+  - name: Enfrentamientos
+    description: |
+      Gestión de enfrentamientos y partidos entre equipos.
+      
+      ### Estados de Enfrentamiento:
+      - **PROGRAMADO**: Enfrentamiento agendado pero no jugado
+      - **FINALIZADO**: Partido completado con resultado registrado
+      - **CANCELADO**: Enfrentamiento cancelado por circunstancias externas
+      
+      ### Funcionalidades:
+      - Programación de partidos entre equipos del mismo torneo
+      - Registro de resultados y actualización automática de estadísticas
+      - Seguimiento detallado de goles por jugador
+      - Consultas por torneo, equipo y rango de fechas
+      - Cancelación de partidos no finalizados
+      
+      ### Reglas de Negocio:
+      - Los equipos deben pertenecer al mismo torneo
+      - Un equipo no puede enfrentarse a sí mismo
+      - Solo se pueden modificar enfrentamientos no finalizados
+      - Los goles de jugadores solo se registran en partidos finalizados
+      - Las estadísticas de equipos se actualizan automáticamente
