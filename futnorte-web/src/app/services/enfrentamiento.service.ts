@@ -57,7 +57,10 @@ export class EnfrentamientoService {
     return this.http.post<void>(`${this.baseUrl}/${id}/goles-jugador`, request);
   }
 
-  cancelarEnfrentamiento(id: number): Observable<EnfrentamientoResponse> {
-    return this.http.post<EnfrentamientoResponse>(`${this.baseUrl}/${id}/cancelar`, {});
+  aplazarEnfrentamiento(id: number): Observable<EnfrentamientoResponse> {
+    const request: ActualizarEnfrentamientoRequest = {
+      estado: 'APLAZADO'
+    };
+    return this.http.put<EnfrentamientoResponse>(`${this.baseUrl}/${id}`, request);
   }
 }

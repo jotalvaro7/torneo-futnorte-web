@@ -31,8 +31,11 @@ export interface CrearEnfrentamientoRequest {
 }
 
 export interface ActualizarEnfrentamientoRequest {
-  fechaHora: string;
-  cancha: string;
+  fechaHora?: string;
+  cancha?: string;
+  estado?: EstadoEnfrentamiento;
+  golesLocal?: number;
+  golesVisitante?: number;
 }
 
 export interface RegistrarResultadoRequest {
@@ -45,4 +48,4 @@ export interface RegistrarGolesJugadorRequest {
   cantidadGoles: number;
 }
 
-export type EstadoEnfrentamiento = 'PROGRAMADO' | 'FINALIZADO' | 'CANCELADO';
+export type EstadoEnfrentamiento = 'PROGRAMADO' | 'FINALIZADO' | 'APLAZADO';

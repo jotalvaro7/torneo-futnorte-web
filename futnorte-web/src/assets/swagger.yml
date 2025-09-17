@@ -780,7 +780,16 @@ paths:
       tags:
         - Enfrentamientos
       summary: Actualizar enfrentamiento
-      description: Actualiza fecha, hora y cancha de un enfrentamiento programado
+      description: |
+        Actualiza cualquier aspecto de un enfrentamiento incluyendo fecha, hora, cancha,
+        estado y resultados. Este endpoint consolidado reemplaza múltiples operaciones separadas.
+
+        **Funcionalidades incluidas:**
+        - Cambiar fecha, hora y cancha
+        - Finalizar enfrentamiento con goles
+        - Aplazar enfrentamiento
+        - Reprogramar enfrentamiento aplazado
+        - Corregir resultados de enfrentamientos finalizados
       operationId: actualizarEnfrentamiento
       parameters:
         - name: id
@@ -814,7 +823,9 @@ paths:
       tags:
         - Enfrentamientos
       summary: Eliminar enfrentamiento
-      description: Elimina un enfrentamiento que no haya sido finalizado
+      description: |
+        Elimina un enfrentamiento del sistema. Con permisos de administrador,
+        se puede eliminar cualquier enfrentamiento sin restricciones de estado.
       operationId: eliminarEnfrentamiento
       parameters:
         - name: id
@@ -929,41 +940,6 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /enfrentamientos/{id}/resultado:
-    post:
-      tags:
-        - Enfrentamientos
-      summary: Registrar resultado del enfrentamiento
-      description: Registra el resultado final de un enfrentamiento y actualiza estadísticas
-      operationId: registrarResultado
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: Identificador único del enfrentamiento
-          schema:
-            type: integer
-            format: int64
-            example: 1
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RegistrarResultadoRequest'
-      responses:
-        '200':
-          description: Resultado registrado exitosamente
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EnfrentamientoResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
 
   /enfrentamientos/{id}/goles-jugador:
     post:
@@ -997,35 +973,6 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /enfrentamientos/{id}/cancelar:
-    post:
-      tags:
-        - Enfrentamientos
-      summary: Cancelar enfrentamiento
-      description: Cancela un enfrentamiento que no haya sido finalizado
-      operationId: cancelarEnfrentamiento
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: Identificador único del enfrentamiento
-          schema:
-            type: integer
-            format: int64
-            example: 1
-      responses:
-        '200':
-          description: Enfrentamiento cancelado exitosamente
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EnfrentamientoResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
 
 components:
   schemas:
@@ -1474,7 +1421,7 @@ components:
       enum:
         - PROGRAMADO
         - FINALIZADO
-        - CANCELADO
+        - APLAZADO
       example: "PROGRAMADO"
 
     CrearEnfrentamientoRequest:
@@ -1515,39 +1462,36 @@ components:
 
     ActualizarEnfrentamientoRequest:
       type: object
-      description: Datos para actualizar un enfrentamiento existente
+      description: |
+        Datos para actualizar un enfrentamiento existente. Todos los campos son opcionales,
+        permitiendo actualizaciones parciales y flexibles.
       properties:
         fechaHora:
           type: string
           format: date-time
-          description: Nueva fecha y hora
+          description: Nueva fecha y hora del enfrentamiento
           example: "2024-03-16T21:00:00"
         cancha:
           type: string
-          description: Nueva cancha
+          description: Nueva cancha donde se jugará
           example: "Estadio Camp Nou"
           maxLength: 100
-      required:
-        - fechaHora
-        - cancha
-
-    RegistrarResultadoRequest:
-      type: object
-      description: Datos para registrar el resultado de un enfrentamiento
-      properties:
+        estado:
+          $ref: '#/components/schemas/EstadoEnfrentamiento'
+          description: Nuevo estado del enfrentamiento
         golesLocal:
           type: integer
-          description: Goles anotados por el equipo local
+          description: |
+            Goles anotados por el equipo local. Requerido si se cambia estado a FINALIZADO.
           example: 2
           minimum: 0
         golesVisitante:
           type: integer
-          description: Goles anotados por el equipo visitante
+          description: |
+            Goles anotados por el equipo visitante. Requerido si se cambia estado a FINALIZADO.
           example: 1
           minimum: 0
-      required:
-        - golesLocal
-        - golesVisitante
+
 
     RegistrarGolesJugadorRequest:
       type: object
@@ -2098,7 +2042,16 @@ components:
       tags:
         - Enfrentamientos
       summary: Actualizar enfrentamiento
-      description: Actualiza fecha, hora y cancha de un enfrentamiento programado
+      description: |
+        Actualiza cualquier aspecto de un enfrentamiento incluyendo fecha, hora, cancha,
+        estado y resultados. Este endpoint consolidado reemplaza múltiples operaciones separadas.
+
+        **Funcionalidades incluidas:**
+        - Cambiar fecha, hora y cancha
+        - Finalizar enfrentamiento con goles
+        - Aplazar enfrentamiento
+        - Reprogramar enfrentamiento aplazado
+        - Corregir resultados de enfrentamientos finalizados
       operationId: actualizarEnfrentamiento
       parameters:
         - name: id
@@ -2132,7 +2085,9 @@ components:
       tags:
         - Enfrentamientos
       summary: Eliminar enfrentamiento
-      description: Elimina un enfrentamiento que no haya sido finalizado
+      description: |
+        Elimina un enfrentamiento del sistema. Con permisos de administrador,
+        se puede eliminar cualquier enfrentamiento sin restricciones de estado.
       operationId: eliminarEnfrentamiento
       parameters:
         - name: id
@@ -2247,41 +2202,6 @@ components:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /enfrentamientos/{id}/resultado:
-    post:
-      tags:
-        - Enfrentamientos
-      summary: Registrar resultado del enfrentamiento
-      description: Registra el resultado final de un enfrentamiento y actualiza estadísticas
-      operationId: registrarResultado
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: Identificador único del enfrentamiento
-          schema:
-            type: integer
-            format: int64
-            example: 1
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RegistrarResultadoRequest'
-      responses:
-        '200':
-          description: Resultado registrado exitosamente
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EnfrentamientoResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
 
   /enfrentamientos/{id}/goles-jugador:
     post:
@@ -2315,35 +2235,6 @@ components:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /enfrentamientos/{id}/cancelar:
-    post:
-      tags:
-        - Enfrentamientos
-      summary: Cancelar enfrentamiento
-      description: Cancela un enfrentamiento que no haya sido finalizado
-      operationId: cancelarEnfrentamiento
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: Identificador único del enfrentamiento
-          schema:
-            type: integer
-            format: int64
-            example: 1
-      responses:
-        '200':
-          description: Enfrentamiento cancelado exitosamente
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EnfrentamientoResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
 
 tags:
   - name: Torneos
@@ -2398,18 +2289,21 @@ tags:
       ### Estados de Enfrentamiento:
       - **PROGRAMADO**: Enfrentamiento agendado pero no jugado
       - **FINALIZADO**: Partido completado con resultado registrado
-      - **CANCELADO**: Enfrentamiento cancelado por circunstancias externas
+      - **APLAZADO**: Enfrentamiento aplazado por circunstancias externas
       
       ### Funcionalidades:
       - Programación de partidos entre equipos del mismo torneo
+      - Endpoint unificado para actualizar cualquier aspecto del enfrentamiento
       - Registro de resultados y actualización automática de estadísticas
       - Seguimiento detallado de goles por jugador
       - Consultas por torneo, equipo y rango de fechas
-      - Cancelación de partidos no finalizados
+      - Aplazamiento y reprogramación de partidos
+      - Control administrativo total sobre enfrentamientos
       
       ### Reglas de Negocio:
       - Los equipos deben pertenecer al mismo torneo
       - Un equipo no puede enfrentarse a sí mismo
-      - Solo se pueden modificar enfrentamientos no finalizados
+      - Endpoint PUT unificado permite cualquier modificación
       - Los goles de jugadores solo se registran en partidos finalizados
       - Las estadísticas de equipos se actualizan automáticamente
+      - Control administrativo completo sin restricciones de estado

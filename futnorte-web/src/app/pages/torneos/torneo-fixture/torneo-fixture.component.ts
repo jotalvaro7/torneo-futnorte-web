@@ -6,7 +6,7 @@ import { firstValueFrom } from 'rxjs';
 import { EnfrentamientoService } from '../../../services/enfrentamiento.service';
 import { EquipoService } from '../../../services/equipo.service';
 import { TorneoService } from '../../../services/torneo.service';
-import { EnfrentamientoResponse, CrearEnfrentamientoRequest, Equipo, Torneo } from '../../../models';
+import { EnfrentamientoResponse, CrearEnfrentamientoRequest, ActualizarEnfrentamientoRequest, Equipo, Torneo } from '../../../models';
 
 @Component({
   selector: 'app-torneo-fixture',
@@ -31,6 +31,11 @@ export class TorneoFixtureComponent implements OnInit {
   showCreateForm = signal(false);
   creating = signal(false);
 
+  // Edición de enfrentamiento
+  showEditForm = signal(false);
+  editingEnfrentamiento = signal<EnfrentamientoResponse | null>(null);
+  updating = signal(false);
+
   // Filtros de fecha
   fechaInicio = signal<string>('');
   fechaFin = signal<string>('');
@@ -40,7 +45,7 @@ export class TorneoFixtureComponent implements OnInit {
   // Control de acordeón
   seccionProgramadosAbierta = signal(true);
   seccionFinalizadosAbierta = signal(true);
-  seccionCanceladosAbierta = signal(false);
+  seccionAplazadosAbierta = signal(false);
 
   torneoId = computed(() => {
     const id = this.route.snapshot.paramMap.get('id');
@@ -50,6 +55,11 @@ export class TorneoFixtureComponent implements OnInit {
   createForm = this.fb.nonNullable.group({
     equipoLocalId: ['', [Validators.required]],
     equipoVisitanteId: ['', [Validators.required]],
+    fechaHora: ['', [Validators.required]],
+    cancha: ['', [Validators.required, Validators.maxLength(100)]]
+  });
+
+  editForm = this.fb.nonNullable.group({
     fechaHora: ['', [Validators.required]],
     cancha: ['', [Validators.required, Validators.maxLength(100)]]
   });
@@ -252,9 +262,9 @@ export class TorneoFixtureComponent implements OnInit {
     });
   });
 
-  enfrentamientosCancelados = computed(() => {
-    const cancelados = this.enfrentamientos().filter(e => e.estado === 'CANCELADO');
-    return [...cancelados].sort((a, b) => {
+  enfrentamientosAplazados = computed(() => {
+    const aplazados = this.enfrentamientos().filter(e => e.estado === 'APLAZADO');
+    return [...aplazados].sort((a, b) => {
       const dateA = new Date(a.fechaHora);
       const dateB = new Date(b.fechaHora);
       return dateA.getTime() - dateB.getTime();
@@ -362,7 +372,7 @@ export class TorneoFixtureComponent implements OnInit {
     switch (estado) {
       case 'PROGRAMADO': return 'bg-blue-100 text-blue-800';
       case 'FINALIZADO': return 'bg-green-100 text-green-800';
-      case 'CANCELADO': return 'bg-red-100 text-red-800';
+      case 'APLAZADO': return 'bg-orange-100 text-orange-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   }
@@ -376,7 +386,74 @@ export class TorneoFixtureComponent implements OnInit {
     this.seccionFinalizadosAbierta.set(!this.seccionFinalizadosAbierta());
   }
 
-  toggleSeccionCancelados(): void {
-    this.seccionCanceladosAbierta.set(!this.seccionCanceladosAbierta());
+  toggleSeccionAplazados(): void {
+    this.seccionAplazadosAbierta.set(!this.seccionAplazadosAbierta());
+  }
+
+  // Métodos para edición de enfrentamiento
+  mostrarFormularioEdicion(enfrentamiento: EnfrentamientoResponse): void {
+    this.editingEnfrentamiento.set(enfrentamiento);
+
+    // Convertir la fecha al formato datetime-local
+    const fecha = new Date(enfrentamiento.fechaHora);
+    const fechaLocal = new Date(fecha.getTime() - (fecha.getTimezoneOffset() * 60000));
+    const fechaFormateada = fechaLocal.toISOString().slice(0, 16);
+
+    this.editForm.patchValue({
+      fechaHora: fechaFormateada,
+      cancha: enfrentamiento.cancha
+    });
+
+    this.showEditForm.set(true);
+  }
+
+  ocultarFormularioEdicion(): void {
+    this.showEditForm.set(false);
+    this.editingEnfrentamiento.set(null);
+    this.editForm.reset();
+  }
+
+  actualizarEnfrentamiento(): void {
+    if (this.editForm.invalid || !this.editingEnfrentamiento()) {
+      this.editForm.markAllAsTouched();
+      return;
+    }
+
+    const enfrentamiento = this.editingEnfrentamiento()!;
+    this.updating.set(true);
+
+    const formValue = this.editForm.value;
+    const request: ActualizarEnfrentamientoRequest = {};
+
+    if (formValue.fechaHora) {
+      request.fechaHora = formValue.fechaHora;
+    }
+    if (formValue.cancha) {
+      request.cancha = formValue.cancha;
+    }
+
+    this.enfrentamientoService.actualizarEnfrentamiento(enfrentamiento.id, request).subscribe({
+      next: (enfrentamientoActualizado) => {
+        // Actualizar el enfrentamiento en la lista
+        this.enfrentamientos.update(current =>
+          current.map(e => e.id === enfrentamiento.id ? enfrentamientoActualizado : e)
+        );
+        this.ocultarFormularioEdicion();
+        this.updating.set(false);
+      },
+      error: (error) => {
+        this.error.set('Error al actualizar enfrentamiento: ' + error.message);
+        this.updating.set(false);
+      }
+    });
+  }
+
+  getEditFieldError(fieldName: string): string {
+    const field = this.editForm.get(fieldName);
+    if (field?.errors && field.touched) {
+      if (field.errors['required']) return `${fieldName} es requerido`;
+      if (field.errors['maxlength']) return `${fieldName} excede la longitud máxima`;
+    }
+    return '';
   }
 }

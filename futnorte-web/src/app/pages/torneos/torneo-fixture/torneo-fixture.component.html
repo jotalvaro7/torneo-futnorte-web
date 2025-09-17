@@ -83,6 +83,77 @@
     </div>
     }
 
+    <!-- Edit Form Modal -->
+    @if (showEditForm()) {
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-2xl shadow-xl max-w-md w-full mx-4">
+        <div class="p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-semibold text-gray-900">Editar Enfrentamiento</h3>
+            <button type="button" class="text-gray-400 hover:text-gray-600" (click)="ocultarFormularioEdicion()">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+
+          @if (editingEnfrentamiento()) {
+          <div class="mb-4 p-3 bg-slate-50 rounded-lg">
+            <div class="text-sm font-medium text-slate-700 mb-1">Partido a editar:</div>
+            <div class="text-base font-bold text-slate-900">
+              {{ editingEnfrentamiento()?.equipoLocal }} vs {{ editingEnfrentamiento()?.equipoVisitante }}
+            </div>
+          </div>
+          }
+
+          <form [formGroup]="editForm" (ngSubmit)="actualizarEnfrentamiento()">
+            <!-- Fecha y Hora -->
+            <div class="mb-4">
+              <label for="editFechaHora" class="block text-sm font-medium text-gray-700 mb-2">
+                Fecha y Hora *
+              </label>
+              <input type="datetime-local" id="editFechaHora" formControlName="fechaHora"
+                     class="form-input w-full"
+                     [class.border-red-500]="getEditFieldError('fechaHora')">
+              @if (getEditFieldError('fechaHora')) {
+              <p class="text-red-500 text-sm mt-1">{{ getEditFieldError('fechaHora') }}</p>
+              }
+            </div>
+
+            <!-- Cancha -->
+            <div class="mb-6">
+              <label for="editCancha" class="block text-sm font-medium text-gray-700 mb-2">
+                Cancha *
+              </label>
+              <input type="text" id="editCancha" formControlName="cancha"
+                     class="form-input w-full" placeholder="Nombre de la cancha"
+                     maxlength="100"
+                     [class.border-red-500]="getEditFieldError('cancha')">
+              @if (getEditFieldError('cancha')) {
+              <p class="text-red-500 text-sm mt-1">{{ getEditFieldError('cancha') }}</p>
+              }
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex gap-3">
+              <button type="button" class="btn btn-secondary flex-1" (click)="ocultarFormularioEdicion()">
+                Cancelar
+              </button>
+              <button type="submit" class="btn btn-primary flex-1" [disabled]="updating()">
+                @if (updating()) {
+                <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                Actualizando...
+                } @else {
+                Actualizar
+                }
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    }
+
     <!-- Create Form Modal -->
     @if (showCreateForm()) {
     <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -279,10 +350,10 @@
             <div class="text-3xl font-black text-green-600 mb-1">{{ enfrentamientosFinalizados().length }}</div>
             <div class="text-xs uppercase tracking-wider font-bold text-slate-500">Finalizados</div>
           </div>
-          @if (enfrentamientosCancelados().length > 0) {
+          @if (enfrentamientosAplazados().length > 0) {
           <div class="text-center">
-            <div class="text-3xl font-black text-red-600 mb-1">{{ enfrentamientosCancelados().length }}</div>
-            <div class="text-xs uppercase tracking-wider font-bold text-slate-500">Cancelados</div>
+            <div class="text-3xl font-black text-orange-600 mb-1">{{ enfrentamientosAplazados().length }}</div>
+            <div class="text-xs uppercase tracking-wider font-bold text-slate-500">Aplazados</div>
           </div>
           }
         </div>
@@ -352,15 +423,15 @@
               </div>
             </div>
             } @else {
-            <!-- Cancelados Mobile -->
-            <div class="text-center mb-4 opacity-60">
-              <div class="text-2xl font-black text-red-500 mb-2">CANCELADO</div>
-              <div class="text-sm font-bold text-slate-500 line-through">{{ formatDateTime(enfrentamiento.fechaHora) }}</div>
-              <div class="text-xs text-slate-400 mt-1 line-through">{{ enfrentamiento.cancha }}</div>
+            <!-- Aplazados Mobile -->
+            <div class="text-center mb-4 opacity-75">
+              <div class="text-2xl font-black text-orange-500 mb-2">APLAZADO</div>
+              <div class="text-sm font-bold text-slate-600">{{ formatDateTime(enfrentamiento.fechaHora) }}</div>
+              <div class="text-xs text-slate-500 mt-1">{{ enfrentamiento.cancha }}</div>
             </div>
-            <div class="flex items-center justify-between opacity-60">
-              <div class="font-bold text-lg text-slate-500 line-through">{{ enfrentamiento.equipoLocal }}</div>
-              <div class="font-bold text-lg text-slate-500 line-through">{{ enfrentamiento.equipoVisitante }}</div>
+            <div class="flex items-center justify-between opacity-75">
+              <div class="font-bold text-lg text-slate-600">{{ enfrentamiento.equipoLocal }}</div>
+              <div class="font-bold text-lg text-slate-600">{{ enfrentamiento.equipoVisitante }}</div>
             </div>
             }
           </div>
@@ -397,14 +468,12 @@
                   d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
               </svg>
             </button>
-            @if (enfrentamiento.estado === 'PROGRAMADO') {
-            <button type="button" class="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-purple-600 transition-colors" title="Editar">
+            <button type="button" class="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-purple-600 transition-colors" title="Editar" (click)="mostrarFormularioEdicion(enfrentamiento)">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
               </svg>
             </button>
-            }
           </div>
           } @else if (enfrentamiento.estado === 'FINALIZADO') {
           <!-- Finalizados Desktop -->
@@ -439,36 +508,48 @@
                   d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
               </svg>
             </button>
+            <button type="button" class="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-purple-600 transition-colors" title="Editar" (click)="mostrarFormularioEdicion(enfrentamiento)">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+            </button>
           </div>
           } @else {
-          <!-- Cancelados Desktop -->
-          <div class="hidden lg:flex lg:col-span-2 items-center justify-end gap-3 opacity-60">
+          <!-- Aplazados Desktop -->
+          <div class="hidden lg:flex lg:col-span-2 items-center justify-end gap-3 opacity-75">
             <div class="text-right">
-              <div class="font-bold text-lg text-slate-500 line-through">{{ enfrentamiento.equipoLocal }}</div>
+              <div class="font-bold text-lg text-slate-600">{{ enfrentamiento.equipoLocal }}</div>
             </div>
           </div>
-          <div class="hidden lg:block lg:col-span-3 text-center opacity-60">
-            <div class="text-2xl font-black text-red-500 mb-2">CANCELADO</div>
-            <div class="text-sm font-bold text-slate-500 line-through">{{ formatDateTime(enfrentamiento.fechaHora) }}</div>
-            <div class="text-xs text-slate-400 mt-1 line-through">{{ enfrentamiento.cancha }}</div>
+          <div class="hidden lg:block lg:col-span-3 text-center opacity-75">
+            <div class="text-2xl font-black text-orange-500 mb-2">APLAZADO</div>
+            <div class="text-sm font-bold text-slate-600">{{ formatDateTime(enfrentamiento.fechaHora) }}</div>
+            <div class="text-xs text-slate-500 mt-1">{{ enfrentamiento.cancha }}</div>
           </div>
-          <div class="hidden lg:flex lg:col-span-2 items-center justify-start gap-3 opacity-60">
+          <div class="hidden lg:flex lg:col-span-2 items-center justify-start gap-3 opacity-75">
             <div class="text-left">
-              <div class="font-bold text-lg text-slate-500 line-through">{{ enfrentamiento.equipoVisitante }}</div>
+              <div class="font-bold text-lg text-slate-600">{{ enfrentamiento.equipoVisitante }}</div>
             </div>
           </div>
-          <div class="hidden lg:flex lg:col-span-1 items-center justify-end opacity-60">
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-red-100 text-red-800">
-              Cancelado
+          <div class="hidden lg:flex lg:col-span-1 items-center justify-end opacity-75">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-orange-100 text-orange-800">
+              Aplazado
             </span>
           </div>
-          <div class="hidden lg:flex lg:col-span-1 items-center justify-end gap-2 opacity-60">
+          <div class="hidden lg:flex lg:col-span-1 items-center justify-end gap-2 opacity-75">
             <button type="button" class="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-purple-600 transition-colors" title="Ver detalles">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M15 12a3 3 0 11-6 0 3 3 0 616 0z"></path>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+            </button>
+            <button type="button" class="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-purple-600 transition-colors" title="Editar" (click)="mostrarFormularioEdicion(enfrentamiento)">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
               </svg>
             </button>
           </div>
@@ -488,8 +569,8 @@
             Finalizado
           </span>
           } @else {
-          <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-red-100 text-red-800">
-            Cancelado
+          <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-orange-100 text-orange-800">
+            Aplazado
           </span>
           }
 
@@ -502,14 +583,12 @@
                   d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
               </svg>
             </button>
-            @if (enfrentamiento.estado === 'PROGRAMADO') {
-            <button type="button" class="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-purple-600 transition-colors" title="Editar">
+            <button type="button" class="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-purple-600 transition-colors" title="Editar" (click)="mostrarFormularioEdicion(enfrentamiento)">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
               </svg>
             </button>
-            }
           </div>
         </div>
       </div>
