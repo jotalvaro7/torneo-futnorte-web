@@ -109,11 +109,12 @@ export class FeatureComponent {
 - Use meaningful component and service naming
 
 ### Git Commit Guidelines
-- **IMPORTANT**: Do not include Claude AI attribution in commit messages
-- Write clear, concise commit messages that describe the changes
+- **IMPORTANT**: Write commit messages in Spanish
+- **IMPORTANT**: Do not include Claude AI attribution or any AI assistant references in commit messages
+- Write clear, concise commit messages in Spanish that describe the changes
 - Focus on the "what" and "why" of the changes, not who created them
 - Use conventional commit format when possible (feat:, fix:, docs:, etc.)
-- Example of good commit: `feat: add player search functionality with CRUD operations`
+- Example of good commit: `feat: agregar funcionalidad de búsqueda de jugadores con operaciones CRUD`
 - Example to avoid: `feat: add player search with Claude Code assistance`
 
 ### Performance Best Practices

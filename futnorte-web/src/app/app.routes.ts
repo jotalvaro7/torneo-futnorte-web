@@ -27,6 +27,10 @@ export const routes: Routes = [
     path: 'torneos/:id/equipos',
     loadComponent: () => import('./pages/torneos/torneo-equipos/torneo-equipos.component').then(c => c.TorneoEquiposComponent)
   },
+  {
+    path: 'torneos/:id/fixture',
+    loadComponent: () => import('./pages/torneos/torneo-fixture/torneo-fixture.component').then(c => c.TorneoFixtureComponent)
+  },
   // Rutas de Equipos
   {
     path: 'equipos/nuevo',
