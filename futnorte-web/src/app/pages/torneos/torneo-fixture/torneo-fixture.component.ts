@@ -1,12 +1,13 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { EnfrentamientoService } from '../../../services/enfrentamiento.service';
 import { EquipoService } from '../../../services/equipo.service';
 import { TorneoService } from '../../../services/torneo.service';
-import { EnfrentamientoResponse, CrearEnfrentamientoRequest, ActualizarEnfrentamientoRequest, Equipo, Torneo } from '../../../models';
+import { JugadorService } from '../../../services/jugador.service';
+import { EnfrentamientoResponse, CrearEnfrentamientoRequest, ActualizarEnfrentamientoRequest, GolesJugadorDto, Equipo, Torneo, Jugador } from '../../../models';
 
 @Component({
   selector: 'app-torneo-fixture',
@@ -19,6 +20,7 @@ export class TorneoFixtureComponent implements OnInit {
   private readonly enfrentamientoService = inject(EnfrentamientoService);
   private readonly equipoService = inject(EquipoService);
   private readonly torneoService = inject(TorneoService);
+  private readonly jugadorService = inject(JugadorService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
@@ -26,6 +28,8 @@ export class TorneoFixtureComponent implements OnInit {
   torneo = signal<Torneo | null>(null);
   equipos = signal<Equipo[]>([]);
   enfrentamientos = signal<EnfrentamientoResponse[]>([]);
+  jugadoresLocal = signal<Jugador[]>([]);
+  jugadoresVisitante = signal<Jugador[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
   showCreateForm = signal(false);
@@ -35,6 +39,13 @@ export class TorneoFixtureComponent implements OnInit {
   showEditForm = signal(false);
   editingEnfrentamiento = signal<EnfrentamientoResponse | null>(null);
   updating = signal(false);
+  editMode = signal(false);
+  originalFormValues: any = null;
+
+  // Eliminación de enfrentamiento
+  deleting = signal(false);
+  showDeleteConfirm = signal(false);
+  enfrentamientoToDelete = signal<EnfrentamientoResponse | null>(null);
 
   // Filtros de fecha
   fechaInicio = signal<string>('');
@@ -61,7 +72,12 @@ export class TorneoFixtureComponent implements OnInit {
 
   editForm = this.fb.nonNullable.group({
     fechaHora: ['', [Validators.required]],
-    cancha: ['', [Validators.required, Validators.maxLength(100)]]
+    cancha: ['', [Validators.required, Validators.maxLength(100)]],
+    estado: ['', [Validators.required]],
+    golesLocal: [null as number | null],
+    golesVisitante: [null as number | null],
+    golesJugadoresLocal: this.fb.array([]),
+    golesJugadoresVisitante: this.fb.array([])
   });
 
   equiposDisponiblesLocal = computed(() => {
@@ -243,6 +259,9 @@ export class TorneoFixtureComponent implements OnInit {
     });
   }
 
+  // Signal para controlar visibilidad de campos de goles
+  mostrarCamposGoles = signal(false);
+
   // Computed properties para organizar enfrentamientos por estado
   enfrentamientosProgramados = computed(() => {
     const programados = this.enfrentamientos().filter(e => e.estado === 'PROGRAMADO');
@@ -393,15 +412,52 @@ export class TorneoFixtureComponent implements OnInit {
   // Métodos para edición de enfrentamiento
   mostrarFormularioEdicion(enfrentamiento: EnfrentamientoResponse): void {
     this.editingEnfrentamiento.set(enfrentamiento);
+    this.editMode.set(false); // Iniciar en modo vista
 
     // Convertir la fecha al formato datetime-local
     const fecha = new Date(enfrentamiento.fechaHora);
     const fechaLocal = new Date(fecha.getTime() - (fecha.getTimezoneOffset() * 60000));
     const fechaFormateada = fechaLocal.toISOString().slice(0, 16);
 
-    this.editForm.patchValue({
+    const formValues = {
       fechaHora: fechaFormateada,
-      cancha: enfrentamiento.cancha
+      cancha: enfrentamiento.cancha,
+      estado: enfrentamiento.estado,
+      golesLocal: enfrentamiento.golesLocal,
+      golesVisitante: enfrentamiento.golesVisitante
+    };
+
+    this.editForm.patchValue(formValues);
+    this.originalFormValues = { ...formValues };
+
+    // Inicializar en modo vista (deshabilitado)
+    this.editForm.disable();
+
+    // Limpiar arrays de goles de jugadores
+    this.limpiarGolesJugadores();
+
+    // Configurar visibilidad inicial de campos de goles
+    this.mostrarCamposGoles.set(enfrentamiento.estado === 'FINALIZADO');
+
+    // Cargar jugadores de ambos equipos primero
+    this.cargarJugadoresDeEquipos(enfrentamiento);
+
+    // Prellenar formulario con goles existentes si los hay y el estado es FINALIZADO
+    if (enfrentamiento.estado === 'FINALIZADO' && (enfrentamiento.golesJugadoresLocal?.length || enfrentamiento.golesJugadoresVisitante?.length)) {
+      this.prellenarGolesJugadores(enfrentamiento);
+    }
+
+    // Suscribirse a cambios de estado
+    this.editForm.get('estado')?.valueChanges.subscribe(estado => {
+      const wasFinalized = this.mostrarCamposGoles();
+      this.mostrarCamposGoles.set(estado === 'FINALIZADO');
+
+      if (estado !== 'FINALIZADO') {
+        this.limpiarGolesJugadores();
+      } else if (!wasFinalized) {
+        // Solo prellenar si estamos cambiando a FINALIZADO y no tenemos goles ya cargados
+        this.prellenarGolesJugadores(this.editingEnfrentamiento()!);
+      }
     });
 
     this.showEditForm.set(true);
@@ -410,10 +466,54 @@ export class TorneoFixtureComponent implements OnInit {
   ocultarFormularioEdicion(): void {
     this.showEditForm.set(false);
     this.editingEnfrentamiento.set(null);
+    this.editMode.set(false);
+    this.originalFormValues = null;
     this.editForm.reset();
+    // Asegurar que el formulario esté habilitado para el próximo uso
+    this.editForm.enable();
+  }
+
+  activarModoEdicion(): void {
+    this.editMode.set(true);
+    // Habilitar todos los controles del formulario
+    this.editForm.enable();
+  }
+
+  cancelarEdicion(): void {
+    // Restaurar valores originales
+    if (this.originalFormValues) {
+      this.editForm.patchValue(this.originalFormValues);
+    }
+    this.editMode.set(false);
+    // Deshabilitar todos los controles del formulario
+    this.editForm.disable();
   }
 
   actualizarEnfrentamiento(): void {
+    // Validaciones dinámicas para goles si el estado es FINALIZADO
+    const estadoSeleccionado = this.editForm.get('estado')?.value;
+    if (estadoSeleccionado === 'FINALIZADO') {
+      const golesLocal = this.editForm.get('golesLocal')?.value;
+      const golesVisitante = this.editForm.get('golesVisitante')?.value;
+
+      if (golesLocal === null || golesLocal === undefined || golesLocal < 0) {
+        this.editForm.get('golesLocal')?.setErrors({ required: true });
+      }
+      if (golesVisitante === null || golesVisitante === undefined || golesVisitante < 0) {
+        this.editForm.get('golesVisitante')?.setErrors({ required: true });
+      }
+
+      // Validar que los goles individuales coincidan con el total
+      if (!this.validarGolesCoinciden()) {
+        this.editForm.get('golesLocal')?.setErrors({ golesNoCoinciden: true });
+        this.editForm.get('golesVisitante')?.setErrors({ golesNoCoinciden: true });
+      }
+    } else {
+      // Limpiar errores de goles si no es FINALIZADO
+      this.editForm.get('golesLocal')?.setErrors(null);
+      this.editForm.get('golesVisitante')?.setErrors(null);
+    }
+
     if (this.editForm.invalid || !this.editingEnfrentamiento()) {
       this.editForm.markAllAsTouched();
       return;
@@ -430,6 +530,23 @@ export class TorneoFixtureComponent implements OnInit {
     }
     if (formValue.cancha) {
       request.cancha = formValue.cancha;
+    }
+    if (formValue.estado) {
+      request.estado = formValue.estado as any;
+    }
+    if (formValue.golesLocal !== null && formValue.golesLocal !== undefined) {
+      request.golesLocal = formValue.golesLocal;
+    }
+    if (formValue.golesVisitante !== null && formValue.golesVisitante !== undefined) {
+      request.golesVisitante = formValue.golesVisitante;
+    }
+
+    // Agregar goles por jugador si existen
+    if (this.golesJugadoresLocalArray.length > 0) {
+      request.golesJugadoresLocal = this.golesJugadoresLocalArray.value as GolesJugadorDto[];
+    }
+    if (this.golesJugadoresVisitanteArray.length > 0) {
+      request.golesJugadoresVisitante = this.golesJugadoresVisitanteArray.value as GolesJugadorDto[];
     }
 
     this.enfrentamientoService.actualizarEnfrentamiento(enfrentamiento.id, request).subscribe({
@@ -453,7 +570,144 @@ export class TorneoFixtureComponent implements OnInit {
     if (field?.errors && field.touched) {
       if (field.errors['required']) return `${fieldName} es requerido`;
       if (field.errors['maxlength']) return `${fieldName} excede la longitud máxima`;
+      if (field.errors['golesNoCoinciden']) return 'Los goles individuales no coinciden con el total';
     }
     return '';
+  }
+
+  // Métodos para manejo de goles por jugador
+  get golesJugadoresLocalArray(): FormArray {
+    return this.editForm.get('golesJugadoresLocal') as FormArray;
+  }
+
+  get golesJugadoresVisitanteArray(): FormArray {
+    return this.editForm.get('golesJugadoresVisitante') as FormArray;
+  }
+
+  agregarGolJugadorLocal(): void {
+    const golJugadorForm = this.fb.group({
+      jugadorId: ['', [Validators.required]],
+      cantidadGoles: [1, [Validators.required, Validators.min(1)]]
+    });
+    this.golesJugadoresLocalArray.push(golJugadorForm);
+  }
+
+  agregarGolJugadorVisitante(): void {
+    const golJugadorForm = this.fb.group({
+      jugadorId: ['', [Validators.required]],
+      cantidadGoles: [1, [Validators.required, Validators.min(1)]]
+    });
+    this.golesJugadoresVisitanteArray.push(golJugadorForm);
+  }
+
+  eliminarGolJugadorLocal(index: number): void {
+    this.golesJugadoresLocalArray.removeAt(index);
+  }
+
+  eliminarGolJugadorVisitante(index: number): void {
+    this.golesJugadoresVisitanteArray.removeAt(index);
+  }
+
+  limpiarGolesJugadores(): void {
+    this.golesJugadoresLocalArray.clear();
+    this.golesJugadoresVisitanteArray.clear();
+  }
+
+  cargarJugadoresDeEquipos(enfrentamiento: EnfrentamientoResponse): void {
+    // Buscar los equipos por nombre para obtener sus IDs
+    const equipoLocal = this.equipos().find(e => e.nombre === enfrentamiento.equipoLocal);
+    const equipoVisitante = this.equipos().find(e => e.nombre === enfrentamiento.equipoVisitante);
+
+    if (equipoLocal) {
+      this.jugadorService.buscarJugadoresPorEquipo(equipoLocal.id!).subscribe({
+        next: (jugadores) => this.jugadoresLocal.set(jugadores),
+        error: (error) => console.error('Error cargando jugadores locales:', error)
+      });
+    }
+
+    if (equipoVisitante) {
+      this.jugadorService.buscarJugadoresPorEquipo(equipoVisitante.id!).subscribe({
+        next: (jugadores) => this.jugadoresVisitante.set(jugadores),
+        error: (error) => console.error('Error cargando jugadores visitantes:', error)
+      });
+    }
+  }
+
+  calcularSumaGolesLocal(): number {
+    return this.golesJugadoresLocalArray.controls.reduce((suma, control) => {
+      return suma + (control.get('cantidadGoles')?.value || 0);
+    }, 0);
+  }
+
+  calcularSumaGolesVisitante(): number {
+    return this.golesJugadoresVisitanteArray.controls.reduce((suma, control) => {
+      return suma + (control.get('cantidadGoles')?.value || 0);
+    }, 0);
+  }
+
+  validarGolesCoinciden(): boolean {
+    if (!this.mostrarCamposGoles()) return true;
+
+    const golesLocalTotal = this.editForm.get('golesLocal')?.value || 0;
+    const golesVisitanteTotal = this.editForm.get('golesVisitante')?.value || 0;
+    const sumaGolesLocal = this.calcularSumaGolesLocal();
+    const sumaGolesVisitante = this.calcularSumaGolesVisitante();
+
+    return golesLocalTotal === sumaGolesLocal && golesVisitanteTotal === sumaGolesVisitante;
+  }
+
+  prellenarGolesJugadores(enfrentamiento: EnfrentamientoResponse): void {
+    // Prellenar goles de jugadores locales si existen
+    if (enfrentamiento.golesJugadoresLocal?.length) {
+      enfrentamiento.golesJugadoresLocal.forEach(gol => {
+        this.golesJugadoresLocalArray.push(this.fb.group({
+          jugadorId: [gol.jugadorId, [Validators.required]],
+          cantidadGoles: [gol.cantidadGoles, [Validators.required, Validators.min(1), Validators.max(10)]]
+        }));
+      });
+    }
+
+    // Prellenar goles de jugadores visitantes si existen
+    if (enfrentamiento.golesJugadoresVisitante?.length) {
+      enfrentamiento.golesJugadoresVisitante.forEach(gol => {
+        this.golesJugadoresVisitanteArray.push(this.fb.group({
+          jugadorId: [gol.jugadorId, [Validators.required]],
+          cantidadGoles: [gol.cantidadGoles, [Validators.required, Validators.min(1), Validators.max(10)]]
+        }));
+      });
+    }
+  }
+
+  // Métodos para eliminación de enfrentamiento
+  mostrarConfirmacionEliminar(enfrentamiento: EnfrentamientoResponse): void {
+    this.enfrentamientoToDelete.set(enfrentamiento);
+    this.showDeleteConfirm.set(true);
+  }
+
+  ocultarConfirmacionEliminar(): void {
+    this.showDeleteConfirm.set(false);
+    this.enfrentamientoToDelete.set(null);
+  }
+
+  eliminarEnfrentamiento(): void {
+    const enfrentamiento = this.enfrentamientoToDelete();
+    if (!enfrentamiento) return;
+
+    this.deleting.set(true);
+
+    this.enfrentamientoService.eliminarEnfrentamiento(enfrentamiento.id).subscribe({
+      next: () => {
+        // Eliminar el enfrentamiento de la lista
+        this.enfrentamientos.update(current =>
+          current.filter(e => e.id !== enfrentamiento.id)
+        );
+        this.ocultarConfirmacionEliminar();
+        this.deleting.set(false);
+      },
+      error: (error) => {
+        this.error.set('Error al eliminar enfrentamiento: ' + error.message);
+        this.deleting.set(false);
+      }
+    });
   }
 }
