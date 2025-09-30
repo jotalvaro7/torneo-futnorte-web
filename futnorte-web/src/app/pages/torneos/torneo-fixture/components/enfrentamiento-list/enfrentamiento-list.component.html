@@ -11,22 +11,6 @@
       </h2>
       <p class="text-slate-600 font-medium">{{ enfrentamientos().length }} partidos programados</p>
     </div>
-    <div class="flex gap-8">
-      <div class="text-center">
-        <div class="text-3xl font-black text-blue-600 mb-1">{{ programadosCount() }}</div>
-        <div class="text-xs uppercase tracking-wider font-bold text-slate-500">Por Jugar</div>
-      </div>
-      <div class="text-center">
-        <div class="text-3xl font-black text-green-600 mb-1">{{ finalizadosCount() }}</div>
-        <div class="text-xs uppercase tracking-wider font-bold text-slate-500">Finalizados</div>
-      </div>
-      @if (aplazadosCount() > 0) {
-      <div class="text-center">
-        <div class="text-3xl font-black text-orange-600 mb-1">{{ aplazadosCount() }}</div>
-        <div class="text-xs uppercase tracking-wider font-bold text-slate-500">Aplazados</div>
-      </div>
-      }
-    </div>
   </div>
 </div>
 
