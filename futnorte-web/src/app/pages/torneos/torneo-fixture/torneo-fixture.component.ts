@@ -64,7 +64,7 @@ export class TorneoFixtureComponent implements OnInit {
 
     if (torneoId) {
       this.state.cargarDatos(torneoId).then(() => {
-        this.state.cargarPartidosSemanaActual();
+        this.state.cargarPartidosSemanaActual(torneoId);
       });
     } else {
       this.state.error.set('ID de torneo inválido');
@@ -146,11 +146,17 @@ export class TorneoFixtureComponent implements OnInit {
   }
 
   filtrarPorFecha(): void {
-    this.state.filtrarPorFecha();
+    const torneoId = this.torneo()?.id;
+    if (torneoId) {
+      this.state.filtrarPorFecha(torneoId);
+    }
   }
 
   limpiarFiltros(): void {
-    this.state.limpiarFiltros();
+    const torneoId = this.torneo()?.id;
+    if (torneoId) {
+      this.state.limpiarFiltros(torneoId);
+    }
   }
 
   establecerFiltroSemana(): void {

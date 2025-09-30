@@ -35,8 +35,8 @@ export class EnfrentamientoEditModalComponent implements OnInit {
     estado: ['', [Validators.required]],
     golesLocal: [0, [Validators.required, Validators.min(0)]],
     golesVisitante: [0, [Validators.required, Validators.min(0)]],
-    golesJugadoresLocal: this.fb.array<any>([]),
-    golesJugadoresVisitante: this.fb.array<any>([])
+    golesJugadoresLocal: this.fb.array([]),
+    golesJugadoresVisitante: this.fb.array([])
   });
 
   // Computed
@@ -76,7 +76,7 @@ export class EnfrentamientoEditModalComponent implements OnInit {
     // Prellenar goles locales
     if (enfrentamiento.golesJugadoresLocal?.length) {
       enfrentamiento.golesJugadoresLocal.forEach(gol => {
-        this.golesLocalArray().push(this.fb.group({
+        (this.golesLocalArray() as FormArray).push(this.fb.group({
           jugadorId: [gol.jugadorId, [Validators.required]],
           cantidadGoles: [gol.cantidadGoles, [Validators.required, Validators.min(1), Validators.max(10)]]
         }));
@@ -86,7 +86,7 @@ export class EnfrentamientoEditModalComponent implements OnInit {
     // Prellenar goles visitantes
     if (enfrentamiento.golesJugadoresVisitante?.length) {
       enfrentamiento.golesJugadoresVisitante.forEach(gol => {
-        this.golesVisitanteArray().push(this.fb.group({
+        (this.golesVisitanteArray() as FormArray).push(this.fb.group({
           jugadorId: [gol.jugadorId, [Validators.required]],
           cantidadGoles: [gol.cantidadGoles, [Validators.required, Validators.min(1), Validators.max(10)]]
         }));
@@ -116,14 +116,14 @@ export class EnfrentamientoEditModalComponent implements OnInit {
   }
 
   agregarGolLocal(): void {
-    this.golesLocalArray().push(this.fb.group({
+    (this.golesLocalArray() as FormArray).push(this.fb.group({
       jugadorId: ['', [Validators.required]],
       cantidadGoles: [1, [Validators.required, Validators.min(1), Validators.max(10)]]
     }));
   }
 
   agregarGolVisitante(): void {
-    this.golesVisitanteArray().push(this.fb.group({
+    (this.golesVisitanteArray() as FormArray).push(this.fb.group({
       jugadorId: ['', [Validators.required]],
       cantidadGoles: [1, [Validators.required, Validators.min(1), Validators.max(10)]]
     }));
