@@ -3,8 +3,10 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { GoleadorResponse } from '../../../models';
+import { GoleadorResponse, Torneo } from '../../../models';
 import { JugadorService } from '../../../services/jugador.service';
+import { TorneoService } from '../../../services/torneo.service';
+import { PdfExportService } from '../../../services/pdf-export.service';
 
 @Component({
   selector: 'app-goleadores-list',
@@ -15,6 +17,8 @@ import { JugadorService } from '../../../services/jugador.service';
 })
 export class GoleadoresListComponent {
   private readonly jugadorService = inject(JugadorService);
+  private readonly torneoService = inject(TorneoService);
+  private readonly pdfExportService = inject(PdfExportService);
   private readonly route = inject(ActivatedRoute);
 
   // Signal del torneoId desde la ruta
@@ -24,6 +28,7 @@ export class GoleadoresListComponent {
   );
 
   // State signals
+  torneo = signal<Torneo | null>(null);
   goleadores = signal<GoleadorResponse[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
@@ -34,19 +39,30 @@ export class GoleadoresListComponent {
   );
 
   constructor() {
-    // Effect para cargar goleadores cuando cambia el torneoId
+    // Effect para cargar datos cuando cambia el torneoId
     effect(() => {
       const id = this.torneoId();
       if (id && id > 0) {
-        this.cargarGoleadores(id);
+        this.cargarDatos(id);
       }
-    });
+    }, { allowSignalWrites: true });
   }
 
-  private cargarGoleadores(torneoId: number): void {
+  private cargarDatos(torneoId: number): void {
     this.loading.set(true);
     this.error.set(null);
 
+    // Cargar torneo
+    this.torneoService.obtenerTorneo(torneoId).subscribe({
+      next: (torneo) => {
+        this.torneo.set(torneo);
+      },
+      error: (err) => {
+        console.error('Error cargando torneo:', err);
+      }
+    });
+
+    // Cargar goleadores
     this.jugadorService.obtenerGoleadoresPorTorneo(torneoId).subscribe({
       next: (goleadores) => {
         this.goleadores.set(goleadores);
@@ -61,6 +77,11 @@ export class GoleadoresListComponent {
   }
 
   recargarGoleadores(): void {
-    this.cargarGoleadores(this.torneoId());
+    this.cargarDatos(this.torneoId());
+  }
+
+  exportarPDF(): void {
+    const nombreTorneo = this.torneo()?.nombre;
+    this.pdfExportService.exportarGoleadores(this.goleadores(), this.torneoId(), nombreTorneo);
   }
 }
