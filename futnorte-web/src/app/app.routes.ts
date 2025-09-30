@@ -31,6 +31,10 @@ export const routes: Routes = [
     path: 'torneos/:id/fixture',
     loadComponent: () => import('./pages/torneos/torneo-fixture/torneo-fixture.component').then(c => c.TorneoFixtureComponent)
   },
+  {
+    path: 'torneos/:id/goleadores',
+    loadComponent: () => import('./pages/torneos/goleadores-list/goleadores-list.component').then(c => c.GoleadoresListComponent)
+  },
   // Rutas de Equipos
   {
     path: 'equipos/nuevo',
