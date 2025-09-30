@@ -4,9 +4,7 @@ import { Observable } from 'rxjs';
 import { 
   EnfrentamientoResponse, 
   CrearEnfrentamientoRequest, 
-  ActualizarEnfrentamientoRequest,
-  RegistrarResultadoRequest,
-  RegistrarGolesJugadorRequest
+  ActualizarEnfrentamientoRequest
 } from '../models';
 import { environment } from '../../environments/environment';
 
@@ -47,20 +45,5 @@ export class EnfrentamientoService {
       .set('fechaFin', fechaFin);
     
     return this.http.get<EnfrentamientoResponse[]>(`${this.baseUrl}/fecha`, { params });
-  }
-
-  registrarResultado(id: number, request: RegistrarResultadoRequest): Observable<EnfrentamientoResponse> {
-    return this.http.post<EnfrentamientoResponse>(`${this.baseUrl}/${id}/resultado`, request);
-  }
-
-  registrarGolesJugador(id: number, request: RegistrarGolesJugadorRequest): Observable<void> {
-    return this.http.post<void>(`${this.baseUrl}/${id}/goles-jugador`, request);
-  }
-
-  aplazarEnfrentamiento(id: number): Observable<EnfrentamientoResponse> {
-    const request: ActualizarEnfrentamientoRequest = {
-      estado: 'APLAZADO'
-    };
-    return this.http.put<EnfrentamientoResponse>(`${this.baseUrl}/${id}`, request);
   }
 }

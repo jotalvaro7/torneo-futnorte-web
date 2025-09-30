@@ -20,6 +20,8 @@ export interface EnfrentamientoResponse {
   estado: EstadoEnfrentamiento;
   golesLocal?: number | null;
   golesVisitante?: number | null;
+  golesJugadoresLocal: GolesJugadorResponse[];
+  golesJugadoresVisitante: GolesJugadorResponse[];
 }
 
 export interface CrearEnfrentamientoRequest {
@@ -36,15 +38,19 @@ export interface ActualizarEnfrentamientoRequest {
   estado?: EstadoEnfrentamiento;
   golesLocal?: number;
   golesVisitante?: number;
+  golesJugadoresLocal?: GolesJugadorDto[];
+  golesJugadoresVisitante?: GolesJugadorDto[];
 }
 
-export interface RegistrarResultadoRequest {
-  golesLocal: number;
-  golesVisitante: number;
-}
-
-export interface RegistrarGolesJugadorRequest {
+export interface GolesJugadorDto {
   jugadorId: number;
+  cantidadGoles: number;
+}
+
+export interface GolesJugadorResponse {
+  jugadorId: number;
+  nombreJugador: string;
+  apellidoJugador: string;
   cantidadGoles: number;
 }
 
