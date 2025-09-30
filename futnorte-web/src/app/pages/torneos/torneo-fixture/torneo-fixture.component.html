@@ -1,6 +1,4 @@
 <div class="min-h-screen">
-
-  <!-- Main Content -->
   <div class="max-w-6xl mx-auto p-4 md:p-6">
     <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl shadow-purple-900/20 overflow-hidden">
 
@@ -67,16 +65,6 @@
           </div>
           <div class="flex gap-3">
             <button type="button"
-              class="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white px-4 py-2 rounded-xl font-medium hover:bg-white/20 transition-all duration-200"
-              (click)="mostrarFiltros.set(!mostrarFiltros())">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
-                </path>
-              </svg>
-              Filtrar
-            </button>
-            <button type="button"
               class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl font-medium transition-all duration-200 transform hover:scale-105"
               (click)="mostrarFormularioCreacion()">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -87,656 +75,115 @@
           </div>
         </div>
       </div>
+
+      <!-- Filtros Component -->
+      @if (torneo() && !loading()) {
+      <app-filtros-fecha
+        [fechaInicio]="fechaInicio()"
+        [fechaFin]="fechaFin()"
+        [filtrandoPorFecha]="filtrandoPorFecha()"
+        (fechaInicioChange)="onFechaInicioChange($event)"
+        (fechaFinChange)="onFechaFinChange($event)"
+        (filtrar)="filtrarPorFecha()"
+        (limpiar)="limpiarFiltros()"
+        (establecerSemana)="establecerFiltroSemana()"
+        (establecerMes)="establecerFiltroMes()">
+      </app-filtros-fecha>
       }
 
-      <!-- Unified Details/Edit Modal -->
-      @if (showEditForm()) {
-      <div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-          <!-- Header with gradient -->
-          <div class="bg-gradient-to-r from-purple-900 to-blue-900 text-white p-6 rounded-t-3xl">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-2xl font-bold mb-1">
-                  @if (editMode()) {
-                  Editar Enfrentamiento
-                  } @else {
-                  Detalles del Enfrentamiento
-                  }
-                </h3>
-                <p class="text-purple-200 text-sm">
-                  @if (editMode()) {
-                  Actualiza la información del partido
-                  } @else {
-                  Información completa del partido
-                  }
-                </p>
-              </div>
-              <div class="flex items-center gap-3">
-                @if (!editMode()) {
-                <button type="button"
-                  class="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl font-medium transition-all duration-200"
-                  (click)="activarModoEdicion()">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                    </path>
-                  </svg>
-                  Editar
-                </button>
-                }
-                <button type="button"
-                  class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all duration-200"
-                  (click)="ocultarFormularioEdicion()">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
-                    </path>
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Content -->
-          <div class="p-6">
-            @if (editingEnfrentamiento()) {
-            <!-- Match Info Card -->
-            <div class="mb-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl border border-blue-100">
-              <div class="flex items-center justify-center">
-                <div class="text-center">
-                  <div class="text-lg font-bold text-slate-800 mb-1">
-                    {{ editingEnfrentamiento()?.equipoLocal }}
-                  </div>
-                  <div class="text-sm text-slate-600">Local</div>
-                </div>
-                <div class="mx-6">
-                  <div
-                    class="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
-                    <span class="text-white font-bold text-lg">VS</span>
-                  </div>
-                </div>
-                <div class="text-center">
-                  <div class="text-lg font-bold text-slate-800 mb-1">
-                    {{ editingEnfrentamiento()?.equipoVisitante }}
-                  </div>
-                  <div class="text-sm text-slate-600">Visitante</div>
-                </div>
-              </div>
-            </div>
-            }
-
-            <form [formGroup]="editForm" (ngSubmit)="actualizarEnfrentamiento()" class="space-y-6">
-              <!-- Grid Layout for better organization -->
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                <!-- Fecha y Hora -->
-                <div class="space-y-2">
-                  <label for="editFechaHora" class="block text-sm font-semibold text-slate-700">
-                    <div class="flex items-center gap-2">
-                      <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                        </path>
-                      </svg>
-                      Fecha y Hora *
-                    </div>
-                  </label>
-                  <input type="datetime-local" id="editFechaHora" formControlName="fechaHora"
-                    class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-purple-500 focus:ring-0 transition-all duration-200 font-medium"
-                    [class.bg-slate-50]="!editForm.disabled" [class.bg-slate-100]="editForm.disabled"
-                    [class.text-slate-600]="editForm.disabled" [class.border-red-500]="getEditFieldError('fechaHora')"
-                    [class.bg-red-50]="getEditFieldError('fechaHora')">
-                  @if (getEditFieldError('fechaHora')) {
-                  <p class="text-red-500 text-sm mt-1 flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd"
-                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                        clip-rule="evenodd"></path>
-                    </svg>
-                    {{ getEditFieldError('fechaHora') }}
-                  </p>
-                  }
-                </div>
-
-                <!-- Cancha -->
-                <div class="space-y-2">
-                  <label for="editCancha" class="block text-sm font-semibold text-slate-700">
-                    <div class="flex items-center gap-2">
-                      <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                      </svg>
-                      Cancha *
-                    </div>
-                  </label>
-                  <input type="text" id="editCancha" formControlName="cancha"
-                    class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-purple-500 focus:ring-0 transition-all duration-200 font-medium"
-                    [class.bg-slate-50]="!editForm.disabled" [class.bg-slate-100]="editForm.disabled"
-                    [class.text-slate-600]="editForm.disabled" placeholder="Nombre de la cancha" maxlength="100"
-                    [class.border-red-500]="getEditFieldError('cancha')"
-                    [class.bg-red-50]="getEditFieldError('cancha')">
-                  @if (getEditFieldError('cancha')) {
-                  <p class="text-red-500 text-sm mt-1 flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd"
-                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                        clip-rule="evenodd"></path>
-                    </svg>
-                    {{ getEditFieldError('cancha') }}
-                  </p>
-                  }
-                </div>
-              </div>
-
-              <!-- Estado -->
-              <div class="space-y-2">
-                <label for="editEstado" class="block text-sm font-semibold text-slate-700">
-                  <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    Estado del Enfrentamiento *
-                  </div>
-                </label>
-                <select id="editEstado" formControlName="estado"
-                  class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-purple-500 focus:ring-0 transition-all duration-200 font-medium"
-                  [class.bg-slate-50]="!editForm.disabled" [class.bg-slate-100]="editForm.disabled"
-                  [class.text-slate-600]="editForm.disabled" [class.border-red-500]="getEditFieldError('estado')"
-                  [class.bg-red-50]="getEditFieldError('estado')">
-                  <option value="">Seleccionar estado</option>
-                  <option value="PROGRAMADO">🔵 Programado</option>
-                  <option value="FINALIZADO">🟢 Finalizado</option>
-                  <option value="APLAZADO">🟠 Aplazado</option>
-                </select>
-                @if (getEditFieldError('estado')) {
-                <p class="text-red-500 text-sm mt-1 flex items-center gap-1">
-                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd"
-                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                      clip-rule="evenodd"></path>
-                  </svg>
-                  {{ getEditFieldError('estado') }}
-                </p>
-                }
-              </div>
-
-              <!-- Resultados (solo si está FINALIZADO) -->
-              @if (mostrarCamposGoles()) {
-              <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-4">
-                <div class="flex items-center gap-2 mb-4">
-                  <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                  </svg>
-                  <h4 class="text-lg font-bold text-green-800">Resultado del Partido</h4>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                  <!-- Goles Local -->
-                  <div class="space-y-2">
-                    <label for="editGolesLocal" class="block text-sm font-semibold text-green-700">
-                      Goles {{ editingEnfrentamiento()?.equipoLocal }}
-                    </label>
-                    <input type="number" id="editGolesLocal" formControlName="golesLocal"
-                      class="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:border-green-500 focus:ring-0 transition-all duration-200 font-bold text-center text-xl"
-                      [class.bg-white]="!editForm.disabled" [class.bg-green-50]="editForm.disabled"
-                      [class.text-slate-600]="editForm.disabled" placeholder="0" min="0" max="99"
-                      [class.border-red-500]="getEditFieldError('golesLocal')"
-                      [class.bg-red-50]="getEditFieldError('golesLocal')">
-                    @if (getEditFieldError('golesLocal')) {
-                    <p class="text-red-500 text-sm mt-1">{{ getEditFieldError('golesLocal') }}</p>
-                    }
-                  </div>
-
-                  <!-- Goles Visitante -->
-                  <div class="space-y-2">
-                    <label for="editGolesVisitante" class="block text-sm font-semibold text-green-700">
-                      Goles {{ editingEnfrentamiento()?.equipoVisitante }}
-                    </label>
-                    <input type="number" id="editGolesVisitante" formControlName="golesVisitante"
-                      class="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:border-green-500 focus:ring-0 transition-all duration-200 font-bold text-center text-xl"
-                      [class.bg-white]="!editForm.disabled" [class.bg-green-50]="editForm.disabled"
-                      [class.text-slate-600]="editForm.disabled" placeholder="0" min="0" max="99"
-                      [class.border-red-500]="getEditFieldError('golesVisitante')"
-                      [class.bg-red-50]="getEditFieldError('golesVisitante')">
-                    @if (getEditFieldError('golesVisitante')) {
-                    <p class="text-red-500 text-sm mt-1">{{ getEditFieldError('golesVisitante') }}</p>
-                    }
-                  </div>
-                </div>
-                <!-- Sección de Goleadores -->
-                @if (mostrarCamposGoles()) {
-                <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-4 mt-4">
-                  <div class="flex items-center gap-2 mb-4">
-                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                    </svg>
-                    <h4 class="text-lg font-bold text-blue-800">Goleadores Detallados</h4>
-                    <div class="ml-auto text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
-                      Opcional
-                    </div>
-                  </div>
-
-                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- Goleadores Equipo Local -->
-                    <div class="space-y-3">
-                      <div class="flex items-center justify-between">
-                        <h5 class="font-bold text-blue-700">{{ editingEnfrentamiento()?.equipoLocal }}</h5>
-                        @if (editMode()) {
-                        <button type="button"
-                          class="text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-full transition-colors"
-                          (click)="agregarGolJugadorLocal()">
-                          + Agregar Gol
-                        </button>
-                        }
-                      </div>
-
-                      @if (golesJugadoresLocalArray.length === 0 &&
-                      !editingEnfrentamiento()?.golesJugadoresLocal?.length) {
-                      <div
-                        class="text-center text-blue-400 text-sm py-4 border-2 border-dashed border-blue-200 rounded-lg">
-                        No hay goles registrados por jugador
-                      </div>
-                      }
-
-                      <!-- Mostrar goles existentes cuando no está en modo edición -->
-                      @if (!editMode() && editingEnfrentamiento()?.golesJugadoresLocal?.length) {
-                      <div class="space-y-2">
-                        @for (gol of editingEnfrentamiento()!.golesJugadoresLocal; track gol.jugadorId) {
-                        <div class="flex justify-between items-center bg-white p-3 rounded-lg border border-blue-200">
-                          <span class="text-sm font-medium text-blue-900">{{ gol.nombreJugador }} {{ gol.apellidoJugador
-                            }}</span>
-                          <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
-                            {{ gol.cantidadGoles }} gol{{ gol.cantidadGoles > 1 ? 'es' : '' }}
-                          </span>
-                        </div>
-                        }
-                      </div>
-                      }
-
-                      <!-- Mostrar inputs de edición solo en modo edición -->
-                      @if (editMode()) {
-                      @for (control of golesJugadoresLocalArray.controls; track $index) {
-                      <div class="flex gap-2 items-start bg-white p-3 rounded-lg border border-blue-200"
-                        [formGroup]="$any(control)">
-                        <div class="flex-1">
-                          <select formControlName="jugadorId"
-                            class="w-full px-3 py-2 text-sm border border-blue-200 rounded focus:border-blue-500 focus:ring-0">
-                            <option value="">Seleccionar jugador</option>
-                            @for (jugador of jugadoresLocal(); track jugador.id) {
-                            <option [value]="jugador.id">{{ jugador.nombre }} {{ jugador.apellido }}</option>
-                            }
-                          </select>
-                        </div>
-                        <div class="w-20">
-                          <input type="number" formControlName="cantidadGoles"
-                            class="w-full px-3 py-2 text-sm text-center border border-blue-200 rounded focus:border-blue-500 focus:ring-0"
-                            min="1" max="10" placeholder="1">
-                        </div>
-                        <button type="button"
-                          class="w-8 h-8 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition-colors flex items-center justify-center"
-                          (click)="eliminarGolJugadorLocal($index)">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                            </path>
-                          </svg>
-                        </button>
-                      </div>
-                      }
-
-                      @if (golesJugadoresLocalArray.length > 0) {
-                      <div class="text-xs text-blue-600 bg-blue-100 p-2 rounded">
-                        <strong>Total:</strong> {{ calcularSumaGolesLocal() }} goles
-                      </div>
-                      }
-                      }
-                    </div>
-
-                    <!-- Goleadores Equipo Visitante -->
-                    <div class="space-y-3">
-                      <div class="flex items-center justify-between">
-                        <h5 class="font-bold text-blue-700">{{ editingEnfrentamiento()?.equipoVisitante }}</h5>
-                        @if (editMode()) {
-                        <button type="button"
-                          class="text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-full transition-colors"
-                          (click)="agregarGolJugadorVisitante()">
-                          + Agregar Gol
-                        </button>
-                        }
-                      </div>
-
-                      @if (golesJugadoresVisitanteArray.length === 0 &&
-                      !editingEnfrentamiento()?.golesJugadoresVisitante?.length) {
-                      <div
-                        class="text-center text-blue-400 text-sm py-4 border-2 border-dashed border-blue-200 rounded-lg">
-                        No hay goles registrados por jugador
-                      </div>
-                      }
-
-                      <!-- Mostrar goles existentes cuando no está en modo edición -->
-                      @if (!editMode() && editingEnfrentamiento()?.golesJugadoresVisitante?.length) {
-                      <div class="space-y-2">
-                        @for (gol of editingEnfrentamiento()!.golesJugadoresVisitante; track gol.jugadorId) {
-                        <div class="flex justify-between items-center bg-white p-3 rounded-lg border border-blue-200">
-                          <span class="text-sm font-medium text-blue-900">{{ gol.nombreJugador }} {{ gol.apellidoJugador
-                            }}</span>
-                          <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
-                            {{ gol.cantidadGoles }} gol{{ gol.cantidadGoles > 1 ? 'es' : '' }}
-                          </span>
-                        </div>
-                        }
-                      </div>
-                      }
-
-                      <!-- Mostrar inputs de edición solo en modo edición -->
-                      @if (editMode()) {
-                      @for (control of golesJugadoresVisitanteArray.controls; track $index) {
-                      <div class="flex gap-2 items-start bg-white p-3 rounded-lg border border-blue-200"
-                        [formGroup]="$any(control)">
-                        <div class="flex-1">
-                          <select formControlName="jugadorId"
-                            class="w-full px-3 py-2 text-sm border border-blue-200 rounded focus:border-blue-500 focus:ring-0">
-                            <option value="">Seleccionar jugador</option>
-                            @for (jugador of jugadoresVisitante(); track jugador.id) {
-                            <option [value]="jugador.id">{{ jugador.nombre }} {{ jugador.apellido }}</option>
-                            }
-                          </select>
-                        </div>
-                        <div class="w-20">
-                          <input type="number" formControlName="cantidadGoles"
-                            class="w-full px-3 py-2 text-sm text-center border border-blue-200 rounded focus:border-blue-500 focus:ring-0"
-                            min="1" max="10" placeholder="1">
-                        </div>
-                        <button type="button"
-                          class="w-8 h-8 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition-colors flex items-center justify-center"
-                          (click)="eliminarGolJugadorVisitante($index)">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                            </path>
-                          </svg>
-                        </button>
-                      </div>
-                      }
-
-                      @if (golesJugadoresVisitanteArray.length > 0) {
-                      <div class="text-xs text-blue-600 bg-blue-100 p-2 rounded">
-                        <strong>Total:</strong> {{ calcularSumaGolesVisitante() }} goles
-                      </div>
-                      }
-                      }
-                    </div>
-                  </div>
-
-                  <!-- Validación de coincidencia de goles -->
-                  @if (!validarGolesCoinciden() && (golesJugadoresLocalArray.length > 0 ||
-                  golesJugadoresVisitanteArray.length > 0)) {
-                  <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <div class="flex items-start gap-2">
-                      <svg class="w-5 h-5 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z">
-                        </path>
-                      </svg>
-                      <div class="text-sm text-yellow-800">
-                        <strong>Advertencia:</strong> Los goles individuales no coinciden con el total del equipo.
-                        <br>
-                        <small>Local: {{ calcularSumaGolesLocal() }}/{{ editForm.get('golesLocal')?.value || 0 }} |
-                          Visitante: {{ calcularSumaGolesVisitante() }}/{{ editForm.get('golesVisitante')?.value || 0
-                          }}</small>
-                      </div>
-                    </div>
-                  </div>
-                  }
-                </div>
-                }
-              </div>
-              }
-
-              <!-- Form Actions -->
-              @if (editMode()) {
-              <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-200">
-                <button type="button"
-                  class="flex-1 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-all duration-200 transform hover:scale-[0.98]"
-                  (click)="cancelarEdicion()">
-                  Cancelar
-                </button>
-                <button type="submit"
-                  class="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-200 transform hover:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                  [disabled]="updating()">
-                  <div class="flex items-center justify-center gap-2">
-                    @if (updating()) {
-                    <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Actualizando...</span>
-                    } @else {
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    <span>Actualizar Enfrentamiento</span>
-                    }
-                  </div>
-                </button>
-              </div>
-              } @else {
-              <div class="flex justify-center pt-4 border-t border-slate-200">
-                <button type="button"
-                  class="px-8 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-all duration-200 transform hover:scale-[0.98]"
-                  (click)="ocultarFormularioEdicion()">
-                  Cerrar
-                </button>
-              </div>
-              }
-            </form>
-          </div>
-        </div>
-      </div>
-      }
-
-      <!-- Create Form Modal -->
-      @if (showCreateForm()) {
-      <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full mx-4">
-          <div class="p-6">
-            <div class="flex items-center justify-between mb-6">
-              <h3 class="text-xl font-semibold text-gray-900">Nuevo Enfrentamiento</h3>
-              <button type="button" class="text-gray-400 hover:text-gray-600" (click)="ocultarFormularioCreacion()">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              </button>
-            </div>
-
-            <form [formGroup]="createForm" (ngSubmit)="crearEnfrentamiento()">
-              <!-- Equipo Local -->
-              <div class="mb-4">
-                <label for="equipoLocal" class="block text-sm font-medium text-gray-700 mb-2">
-                  Equipo Local *
-                </label>
-                <select id="equipoLocal" formControlName="equipoLocalId" class="form-select w-full"
-                  [class.border-red-500]="getFieldError('equipoLocalId')">
-                  <option value="">Seleccionar equipo local</option>
-                  @for (equipo of equiposDisponiblesLocal(); track equipo.id) {
-                  <option [value]="equipo.id">{{ equipo.nombre }}</option>
-                  }
-                </select>
-                @if (getFieldError('equipoLocalId')) {
-                <p class="text-red-500 text-sm mt-1">{{ getFieldError('equipoLocalId') }}</p>
-                }
-              </div>
-
-              <!-- Equipo Visitante -->
-              <div class="mb-4">
-                <label for="equipoVisitante" class="block text-sm font-medium text-gray-700 mb-2">
-                  Equipo Visitante *
-                </label>
-                <select id="equipoVisitante" formControlName="equipoVisitanteId" class="form-select w-full"
-                  [class.border-red-500]="getFieldError('equipoVisitanteId')">
-                  <option value="">Seleccionar equipo visitante</option>
-                  @for (equipo of equiposDisponiblesVisitante(); track equipo.id) {
-                  <option [value]="equipo.id">{{ equipo.nombre }}</option>
-                  }
-                </select>
-                @if (getFieldError('equipoVisitanteId')) {
-                <p class="text-red-500 text-sm mt-1">{{ getFieldError('equipoVisitanteId') }}</p>
-                }
-              </div>
-
-              <!-- Fecha y Hora -->
-              <div class="mb-4">
-                <label for="fechaHora" class="block text-sm font-medium text-gray-700 mb-2">
-                  Fecha y Hora *
-                </label>
-                <input type="datetime-local" id="fechaHora" formControlName="fechaHora" class="form-input w-full"
-                  [class.border-red-500]="getFieldError('fechaHora')">
-                @if (getFieldError('fechaHora')) {
-                <p class="text-red-500 text-sm mt-1">{{ getFieldError('fechaHora') }}</p>
-                }
-              </div>
-
-              <!-- Cancha -->
-              <div class="mb-6">
-                <label for="cancha" class="block text-sm font-medium text-gray-700 mb-2">
-                  Cancha *
-                </label>
-                <input type="text" id="cancha" formControlName="cancha" class="form-input w-full"
-                  placeholder="Nombre de la cancha" maxlength="100" [class.border-red-500]="getFieldError('cancha')">
-                @if (getFieldError('cancha')) {
-                <p class="text-red-500 text-sm mt-1">{{ getFieldError('cancha') }}</p>
-                }
-              </div>
-
-              <!-- Form Actions -->
-              <div class="flex gap-3">
-                <button type="button" class="btn btn-secondary flex-1" (click)="ocultarFormularioCreacion()">
-                  Cancelar
-                </button>
-                <button type="submit" class="btn btn-primary flex-1" [disabled]="creating()">
-                  @if (creating()) {
-                  <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                  Creando...
-                  } @else {
-                  Crear
-                  }
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-      }
-
-      <!-- Panel de Filtros -->
-      @if (mostrarFiltros() && torneo() && !loading()) {
-      <div class="bg-slate-50 border-b border-slate-200 p-6">
-        <h3 class="text-lg font-bold text-purple-900 mb-4">Filtrar Partidos</h3>
-
-        <!-- Filtros Rápidos -->
-        <div class="flex flex-wrap gap-3 mb-6">
-          <button type="button"
-            class="px-4 py-2 bg-white border-2 border-slate-200 text-slate-600 rounded-xl font-medium hover:border-green-400 hover:text-green-600 hover:bg-green-50 transition-all duration-200"
-            (click)="establecerFiltroSemana()">
-            Fin de Semana
-          </button>
-          <button type="button"
-            class="px-4 py-2 bg-white border-2 border-slate-200 text-slate-600 rounded-xl font-medium hover:border-green-400 hover:text-green-600 hover:bg-green-50 transition-all duration-200"
-            (click)="establecerFiltroMes()">
-            Este Mes
-          </button>
-          <button type="button"
-            class="px-4 py-2 bg-white border-2 border-slate-200 text-slate-600 rounded-xl font-medium hover:border-green-400 hover:text-green-600 hover:bg-green-50 transition-all duration-200"
-            (click)="limpiarFiltros()">
-            Todos los Partidos
-          </button>
-        </div>
-
-        <!-- Filtro Personalizado -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-          <div>
-            <label for="fechaInicio" class="block text-sm font-semibold text-purple-900 mb-2">
-              Fecha Inicio
-            </label>
-            <input type="date" id="fechaInicio"
-              class="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl focus:border-purple-500 focus:ring-0 font-medium"
-              [value]="fechaInicio()" (input)="fechaInicio.set($any($event.target).value)">
-          </div>
-
-          <div>
-            <label for="fechaFin" class="block text-sm font-semibold text-purple-900 mb-2">
-              Fecha Fin
-            </label>
-            <input type="date" id="fechaFin"
-              class="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl focus:border-purple-500 focus:ring-0 font-medium"
-              [value]="fechaFin()" (input)="fechaFin.set($any($event.target).value)">
-          </div>
-
-          <div class="flex gap-3">
-            <button type="button"
-              class="flex-1 flex items-center justify-center gap-2 bg-purple-900 hover:bg-purple-800 text-white px-4 py-3 rounded-xl font-medium transition-all duration-200 transform hover:scale-105"
-              (click)="filtrarPorFecha()" [disabled]="filtrandoPorFecha()">
-              @if (filtrandoPorFecha()) {
-              <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              Filtrando...
-              } @else {
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <!-- Partidos Programados -->
+      @if (enfrentamientosProgramados().length > 0 && !loading()) {
+      <div class="border-b border-slate-200">
+        <div class="bg-gradient-to-r from-blue-50 to-purple-50 p-4">
+          <h3 class="text-xl font-black text-blue-900 flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
-              Buscar
-              }
-            </button>
-
-            <button type="button"
-              class="px-4 py-3 bg-white border-2 border-slate-200 text-slate-600 rounded-xl font-medium hover:bg-slate-50 transition-all duration-200"
-              (click)="limpiarFiltros()">
-              Limpiar
-            </button>
-          </div>
+            </div>
+            <span>Partidos Programados</span>
+            <span class="ml-auto text-lg bg-blue-500 text-white px-3 py-1 rounded-full">
+              {{ enfrentamientosProgramados().length }}
+            </span>
+          </h3>
         </div>
+        <app-enfrentamiento-list
+          [enfrentamientos]="enfrentamientosProgramados()"
+          [programadosCount]="enfrentamientosProgramados().length"
+          [finalizadosCount]="0"
+          [aplazadosCount]="0"
+          [fechaInicio]="fechaInicio()"
+          [fechaFin]="fechaFin()"
+          (editar)="mostrarFormularioEdicion($event)"
+          (eliminar)="mostrarConfirmacionEliminar($event)">
+        </app-enfrentamiento-list>
       </div>
       }
 
-      <!-- Enfrentamientos principales -->
-      @if (!loading() && torneo()) {
-
-      <!-- Información del período actual -->
-      <div class="bg-white border-b border-slate-200 p-6">
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          <div>
-            <h2 class="text-2xl text-slate-950 mb-2">
-              @if (fechaInicio() && fechaFin()) {
-              {{ formatDate(fechaInicio()) }} - {{ formatDate(fechaFin()) }}
-              } @else {
-              Todos los Partidos
-              }
-            </h2>
-            <p class="text-slate-600 font-medium">{{ enfrentamientosOrdenados().length }} partidos programados</p>
-          </div>
-          <div class="flex gap-8">
-            <div class="text-center">
-              <div class="text-3xl font-black text-blue-600 mb-1">{{ enfrentamientosProgramados().length }}</div>
-              <div class="text-xs uppercase tracking-wider font-bold text-slate-500">Por Jugar</div>
+      <!-- Partidos Finalizados -->
+      @if (enfrentamientosFinalizados().length > 0 && !loading()) {
+      <div class="border-b border-slate-200">
+        <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-4">
+          <h3 class="text-xl font-black text-green-900 flex items-center gap-3">
+            <div class="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
             </div>
-            <div class="text-center">
-              <div class="text-3xl font-black text-green-600 mb-1">{{ enfrentamientosFinalizados().length }}</div>
-              <div class="text-xs uppercase tracking-wider font-bold text-slate-500">Finalizados</div>
-            </div>
-            @if (enfrentamientosAplazados().length > 0) {
-            <div class="text-center">
-              <div class="text-3xl font-black text-orange-600 mb-1">{{ enfrentamientosAplazados().length }}</div>
-              <div class="text-xs uppercase tracking-wider font-bold text-slate-500">Aplazados</div>
-            </div>
-            }
-          </div>
+            <span>Partidos Finalizados</span>
+            <span class="ml-auto text-lg bg-green-500 text-white px-3 py-1 rounded-full">
+              {{ enfrentamientosFinalizados().length }}
+            </span>
+          </h3>
         </div>
+        <app-enfrentamiento-list
+          [enfrentamientos]="enfrentamientosFinalizados()"
+          [programadosCount]="0"
+          [finalizadosCount]="enfrentamientosFinalizados().length"
+          [aplazadosCount]="0"
+          [fechaInicio]="fechaInicio()"
+          [fechaFin]="fechaFin()"
+          (editar)="mostrarFormularioEdicion($event)"
+          (eliminar)="mostrarConfirmacionEliminar($event)">
+        </app-enfrentamiento-list>
       </div>
+      }
 
-      @if (enfrentamientosOrdenados().length === 0) {
-      <!-- Empty state -->
+      <!-- Partidos Aplazados -->
+      @if (enfrentamientosAplazados().length > 0 && !loading()) {
+      <div class="border-b border-slate-200">
+        <div class="bg-gradient-to-r from-orange-50 to-amber-50 p-4">
+          <h3 class="text-xl font-black text-orange-900 flex items-center gap-3">
+            <div class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                </path>
+              </svg>
+            </div>
+            <span>Partidos Aplazados</span>
+            <span class="ml-auto text-lg bg-orange-500 text-white px-3 py-1 rounded-full">
+              {{ enfrentamientosAplazados().length }}
+            </span>
+          </h3>
+        </div>
+        <app-enfrentamiento-list
+          [enfrentamientos]="enfrentamientosAplazados()"
+          [programadosCount]="0"
+          [finalizadosCount]="0"
+          [aplazadosCount]="enfrentamientosAplazados().length"
+          [fechaInicio]="fechaInicio()"
+          [fechaFin]="fechaFin()"
+          (editar)="mostrarFormularioEdicion($event)"
+          (eliminar)="mostrarConfirmacionEliminar($event)">
+        </app-enfrentamiento-list>
+      </div>
+      }
+
+      <!-- Empty State -->
+      @if (enfrentamientosProgramados().length === 0 && enfrentamientosFinalizados().length === 0 &&
+      enfrentamientosAplazados().length === 0 && !loading()) {
       <div class="bg-white p-16 text-center">
         <div
           class="w-20 h-20 bg-gradient-to-br from-purple-100 to-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -747,322 +194,52 @@
           </svg>
         </div>
         <h3 class="text-2xl font-black text-purple-900 mb-3">No hay partidos programados</h3>
-        <p class="text-slate-600 mb-8 max-w-md mx-auto">Comienza creando el primer partido del torneo y organiza la
-          competencia</p>
+        <p class="text-slate-600 mb-8 max-w-md mx-auto">Comienza agregando el primer partido del torneo</p>
         <button type="button"
-          class="bg-gradient-to-r from-purple-900 to-purple-800 hover:from-purple-800 hover:to-purple-700 text-white px-8 py-4 rounded-2xl font-bold transition-all duration-200 transform hover:scale-105"
+          class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200"
           (click)="mostrarFormularioCreacion()">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
           Crear Primer Partido
         </button>
       </div>
-      } @else {
-
-      <!-- Todos los Partidos Unificados -->
-      <div class="bg-white">
-        @for (enfrentamiento of enfrentamientosOrdenados(); track enfrentamiento.id) {
-        <div class="p-6 transition-colors border-b border-slate-100 group"
-          [class]="enfrentamiento.estado === 'PROGRAMADO' ? 'hover:bg-blue-50/30' : enfrentamiento.estado === 'FINALIZADO' ? 'hover:bg-green-50/30' : 'hover:bg-red-50/30'">
-
-          <!-- Match Layout Unificado -->
-          <div class="grid grid-cols-1 lg:grid-cols-9 gap-4 items-center">
-
-            <!-- Mobile Layout (visible only on small screens) -->
-            <div class="lg:hidden col-span-full">
-              @if (enfrentamiento.estado === 'PROGRAMADO') {
-              <!-- Programados Mobile -->
-              <div class="text-center mb-4">
-                <div class="text-2xl font-black text-slate-400 mb-2">VS</div>
-                <div class="text-sm font-bold text-slate-600">{{ formatDateTime(enfrentamiento.fechaHora) }}</div>
-                <div class="text-xs text-slate-500 mt-1">{{ enfrentamiento.cancha }}</div>
-              </div>
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                  <div class="font-bold text-lg text-slate-900">{{ enfrentamiento.equipoLocal }}</div>
-                </div>
-                <div class="flex items-center gap-3">
-                  <div class="font-bold text-lg text-slate-900">{{ enfrentamiento.equipoVisitante }}</div>
-                </div>
-              </div>
-              } @else if (enfrentamiento.estado === 'FINALIZADO') {
-              <!-- Finalizados Mobile -->
-              <div class="text-center mb-4">
-                <div class="text-2xl font-black text-green-600 mb-2">
-                  {{ enfrentamiento.golesLocal }} - {{ enfrentamiento.golesVisitante }}
-                </div>
-                <div class="text-sm font-bold text-slate-600">{{ formatDateTime(enfrentamiento.fechaHora) }}</div>
-                <div class="text-xs text-slate-500 mt-1">{{ enfrentamiento.cancha }}</div>
-              </div>
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                  <div class="font-bold text-lg text-slate-900">{{ enfrentamiento.equipoLocal }}</div>
-                </div>
-                <div class="flex items-center gap-3">
-                  <div class="font-bold text-lg text-slate-900">{{ enfrentamiento.equipoVisitante }}</div>
-                </div>
-              </div>
-              } @else {
-              <!-- Aplazados Mobile -->
-              <div class="text-center mb-4 opacity-75">
-                <div class="text-2xl font-black text-orange-500 mb-2">APLAZADO</div>
-                <div class="text-sm font-bold text-slate-600">{{ formatDateTime(enfrentamiento.fechaHora) }}</div>
-                <div class="text-xs text-slate-500 mt-1">{{ enfrentamiento.cancha }}</div>
-              </div>
-              <div class="flex items-center justify-between opacity-75">
-                <div class="font-bold text-lg text-slate-600">{{ enfrentamiento.equipoLocal }}</div>
-                <div class="font-bold text-lg text-slate-600">{{ enfrentamiento.equipoVisitante }}</div>
-              </div>
-              }
-            </div>
-
-            <!-- Desktop Layout (hidden on small screens) -->
-            @if (enfrentamiento.estado === 'PROGRAMADO') {
-            <!-- Programados Desktop -->
-            <div class="hidden lg:flex lg:col-span-2 items-center justify-end gap-3">
-              <div class="text-right">
-                <div class="font-bold text-lg text-slate-900">{{ enfrentamiento.equipoLocal }}</div>
-              </div>
-            </div>
-            <div class="hidden lg:block lg:col-span-3 text-center">
-              <div class="text-2xl font-black text-slate-400 mb-2">VS</div>
-              <div class="text-sm font-bold text-slate-600">{{ formatDateTime(enfrentamiento.fechaHora) }}</div>
-              <div class="text-xs text-slate-500 mt-1">{{ enfrentamiento.cancha }}</div>
-            </div>
-            <div class="hidden lg:flex lg:col-span-2 items-center justify-start gap-3">
-              <div class="text-left">
-                <div class="font-bold text-lg text-slate-900">{{ enfrentamiento.equipoVisitante }}</div>
-              </div>
-            </div>
-            <div class="hidden lg:flex lg:col-span-1 items-center justify-end">
-              <span
-                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-100 text-blue-800">
-                Por Jugar
-              </span>
-            </div>
-            <div class="hidden lg:flex lg:col-span-1 justify-center gap-2">
-              <button type="button"
-                class="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-purple-600 transition-colors"
-                title="Editar" (click)="mostrarFormularioEdicion(enfrentamiento)">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                  </path>
-                </svg>
-              </button>
-              <button type="button"
-                class="w-8 h-8 bg-white border border-red-200 rounded-lg flex items-center justify-center text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
-                title="Eliminar" (click)="mostrarConfirmacionEliminar(enfrentamiento)">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                  </path>
-                </svg>
-              </button>
-            </div>
-            } @else if (enfrentamiento.estado === 'FINALIZADO') {
-            <!-- Finalizados Desktop -->
-            <div class="hidden lg:flex lg:col-span-2 items-center justify-end gap-3">
-              <div class="text-right">
-                <div class="font-bold text-lg text-slate-900">{{ enfrentamiento.equipoLocal }}</div>
-              </div>
-            </div>
-            <div class="hidden lg:block lg:col-span-3 text-center">
-              <div class="text-2xl font-black text-green-600 mb-2">
-                {{ enfrentamiento.golesLocal }} - {{ enfrentamiento.golesVisitante }}
-              </div>
-              <div class="text-sm font-bold text-slate-600">{{ formatDateTime(enfrentamiento.fechaHora) }}</div>
-              <div class="text-xs text-slate-500 mt-1">{{ enfrentamiento.cancha }}</div>
-            </div>
-            <div class="hidden lg:flex lg:col-span-2 items-center justify-start gap-3">
-              <div class="text-left">
-                <div class="font-bold text-lg text-slate-900">{{ enfrentamiento.equipoVisitante }}</div>
-              </div>
-            </div>
-            <div class="hidden lg:flex lg:col-span-1 items-center justify-end">
-              <span
-                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-green-100 text-green-800">
-                Finalizado
-              </span>
-            </div>
-            <div class="hidden lg:flex lg:col-span-1 items-center justify-end">
-              <button type="button"
-                class="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-purple-600 transition-colors"
-                title="Editar" (click)="mostrarFormularioEdicion(enfrentamiento)">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                  </path>
-                </svg>
-              </button>
-            </div>
-            } @else {
-            <!-- Aplazados Desktop -->
-            <div class="hidden lg:flex lg:col-span-2 items-center justify-end gap-3 opacity-75">
-              <div class="text-right">
-                <div class="font-bold text-lg text-slate-600">{{ enfrentamiento.equipoLocal }}</div>
-              </div>
-            </div>
-            <div class="hidden lg:block lg:col-span-3 text-center opacity-75">
-              <div class="text-2xl font-black text-orange-500 mb-2">APLAZADO</div>
-              <div class="text-sm font-bold text-slate-600">{{ formatDateTime(enfrentamiento.fechaHora) }}</div>
-              <div class="text-xs text-slate-500 mt-1">{{ enfrentamiento.cancha }}</div>
-            </div>
-            <div class="hidden lg:flex lg:col-span-2 items-center justify-start gap-3 opacity-75">
-              <div class="text-left">
-                <div class="font-bold text-lg text-slate-600">{{ enfrentamiento.equipoVisitante }}</div>
-              </div>
-            </div>
-            <div class="hidden lg:flex lg:col-span-1 items-center justify-end opacity-75">
-              <span
-                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-orange-100 text-orange-800">
-                Aplazado
-              </span>
-            </div>
-            <div class="hidden lg:flex lg:col-span-1 items-center justify-end gap-2 opacity-75">
-              <button type="button"
-                class="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-purple-600 transition-colors"
-                title="Editar" (click)="mostrarFormularioEdicion(enfrentamiento)">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                  </path>
-                </svg>
-              </button>
-            </div>
-            }
-
-          </div>
-
-          <!-- Status y acciones -->
-          <!-- Status y acciones (Mobile only) -->
-          <div
-            class="lg:hidden flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4 pt-4 border-t border-slate-100">
-            @if (enfrentamiento.estado === 'PROGRAMADO') {
-            <span
-              class="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-100 text-blue-800">
-              Por Jugar
-            </span>
-            } @else if (enfrentamiento.estado === 'FINALIZADO') {
-            <span
-              class="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-green-100 text-green-800">
-              Finalizado
-            </span>
-            } @else {
-            <span
-              class="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-orange-100 text-orange-800">
-              Aplazado
-            </span>
-            }
-
-            <div class="flex gap-2 justify-center sm:justify-end transition-opacity">
-              <button type="button"
-                class="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-purple-600 transition-colors"
-                title="Editar" (click)="mostrarFormularioEdicion(enfrentamiento)">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                  </path>
-                </svg>
-              </button>
-              @if (enfrentamiento.estado === 'PROGRAMADO') {
-              <button type="button"
-                class="w-8 h-8 bg-white border border-red-200 rounded-lg flex items-center justify-center text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
-                title="Eliminar" (click)="mostrarConfirmacionEliminar(enfrentamiento)">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                  </path>
-                </svg>
-              </button>
-              }
-            </div>
-          </div>
-        </div>
-        }
-      </div>
-      }
       }
 
-      <!-- Delete Confirmation Modal -->
-      @if (showDeleteConfirm()) {
-      <div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full">
-          <!-- Header -->
-          <div class="bg-gradient-to-r from-red-600 to-red-700 text-white p-6 rounded-t-3xl">
-            <div class="flex items-center gap-3">
-              <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z">
-                  </path>
-                </svg>
-              </div>
-              <div>
-                <h3 class="text-2xl font-bold">Confirmar Eliminación</h3>
-                <p class="text-red-100 text-sm mt-1">Esta acción no se puede deshacer</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Content -->
-          <div class="p-6">
-            @if (enfrentamientoToDelete()) {
-            <div class="mb-6">
-              <p class="text-slate-700 text-lg mb-4">¿Estás seguro de que deseas eliminar este partido?</p>
-
-              <!-- Match Info -->
-              <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4">
-                <div class="flex items-center justify-center mb-3">
-                  <div class="text-center">
-                    <div class="font-bold text-slate-900">{{ enfrentamientoToDelete()?.equipoLocal }}</div>
-                    <div class="text-xs text-slate-500">Local</div>
-                  </div>
-                  <div class="mx-4">
-                    <div class="w-8 h-8 bg-slate-300 rounded-full flex items-center justify-center">
-                      <span class="text-white font-bold text-sm">VS</span>
-                    </div>
-                  </div>
-                  <div class="text-center">
-                    <div class="font-bold text-slate-900">{{ enfrentamientoToDelete()?.equipoVisitante }}</div>
-                    <div class="text-xs text-slate-500">Visitante</div>
-                  </div>
-                </div>
-                <div class="text-center text-sm text-slate-600">
-                  <div>{{ formatDateTime(enfrentamientoToDelete()!.fechaHora) }}</div>
-                  <div>{{ enfrentamientoToDelete()?.cancha }}</div>
-                </div>
-              </div>
-            </div>
-            }
-
-            <!-- Actions -->
-            <div class="flex gap-3">
-              <button type="button"
-                class="flex-1 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-all duration-200 transform hover:scale-[0.98]"
-                (click)="ocultarConfirmacionEliminar()" [disabled]="deleting()">
-                Cancelar
-              </button>
-              <button type="button"
-                class="flex-1 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold rounded-xl transition-all duration-200 transform hover:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                (click)="eliminarEnfrentamiento()" [disabled]="deleting()">
-                <div class="flex items-center justify-center gap-2">
-                  @if (deleting()) {
-                  <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Eliminando...</span>
-                  } @else {
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                    </path>
-                  </svg>
-                  <span>Eliminar</span>
-                  }
-                </div>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
       }
     </div>
   </div>
 </div>
+
+<!-- Create Form Modal -->
+@if (showCreateForm()) {
+<app-enfrentamiento-create-form
+  [equipos]="equipos()"
+  [creating]="creating()"
+  [torneoId]="torneo()?.id || 0"
+  (submit)="crearEnfrentamiento($event)"
+  (cancel)="ocultarFormularioCreacion()">
+</app-enfrentamiento-create-form>
+}
+
+<!-- Edit Modal -->
+@if (showEditModal() && editingEnfrentamiento()) {
+<app-enfrentamiento-edit-modal
+  [enfrentamiento]="editingEnfrentamiento()!"
+  [jugadoresLocal]="jugadoresLocal()"
+  [jugadoresVisitante]="jugadoresVisitante()"
+  [updating]="updating()"
+  (update)="actualizarEnfrentamiento($event)"
+  (cancel)="ocultarFormularioEdicion()">
+</app-enfrentamiento-edit-modal>
+}
+
+<!-- Delete Confirmation Modal -->
+@if (showDeleteConfirm() && enfrentamientoToDelete()) {
+<app-delete-confirm-modal
+  [enfrentamiento]="enfrentamientoToDelete()!"
+  [deleting]="deleting()"
+  (confirm)="eliminarEnfrentamiento()"
+  (cancel)="ocultarConfirmacionEliminar()">
+</app-delete-confirm-modal>
+}

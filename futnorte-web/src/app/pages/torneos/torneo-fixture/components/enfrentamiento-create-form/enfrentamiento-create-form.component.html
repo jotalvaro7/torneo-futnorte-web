@@ -1,0 +1,105 @@
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-2xl shadow-xl max-w-md w-full mx-4">
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-semibold text-gray-900">Nuevo Enfrentamiento</h3>
+        <button type="button" class="text-gray-400 hover:text-gray-600" (click)="onCancel()">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <form [formGroup]="createForm" (ngSubmit)="onSubmit()">
+        <!-- Equipo Local -->
+        <div class="mb-4">
+          <label for="equipoLocal" class="block text-sm font-medium text-gray-700 mb-2">
+            Equipo Local *
+          </label>
+          <select
+            id="equipoLocal"
+            formControlName="equipoLocalId"
+            class="form-select w-full"
+            [class.border-red-500]="getFieldError('equipoLocalId')">
+            <option value="">Seleccionar equipo local</option>
+            @for (equipo of equiposDisponiblesLocal; track equipo.id) {
+            <option [value]="equipo.id">{{ equipo.nombre }}</option>
+            }
+          </select>
+          @if (getFieldError('equipoLocalId')) {
+          <p class="text-red-500 text-sm mt-1">{{ getFieldError('equipoLocalId') }}</p>
+          }
+        </div>
+
+        <!-- Equipo Visitante -->
+        <div class="mb-4">
+          <label for="equipoVisitante" class="block text-sm font-medium text-gray-700 mb-2">
+            Equipo Visitante *
+          </label>
+          <select
+            id="equipoVisitante"
+            formControlName="equipoVisitanteId"
+            class="form-select w-full"
+            [class.border-red-500]="getFieldError('equipoVisitanteId')">
+            <option value="">Seleccionar equipo visitante</option>
+            @for (equipo of equiposDisponiblesVisitante; track equipo.id) {
+            <option [value]="equipo.id">{{ equipo.nombre }}</option>
+            }
+          </select>
+          @if (getFieldError('equipoVisitanteId')) {
+          <p class="text-red-500 text-sm mt-1">{{ getFieldError('equipoVisitanteId') }}</p>
+          }
+        </div>
+
+        <!-- Fecha y Hora -->
+        <div class="mb-4">
+          <label for="fechaHora" class="block text-sm font-medium text-gray-700 mb-2">
+            Fecha y Hora *
+          </label>
+          <input
+            type="datetime-local"
+            id="fechaHora"
+            formControlName="fechaHora"
+            class="form-input w-full"
+            [class.border-red-500]="getFieldError('fechaHora')">
+          @if (getFieldError('fechaHora')) {
+          <p class="text-red-500 text-sm mt-1">{{ getFieldError('fechaHora') }}</p>
+          }
+        </div>
+
+        <!-- Cancha -->
+        <div class="mb-6">
+          <label for="cancha" class="block text-sm font-medium text-gray-700 mb-2">
+            Cancha *
+          </label>
+          <input
+            type="text"
+            id="cancha"
+            formControlName="cancha"
+            class="form-input w-full"
+            placeholder="Nombre de la cancha"
+            maxlength="100"
+            [class.border-red-500]="getFieldError('cancha')">
+          @if (getFieldError('cancha')) {
+          <p class="text-red-500 text-sm mt-1">{{ getFieldError('cancha') }}</p>
+          }
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex gap-3">
+          <button type="button" class="btn btn-secondary flex-1" (click)="onCancel()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary flex-1" [disabled]="creating()">
+            @if (creating()) {
+            <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+            Creando...
+            } @else {
+            Crear
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

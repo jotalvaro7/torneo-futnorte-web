@@ -1,0 +1,218 @@
+<!-- Modal Overlay -->
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto"
+  (click)="onCancel()">
+  <div class="bg-white rounded-2xl max-w-4xl w-full my-8" (click)="$event.stopPropagation()">
+
+    <!-- Modal Header -->
+    <div
+      class="flex items-center justify-between p-6 border-b border-slate-200 bg-gradient-to-r from-purple-600 to-blue-600 rounded-t-2xl">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+            </path>
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-2xl font-black text-white">Detalles del Partido</h3>
+          <p class="text-purple-100 text-sm">{{ enfrentamiento().equipoLocal }} vs {{ enfrentamiento().equipoVisitante
+            }}</p>
+        </div>
+      </div>
+      <button type="button"
+        class="w-10 h-10 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg flex items-center justify-center text-white transition-colors"
+        (click)="onCancel()">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <form [formGroup]="editForm" (ngSubmit)="onSubmit()">
+      <div class="p-6 max-h-[calc(100vh-200px)] overflow-y-auto">
+
+        <!-- Información del partido -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-2">Fecha y Hora</label>
+            @if (editMode()) {
+            <input type="datetime-local" formControlName="fechaHora"
+              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-colors">
+            } @else {
+            <div class="px-4 py-3 bg-slate-50 rounded-lg text-slate-700 font-medium">
+              {{ formatDateTime(enfrentamiento().fechaHora) }}
+            </div>
+            }
+          </div>
+
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-2">Cancha</label>
+            @if (editMode()) {
+            <input type="text" formControlName="cancha"
+              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-colors"
+              placeholder="Cancha">
+            } @else {
+            <div class="px-4 py-3 bg-slate-50 rounded-lg text-slate-700 font-medium">
+              {{ enfrentamiento().cancha }}
+            </div>
+            }
+          </div>
+
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-2">Estado</label>
+            @if (editMode()) {
+            <select formControlName="estado" (change)="onEstadoChange($event)"
+              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-colors">
+              <option value="PROGRAMADO">PROGRAMADO</option>
+              <option value="FINALIZADO">FINALIZADO</option>
+              <option value="APLAZADO">APLAZADO</option>
+            </select>
+            } @else {
+            <div class="px-4 py-3 bg-slate-50 rounded-lg">
+              @if (enfrentamiento().estado === 'PROGRAMADO') {
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-100 text-blue-800">
+                Por Jugar
+              </span>
+              } @else if (enfrentamiento().estado === 'FINALIZADO') {
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-green-100 text-green-800">
+                Finalizado
+              </span>
+              } @else {
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-orange-100 text-orange-800">
+                Aplazado
+              </span>
+              }
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Campos de goles (solo si está FINALIZADO) -->
+        @if (mostrarCamposGoles()) {
+        <div class="border-t border-slate-200 pt-6 mb-6">
+          <h4 class="text-lg font-black text-slate-900 mb-4">Resultado del Partido</h4>
+
+          <div class="grid grid-cols-2 gap-4 mb-6">
+            <div>
+              <label class="block text-sm font-bold text-blue-700 mb-2">Goles {{ enfrentamiento().equipoLocal
+                }}</label>
+              @if (editMode()) {
+              <input type="number" formControlName="golesLocal"
+                class="w-full px-4 py-3 text-center text-2xl font-black border-2 border-blue-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
+                min="0" max="50">
+              } @else {
+              <div class="px-4 py-3 text-center text-2xl font-black text-blue-700 bg-blue-50 rounded-lg">
+                {{ enfrentamiento().golesLocal }}
+              </div>
+              }
+            </div>
+
+            <div>
+              <label class="block text-sm font-bold text-red-700 mb-2">Goles {{ enfrentamiento().equipoVisitante
+                }}</label>
+              @if (editMode()) {
+              <input type="number" formControlName="golesVisitante"
+                class="w-full px-4 py-3 text-center text-2xl font-black border-2 border-red-300 rounded-lg focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors"
+                min="0" max="50">
+              } @else {
+              <div class="px-4 py-3 text-center text-2xl font-black text-red-700 bg-red-50 rounded-lg">
+                {{ enfrentamiento().golesVisitante }}
+              </div>
+              }
+            </div>
+          </div>
+
+          <!-- Goleadores por Jugador -->
+          <div class="border-t border-slate-200 pt-6">
+            <h4 class="text-lg font-black text-slate-900 mb-4">Goleadores</h4>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <!-- Goleadores Equipo Local -->
+              <app-goleadores-form
+                [equipoNombre]="enfrentamiento().equipoLocal"
+                [jugadores]="jugadoresLocal()"
+                [golesExistentes]="golesExistentesLocal()"
+                [editMode]="editMode()"
+                [golesFormArray]="golesLocalArray()"
+                [tipoEquipo]="'local'"
+                (agregarGol)="agregarGolLocal()"
+                (eliminarGol)="eliminarGolLocal($event)">
+              </app-goleadores-form>
+
+              <!-- Goleadores Equipo Visitante -->
+              <app-goleadores-form
+                [equipoNombre]="enfrentamiento().equipoVisitante"
+                [jugadores]="jugadoresVisitante()"
+                [golesExistentes]="golesExistentesVisitante()"
+                [editMode]="editMode()"
+                [golesFormArray]="golesVisitanteArray()"
+                [tipoEquipo]="'visitante'"
+                (agregarGol)="agregarGolVisitante()"
+                (eliminarGol)="eliminarGolVisitante($event)">
+              </app-goleadores-form>
+            </div>
+
+            @if (editMode() && (calcularSumaGolesLocal() !== editForm.value.golesLocal! || calcularSumaGolesVisitante() !== editForm.value.golesVisitante!)) {
+            <div class="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p class="text-red-700 text-sm font-medium">
+                ⚠️ La suma de los goles individuales debe coincidir con el total de goles del equipo
+              </p>
+              <div class="mt-2 text-xs text-red-600">
+                <p>{{ enfrentamiento().equipoLocal }}: {{ calcularSumaGolesLocal() }} / {{
+                  editForm.value.golesLocal }}</p>
+                <p>{{ enfrentamiento().equipoVisitante }}: {{ calcularSumaGolesVisitante() }} / {{
+                  editForm.value.golesVisitante }}</p>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+        }
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex justify-between items-center gap-3 p-6 border-t border-slate-200 bg-slate-50 rounded-b-2xl">
+        @if (!editMode()) {
+        <button type="button"
+          class="flex-1 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
+          (click)="toggleEditMode()">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+            </path>
+          </svg>
+          Editar
+        </button>
+        } @else {
+        <button type="button"
+          class="flex-1 px-6 py-3 bg-slate-300 hover:bg-slate-400 text-slate-700 font-bold rounded-lg transition-colors"
+          (click)="toggleEditMode()" [disabled]="updating()">
+          Cancelar Edición
+        </button>
+        <button type="submit"
+          class="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          [disabled]="updating() || editForm.invalid">
+          @if (updating()) {
+          <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
+          Guardando...
+          } @else {
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          Guardar Cambios
+          }
+        </button>
+        }
+      </div>
+    </form>
+
+  </div>
+</div>
