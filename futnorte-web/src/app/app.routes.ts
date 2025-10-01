@@ -35,6 +35,10 @@ export const routes: Routes = [
     path: 'torneos/:id/goleadores',
     loadComponent: () => import('./pages/torneos/goleadores-list/goleadores-list.component').then(c => c.GoleadoresListComponent)
   },
+  {
+    path: 'torneos/:id/posiciones',
+    loadComponent: () => import('./pages/torneos/tabla-posiciones/tabla-posiciones.component').then(c => c.TablaPosicionesComponent)
+  },
   // Rutas de Equipos
   {
     path: 'equipos/nuevo',
