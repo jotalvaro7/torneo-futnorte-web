@@ -171,10 +171,15 @@ export class EquipoFormComponent implements OnInit {
   }
 
   onVolver(): void {
-    const torneoIdValue = this.equipoForm.get('torneoId')?.value || this.torneoId();
-    
-    if (torneoIdValue) {
-      this.router.navigate(['/torneos', torneoIdValue, 'equipos']);
+    if (this.isEditing()) {
+      // Si estamos editando, volver al detalle del equipo
+      this.router.navigate(['/equipos', this.equipoId()]);
+    } else {
+      // Si estamos creando, volver a la lista de equipos del torneo
+      const torneoIdValue = this.equipoForm.get('torneoId')?.value || this.torneoId();
+      if (torneoIdValue) {
+        this.router.navigate(['/torneos', torneoIdValue, 'equipos']);
+      }
     }
   }
 }
