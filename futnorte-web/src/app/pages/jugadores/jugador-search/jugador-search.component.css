@@ -1,0 +1,79 @@
+/* Animación de entrada suave */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Animación para los cards con hover */
+.card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+}
+
+/* Efecto de resplandor en focus para inputs */
+input:focus,
+select:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Animación de pulso suave para el botón de búsqueda */
+@keyframes pulse-soft {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+  }
+}
+
+/* Transición suave para todos los elementos interactivos */
+button,
+input,
+select {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Estilo mejorado para el select */
+select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+}
+
+/* Animación de aparición escalonada para las cards */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.grid > div {
+  animation: slideInUp 0.4s ease-out backwards;
+}
+
+.grid > div:nth-child(1) { animation-delay: 0.05s; }
+.grid > div:nth-child(2) { animation-delay: 0.1s; }
+.grid > div:nth-child(3) { animation-delay: 0.15s; }
+.grid > div:nth-child(4) { animation-delay: 0.2s; }
+.grid > div:nth-child(5) { animation-delay: 0.25s; }
+.grid > div:nth-child(6) { animation-delay: 0.3s; }

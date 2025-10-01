@@ -1,42 +1,45 @@
-<div class="min-h-screen bg-gradient-to-br from-primary-50 to-indigo-100">
-  <div class="container mx-auto px-4 py-8">
-    <!-- Header -->
-    <div class="mb-8">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-3xl font-bold text-gray-900">
-            {{ pageTitle() }}
-          </h1>
-          <p class="mt-2 text-gray-600">
-            {{ isEditMode() ? 'Modifica los datos del torneo' : 'Crea un nuevo torneo de fútbol' }}
-          </p>
-        </div>
-        <button type="button" (click)="onCancel()"
-          class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          Volver
-        </button>
-      </div>
-    </div>
-
+<div class="min-h-screen py-8">
+  <div class="container mx-auto px-4 max-w-4xl">
     <!-- Form Card -->
-    <div class="max-w-2xl mx-auto">
-      <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+
+      <!-- Header con gradiente verde-azul -->
+      <div class="bg-gradient-to-r from-green-600 to-blue-600 p-6 border-b border-slate-200">
+        <div class="flex items-center gap-3">
+          <button type="button"
+            class="w-10 h-10 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg flex items-center justify-center text-white transition-colors"
+            (click)="onCancel()">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center">
+            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z">
+              </path>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-2xl font-black text-white">{{ pageTitle() }}</h3>
+            <p class="text-green-100 text-sm">{{ isEditMode() ? 'Modifica los datos del torneo' : 'Crea un nuevo torneo de fútbol' }}</p>
+          </div>
+        </div>
+      </div>
+
         <!-- Success Message -->
         @if (success()) {
-        <div class="bg-success-50 border-l-4 border-success-400 p-6">
+        <div class="bg-green-50 border-l-4 border-green-400 p-6">
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <svg class="h-5 w-5 text-success-400" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="h-6 w-6 text-green-400" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd"
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                   clip-rule="evenodd" />
               </svg>
             </div>
             <div class="ml-3">
-              <p class="text-sm text-success-700 font-medium">
+              <p class="text-sm text-green-700 font-bold">
                 ¡Torneo {{ isEditMode() ? 'actualizado' : 'creado' }} exitosamente! Redirigiendo...
               </p>
             </div>
@@ -46,140 +49,119 @@
 
         <!-- Error Message -->
         @if (error()) {
-        <div class="bg-danger-50 border-l-4 border-danger-400 p-6">
+        <div class="bg-red-50 border-l-4 border-red-400 p-6">
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <svg class="h-5 w-5 text-danger-400" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="h-6 w-6 text-red-400" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd"
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
                   clip-rule="evenodd" />
               </svg>
             </div>
             <div class="ml-3">
-              <p class="text-sm text-danger-700">{{ error() }}</p>
-            </div>
-          </div>
-        </div>
-        }
-
-        <!-- Loading State -->
-        @if (loading() && !success()) {
-        <div class="bg-primary-50 border-l-4 border-primary-400 p-6">
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-600"></div>
-            </div>
-            <div class="ml-3">
-              <p class="text-sm text-primary-700 font-medium">
-                {{ isEditMode() ? 'Actualizando torneo...' : 'Creando torneo...' }}
-              </p>
+              <p class="text-sm text-red-700 font-bold">{{ error() }}</p>
             </div>
           </div>
         </div>
         }
 
         <!-- Form -->
-        <form [formGroup]="torneoForm" (ngSubmit)="onSubmit()" class="p-8 space-y-6">
-          <!-- Tournament Name -->
-          <div>
-            <label for="nombre" class="block text-sm font-semibold text-gray-900 mb-2">
-              Nombre del Torneo *
-            </label>
-            <input type="text" id="nombre" formControlName="nombre" placeholder="Ej: Copa de Verano 2024"
-              class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
-              [class.border-danger-300]="isFieldInvalid('nombre')" [class.border-gray-300]="!isFieldInvalid('nombre')"
-              [class.focus:ring-danger-500]="isFieldInvalid('nombre')">
-            @if (isFieldInvalid('nombre')) {
-            <p class="mt-2 text-sm text-danger-600">
-              {{ getFieldError('nombre') }}
-            </p>
-            }
-          </div>
-
-          <!-- Description -->
-          <div>
-            <label for="descripcion" class="block text-sm font-semibold text-gray-900 mb-2">
-              Descripción
-            </label>
-            <textarea id="descripcion" formControlName="descripcion" rows="4"
-              placeholder="Describe los detalles del torneo, reglas especiales, premios..."
-              class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 resize-none"
-              [class.border-danger-300]="isFieldInvalid('descripcion')"
-              [class.border-gray-300]="!isFieldInvalid('descripcion')"
-              [class.focus:ring-danger-500]="isFieldInvalid('descripcion')"></textarea>
-            @if (isFieldInvalid('descripcion')) {
-            <p class="mt-2 text-sm text-danger-600">
-              {{ getFieldError('descripcion') }}
-            </p>
-            }
-          </div>
-
-          <!-- Date Fields -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Start Date -->
+        <form [formGroup]="torneoForm" (ngSubmit)="onSubmit()">
+          <div class="p-8 space-y-6">
+            <!-- Tournament Name -->
             <div>
-              <label for="fechaInicio" class="block text-sm font-semibold text-gray-900 mb-2">
-                Fecha de Inicio *
+              <label for="nombre" class="block text-sm font-bold text-slate-700 mb-2">
+                Nombre del Torneo *
               </label>
-              <input type="date" id="fechaInicio" formControlName="fechaInicio"
-                class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
-                [class.border-danger-300]="isFieldInvalid('fechaInicio')"
-                [class.border-gray-300]="!isFieldInvalid('fechaInicio')"
-                [class.focus:ring-danger-500]="isFieldInvalid('fechaInicio')">
-              @if (isFieldInvalid('fechaInicio')) {
-              <p class="mt-2 text-sm text-danger-600">
-                {{ getFieldError('fechaInicio') }}
+              <input type="text" id="nombre" formControlName="nombre" placeholder="Ej: Copa de Verano 2024"
+                class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
+                [class.border-red-500]="isFieldInvalid('nombre')">
+              @if (isFieldInvalid('nombre')) {
+              <p class="mt-2 text-sm text-red-600 font-medium">
+                {{ getFieldError('nombre') }}
               </p>
               }
             </div>
 
-            <!-- End Date -->
+            <!-- Description -->
             <div>
-              <label for="fechaFin" class="block text-sm font-semibold text-gray-900 mb-2">
-                Fecha de Fin
+              <label for="descripcion" class="block text-sm font-bold text-slate-700 mb-2">
+                Descripción
               </label>
-              <input type="date" id="fechaFin" formControlName="fechaFin"
-                class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
-                [class.border-danger-300]="isFieldInvalid('fechaFin')"
-                [class.border-gray-300]="!isFieldInvalid('fechaFin')"
-                [class.focus:ring-danger-500]="isFieldInvalid('fechaFin')">
-              @if (isFieldInvalid('fechaFin')) {
-              <p class="mt-2 text-sm text-danger-600">
-                {{ getFieldError('fechaFin') }}
+              <textarea id="descripcion" formControlName="descripcion" rows="4"
+                placeholder="Describe los detalles del torneo, reglas especiales, premios..."
+                class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors resize-none"
+                [class.border-red-500]="isFieldInvalid('descripcion')"></textarea>
+              @if (isFieldInvalid('descripcion')) {
+              <p class="mt-2 text-sm text-red-600 font-medium">
+                {{ getFieldError('descripcion') }}
               </p>
               }
+            </div>
+
+            <!-- Date Fields -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Start Date -->
+              <div>
+                <label for="fechaInicio" class="block text-sm font-bold text-slate-700 mb-2">
+                  Fecha de Inicio *
+                </label>
+                <input type="date" id="fechaInicio" formControlName="fechaInicio"
+                  class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
+                  [class.border-red-500]="isFieldInvalid('fechaInicio')">
+                @if (isFieldInvalid('fechaInicio')) {
+                <p class="mt-2 text-sm text-red-600 font-medium">
+                  {{ getFieldError('fechaInicio') }}
+                </p>
+                }
+              </div>
+
+              <!-- End Date -->
+              <div>
+                <label for="fechaFin" class="block text-sm font-bold text-slate-700 mb-2">
+                  Fecha de Fin
+                </label>
+                <input type="date" id="fechaFin" formControlName="fechaFin"
+                  class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
+                  [class.border-red-500]="isFieldInvalid('fechaFin')">
+                @if (isFieldInvalid('fechaFin')) {
+                <p class="mt-2 text-sm text-red-600 font-medium">
+                  {{ getFieldError('fechaFin') }}
+                </p>
+                }
+              </div>
             </div>
           </div>
 
           <!-- Form Actions -->
-          <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
+          <div class="flex justify-between items-center gap-3 p-6 border-t border-slate-200 bg-slate-50 rounded-b-2xl">
             <button type="button" (click)="onCancel()"
-              class="px-6 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200"
+              class="flex-1 px-6 py-3 bg-slate-300 hover:bg-slate-400 text-slate-700 font-bold rounded-lg transition-colors"
               [disabled]="loading()">
               Cancelar
             </button>
             <button type="submit"
-              class="px-8 py-3 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              class="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               [disabled]="loading() || torneoForm.invalid">
-              @if (!loading()) {
-              <span>
-                {{ submitButtonText() }}
-              </span>
+              @if (loading()) {
+              <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
+              </svg>
+              Guardando...
               } @else {
-              <span class="flex items-center">
-                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                {{ submitButtonText() }}
-              </span>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 4v16m8-8H4">
+                </path>
+              </svg>
+              {{ submitButtonText() }}
               }
             </button>
           </div>
         </form>
       </div>
-
-      <!-- Required Fields Notice -->
-      <p class="text-center text-sm text-gray-500 mt-6">
-        Los campos marcados con * son obligatorios
-      </p>
     </div>
   </div>
-</div>
