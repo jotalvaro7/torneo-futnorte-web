@@ -95,19 +95,13 @@
                 </svg>
                 Editar
               </button>
-              <button type="button" class="btn btn-danger btn-md gap-2" (click)="eliminarEquipo()"
-                [disabled]="deleting()">
-                @if (deleting()) {
-                <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>Eliminando...</span>
-                } @else {
+              <button type="button" class="btn btn-danger btn-md gap-2" (click)="openDeleteModal()">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
                   </path>
                 </svg>
                 <span>Eliminar</span>
-                }
               </button>
             </div>
           </div>
@@ -381,5 +375,17 @@
       </div>
     </div>
     }
+
+    <!-- Modal de Confirmación de Eliminación -->
+    <app-delete-confirmation-modal
+      [show]="showDeleteModal()"
+      [title]="'Confirmar Eliminación'"
+      [message]="deleteModalMessage()"
+      [warningMessage]="'Se perderán todos los jugadores y estadísticas asociadas a este equipo.'"
+      [confirmButtonText]="'Eliminar'"
+      [isDeleting]="deleting()"
+      (confirm)="confirmarEliminar()"
+      (cancel)="closeDeleteModal()">
+    </app-delete-confirmation-modal>
   </div>
 </div>

@@ -5,11 +5,12 @@ import { EquipoService } from '../../../services/equipo.service';
 import { EnfrentamientoService } from '../../../services/enfrentamiento.service';
 import { Equipo, EnfrentamientoResponse } from '../../../models';
 import { EquipoJugadoresComponent } from '../equipo-jugadores/equipo-jugadores.component';
+import { DeleteConfirmationModalComponent } from '../../../shared/components/delete-confirmation-modal/delete-confirmation-modal.component';
 
 @Component({
   selector: 'app-equipo-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, EquipoJugadoresComponent],
+  imports: [CommonModule, RouterModule, EquipoJugadoresComponent, DeleteConfirmationModalComponent],
   templateUrl: './equipo-detail.component.html',
   styleUrl: './equipo-detail.component.css'
 })
@@ -23,6 +24,14 @@ export class EquipoDetailComponent implements OnInit {
   loading = signal(false);
   error = signal<string | null>(null);
   deleting = signal(false);
+
+  // Modal de confirmación
+  showDeleteModal = signal(false);
+  deleteModalMessage = computed(() => {
+    const equipo = this.equipo();
+    if (!equipo) return '';
+    return `¿Está seguro de que desea eliminar el equipo <span class="font-bold text-slate-900">"${equipo.nombre}"</span>?`;
+  });
 
   // Historial de enfrentamientos
   enfrentamientos = signal<EnfrentamientoResponse[]>([]);
@@ -81,22 +90,28 @@ export class EquipoDetailComponent implements OnInit {
     });
   }
 
-  eliminarEquipo(): void {
+  openDeleteModal(): void {
+    this.showDeleteModal.set(true);
+  }
+
+  closeDeleteModal(): void {
+    this.showDeleteModal.set(false);
+  }
+
+  confirmarEliminar(): void {
     const equipo = this.equipo();
     if (!equipo?.id) return;
 
-    if (confirm(`¿Está seguro de que desea eliminar el equipo "${equipo.nombre}"? Esta acción no se puede deshacer.`)) {
-      this.deleting.set(true);
-      this.equipoService.eliminarEquipo(equipo.id).subscribe({
-        next: () => {
-          this.router.navigate(['/equipos']);
-        },
-        error: (error) => {
-          this.error.set('Error al eliminar equipo: ' + error.message);
-          this.deleting.set(false);
-        }
-      });
-    }
+    this.deleting.set(true);
+    this.equipoService.eliminarEquipo(equipo.id).subscribe({
+      next: () => {
+        this.router.navigate(['/equipos']);
+      },
+      error: (error) => {
+        this.error.set('Error al eliminar equipo: ' + error.message);
+        this.deleting.set(false);
+      }
+    });
   }
 
   onEdit(): void {

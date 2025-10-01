@@ -1,167 +1,163 @@
-<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-  <!-- Main Content -->
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Loading State -->
-    @if (loading()) {
-    <div class="flex flex-col items-center justify-center py-16 animate-fade-in">
-      <div class="relative">
-        <div class="w-12 h-12 border-4 border-green-200 border-t-green-600 rounded-full animate-spin"></div>
-        <div class="absolute inset-0 w-12 h-12 border-4 border-transparent border-b-green-400 rounded-full animate-spin animation-delay-150"></div>
-      </div>
-      <p class="mt-4 text-gray-600 font-medium">Cargando datos del equipo...</p>
-    </div>
-    }
+<div class="min-h-screen py-8">
+  <div class="container mx-auto px-4 max-w-4xl">
+    <!-- Form Card -->
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
 
-    <!-- Error State -->
-    @if (error()) {
-    <div class="mb-6 animate-slide-up">
-      <div class="bg-danger-50 border border-danger-200 rounded-xl p-4">
-        <div class="flex items-start">
-          <div class="flex-shrink-0">
-            <svg class="w-5 h-5 text-danger-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          </div>
-          <div class="ml-3 flex-1">
-            <h3 class="text-sm font-semibold text-danger-800">Ha ocurrido un error</h3>
-            <p class="mt-1 text-sm text-danger-700">{{ error() }}</p>
-          </div>
-          <button type="button" class="ml-auto flex-shrink-0 text-danger-400 hover:text-danger-600 transition-colors" (click)="error.set(null)">
+      <!-- Header con gradiente verde-azul -->
+      <div class="bg-gradient-to-r from-green-600 to-blue-600 p-6 border-b border-slate-200">
+        <div class="flex items-center gap-3">
+          <button type="button"
+            class="w-10 h-10 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg flex items-center justify-center text-white transition-colors"
+            (click)="onVolver()">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
             </svg>
           </button>
-        </div>
-      </div>
-    </div>
-    }
-
-    <!-- Form Container -->
-    @if (!loading()) {
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden animate-fade-in">
-      <!-- Card Header -->
-      <div class="bg-gray-50 px-5 py-6 border-b border-gray-200">
-        <div class="flex items-center space-x-4">
-          <div class="flex flex-shrink-0 items-center">
-            <button type="button" class="btn btn-ghost btn-sm gap-2" (click)="onVolver()">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-              </svg>
-            </button>
-            <div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-              </svg>
-            </div>
+          <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center">
+            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
           </div>
           <div>
-            <h2 class="text-xl font-bold text-gray-900">{{ pageTitle() }}</h2>
-            <p class="text-sm text-gray-600">{{ isEditing() ? 'Modifica los datos del equipo' : 'Crea un nuevo equipo de fútbol' }}</p>
+            <h3 class="text-2xl font-black text-white">{{ pageTitle() }}</h3>
+            <p class="text-green-100 text-sm">{{ isEditing() ? 'Modifica los datos del equipo' : 'Crea un nuevo equipo de fútbol' }}</p>
           </div>
         </div>
       </div>
-      
-      <div class="p-8">
-        <form [formGroup]="equipoForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
+      <!-- Error Message -->
+      @if (error()) {
+      <div class="bg-red-50 border-l-4 border-red-400 p-6">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-red-700 font-bold">{{ error() }}</p>
+          </div>
+        </div>
+      </div>
+      }
+
+      <!-- Loading State -->
+      @if (loading()) {
+      <div class="flex items-center justify-center py-20">
+        <div class="text-center">
+          <svg class="w-16 h-16 animate-spin text-green-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
+          <p class="text-slate-600 font-medium">Cargando datos del equipo...</p>
+        </div>
+      </div>
+      }
+
+      <!-- Form -->
+      @if (!loading()) {
+      <form [formGroup]="equipoForm" (ngSubmit)="onSubmit()">
+        <div class="p-8 space-y-6">
           <!-- Nombre Field -->
           <div>
-            <label for="nombre" class="block text-sm font-semibold text-gray-700 mb-2">
-              Nombre del Equipo
-              <span class="text-danger-500">*</span>
+            <label for="nombre" class="block text-sm font-bold text-slate-700 mb-2">
+              Nombre del Equipo *
             </label>
-            <input 
+            <input
               id="nombre"
-              type="text" 
+              type="text"
               formControlName="nombre"
-              class="input input-bordered w-full"
-              [class.input-error]="isFieldInvalid('nombre')"
+              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors"
+              [class.border-red-500]="isFieldInvalid('nombre')"
               placeholder="Ej: Real Madrid, Barcelona..."
             />
             @if (isFieldInvalid('nombre')) {
-            <p class="mt-1 text-sm text-danger-600">{{ getFieldError('nombre') }}</p>
+            <p class="mt-2 text-sm text-red-600 font-medium">{{ getFieldError('nombre') }}</p>
             }
           </div>
 
           <!-- Entrenador Field -->
           <div>
-            <label for="entrenador" class="block text-sm font-semibold text-gray-700 mb-2">
-              Entrenador
-              <span class="text-danger-500">*</span>
+            <label for="entrenador" class="block text-sm font-bold text-slate-700 mb-2">
+              Entrenador *
             </label>
-            <input 
+            <input
               id="entrenador"
-              type="text" 
+              type="text"
               formControlName="entrenador"
-              class="input input-bordered w-full"
-              [class.input-error]="isFieldInvalid('entrenador')"
+              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors"
+              [class.border-red-500]="isFieldInvalid('entrenador')"
               placeholder="Ej: Carlos Pérez, María González..."
             />
             @if (isFieldInvalid('entrenador')) {
-            <p class="mt-1 text-sm text-danger-600">{{ getFieldError('entrenador') }}</p>
+            <p class="mt-2 text-sm text-red-600 font-medium">{{ getFieldError('entrenador') }}</p>
             }
           </div>
 
           <!-- Torneo Field -->
           <div>
-            <label for="torneoId" class="block text-sm font-semibold text-gray-700 mb-2">
-              Torneo
-              <span class="text-danger-500">*</span>
+            <label for="torneoId" class="block text-sm font-bold text-slate-700 mb-2">
+              Torneo *
               @if (equipoForm.get('torneoId')?.disabled) {
               <span class="ml-2 text-xs text-blue-600 font-medium">(Preseleccionado)</span>
               }
             </label>
-            <select 
+            <select
               id="torneoId"
               formControlName="torneoId"
-              class="select select-bordered w-full"
-              [class.select-error]="isFieldInvalid('torneoId')"
+              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors"
+              [class.border-red-500]="isFieldInvalid('torneoId')"
               [class.bg-blue-50]="equipoForm.get('torneoId')?.disabled"
             >
+              <option value="">Seleccionar torneo</option>
               @for (torneo of torneos(); track torneo.id) {
               <option [value]="torneo.id">{{ torneo.nombre }}</option>
               }
             </select>
             @if (isFieldInvalid('torneoId')) {
-            <p class="mt-1 text-sm text-danger-600">{{ getFieldError('torneoId') }}</p>
+            <p class="mt-2 text-sm text-red-600 font-medium">{{ getFieldError('torneoId') }}</p>
             }
             @if (torneos().length === 0) {
-            <p class="mt-1 text-sm text-warning-600">No hay torneos activos disponibles</p>
+            <p class="mt-2 text-sm text-yellow-600 font-medium">No hay torneos activos disponibles</p>
             }
           </div>
+        </div>
 
-          <!-- Form Actions -->
-          <div class="flex flex-col min-[426px]:flex-row gap-4 pt-6 border-t border-gray-200 h-16">
-            <button 
-              type="submit" 
-              class="btn btn-primary flex-1 gap-2"
-              [disabled]="equipoForm.invalid || saving()" (click)="onSubmit()"
-            >
-              @if (saving()) {
-              <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              <span>{{ isEditing() ? 'Actualizando...' : 'Creando...' }}</span>
-              } @else {
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-              <span>{{ submitButtonText() }}</span>
-              }
-            </button>
-
-            <button 
-              type="button" 
-              class="btn btn-outline flex-1 gap-2"
-              (click)="onCancel()"
-              [disabled]="saving()"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-              Cancelar
-            </button>
-          </div>
-        </form>
-      </div>
+        <!-- Form Actions -->
+        <div class="flex justify-between items-center gap-3 p-6 border-t border-slate-200 bg-slate-50 rounded-b-2xl">
+          <button type="button"
+            class="flex-1 px-6 py-3 bg-slate-300 hover:bg-slate-400 text-slate-700 font-bold rounded-lg transition-colors"
+            (click)="onCancel()"
+            [disabled]="saving()">
+            Cancelar
+          </button>
+          <button type="submit"
+            class="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            [disabled]="saving() || equipoForm.invalid">
+            @if (saving()) {
+            <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+              </path>
+            </svg>
+            Guardando...
+            } @else {
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 4v16m8-8H4">
+              </path>
+            </svg>
+            {{ submitButtonText() }}
+            }
+          </button>
+        </div>
+      </form>
+      }
     </div>
-    }
   </div>
 </div>

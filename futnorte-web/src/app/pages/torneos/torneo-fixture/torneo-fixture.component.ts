@@ -1,9 +1,9 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TorneoFixtureStateService } from './services/torneo-fixture-state.service';
 import { FiltrosFechaComponent } from './components/filtros-fecha/filtros-fecha.component';
-import { DeleteConfirmModalComponent } from './components/delete-confirm-modal/delete-confirm-modal.component';
+import { DeleteConfirmationModalComponent } from '../../../shared/components/delete-confirmation-modal/delete-confirmation-modal.component';
 import { EnfrentamientoCreateFormComponent } from './components/enfrentamiento-create-form/enfrentamiento-create-form.component';
 import { EnfrentamientoEditModalComponent } from './components/enfrentamiento-edit-modal/enfrentamiento-edit-modal.component';
 import { EnfrentamientoListComponent } from './components/enfrentamiento-list/enfrentamiento-list.component';
@@ -16,7 +16,7 @@ import { EnfrentamientoResponse, CrearEnfrentamientoRequest, ActualizarEnfrentam
     CommonModule,
     RouterModule,
     FiltrosFechaComponent,
-    DeleteConfirmModalComponent,
+    DeleteConfirmationModalComponent,
     EnfrentamientoCreateFormComponent,
     EnfrentamientoEditModalComponent,
     EnfrentamientoListComponent
@@ -38,6 +38,13 @@ export class TorneoFixtureComponent implements OnInit {
   enfrentamientoToDelete = signal<EnfrentamientoResponse | null>(null);
   jugadoresLocal = signal<Jugador[]>([]);
   jugadoresVisitante = signal<Jugador[]>([]);
+
+  // Computed para el mensaje del modal de eliminación
+  deleteModalMessage = computed(() => {
+    const enfrentamiento = this.enfrentamientoToDelete();
+    if (!enfrentamiento) return '';
+    return `¿Está seguro de que desea eliminar el partido <span class="font-bold text-slate-900">${enfrentamiento.equipoLocal} vs ${enfrentamiento.equipoVisitante}</span>?`;
+  });
 
   // Exponer state del servicio
   torneo = this.state.torneo;

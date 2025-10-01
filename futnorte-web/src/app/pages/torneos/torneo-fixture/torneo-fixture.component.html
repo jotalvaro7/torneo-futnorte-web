@@ -234,11 +234,13 @@
 }
 
 <!-- Delete Confirmation Modal -->
-@if (showDeleteConfirm() && enfrentamientoToDelete()) {
-<app-delete-confirm-modal
-  [enfrentamiento]="enfrentamientoToDelete()!"
-  [deleting]="deleting()"
+<app-delete-confirmation-modal
+  [show]="showDeleteConfirm()"
+  [title]="'Confirmar Eliminación'"
+  [message]="deleteModalMessage()"
+  [warningMessage]="'Se perderán todos los datos del partido, incluyendo goles y estadísticas.'"
+  [confirmButtonText]="'Eliminar'"
+  [isDeleting]="deleting()"
   (confirm)="eliminarEnfrentamiento()"
   (cancel)="ocultarConfirmacionEliminar()">
-</app-delete-confirm-modal>
-}
+</app-delete-confirmation-modal>
