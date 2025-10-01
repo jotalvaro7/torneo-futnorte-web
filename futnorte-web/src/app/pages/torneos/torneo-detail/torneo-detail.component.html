@@ -147,7 +147,7 @@
       </div>
 
       <!-- Quick Actions Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <!-- Teams Section -->
         <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
           <div class="px-6 py-4 border-b border-gray-100">
@@ -172,6 +172,34 @@
                 </svg>
               </div>
               <p class="text-gray-600 text-sm">Administra los equipos del torneo</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fixture Section -->
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-100">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-lg font-bold text-gray-900">Fixture</h3>
+                <p class="text-sm text-gray-600">Calendario de partidos</p>
+              </div>
+              <button type="button" class="btn btn-secondary btn-sm gap-2" [routerLink]="['/torneos', torneoId(), 'fixture']">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                Ver
+              </button>
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="text-center py-6">
+              <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+              <p class="text-gray-600 text-sm">Gestiona los partidos del torneo</p>
             </div>
           </div>
         </div>
