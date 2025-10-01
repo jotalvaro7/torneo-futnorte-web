@@ -2,6 +2,13 @@
   <!-- Header -->
   <div class="flex items-center justify-between mb-8">
     <div class="flex items-center gap-4">
+      <button
+        (click)="onBack()"
+        class="w-10 h-10 bg-slate-200 hover:bg-slate-300 rounded-lg flex items-center justify-center transition-colors">
+        <svg class="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+      </button>
       <div class="w-14 h-14 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg">
         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

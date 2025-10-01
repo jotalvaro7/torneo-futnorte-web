@@ -73,7 +73,8 @@ export class TorneoFixtureComponent implements OnInit {
 
   // Navegación
   onBack(): void {
-    this.router.navigate(['/torneos']);
+    const id = this.torneo()?.id;
+    this.router.navigate(['/torneos', id]);
   }
 
   // Crear enfrentamiento

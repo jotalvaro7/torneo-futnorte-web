@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { GoleadorResponse, Torneo } from '../../../models';
@@ -20,6 +20,7 @@ export class GoleadoresListComponent {
   private readonly torneoService = inject(TorneoService);
   private readonly pdfExportService = inject(PdfExportService);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   // Signal del torneoId desde la ruta
   torneoId = toSignal(
@@ -83,5 +84,9 @@ export class GoleadoresListComponent {
   exportarPDF(): void {
     const nombreTorneo = this.torneo()?.nombre;
     this.pdfExportService.exportarGoleadores(this.goleadores(), this.torneoId(), nombreTorneo);
+  }
+
+  onBack(): void {
+    this.router.navigate(['/torneos', this.torneoId()]);
   }
 }
