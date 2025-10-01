@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { GoleadorResponse } from '../models';
+import { Equipo, GoleadorResponse } from '../models';
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +29,7 @@ export class PdfExportService {
     const fecha = new Date().toLocaleDateString('es-ES');
     const totalGoles = goleadores.reduce((acc, g) => acc + g.numeroGoles, 0);
     const startY = nombreTorneo ? 34 : 28;
-    doc.text(`Fecha de generación: ${fecha}`, 14, startY);
+    doc.text(`Fecha: ${fecha}`, 14, startY);
     doc.text(`Total de goles: ${totalGoles}`, 14, startY + 6);
 
     // Preparar datos para la tabla
@@ -62,29 +62,81 @@ export class PdfExportService {
         2: { halign: 'center', cellWidth: 60 },
         3: { halign: 'center', cellWidth: 20, fontStyle: 'bold' }
       },
-      didDrawCell: (data) => {
-        // Destacar los primeros 3 lugares
-        if (data.section === 'body' && data.column.index === 0) {
-          const pos = parseInt(data.cell.text[0]);
-          if (pos <= 3) {
-            // Oro, Plata, Bronce
-            if (pos === 1) {
-              doc.setFillColor(250, 204, 21); // Oro
-            } else if (pos === 2) {
-              doc.setFillColor(203, 213, 225); // Plata
-            } else {
-              doc.setFillColor(251, 146, 60); // Bronce
-            }
-            doc.rect(data.cell.x, data.cell.y, data.cell.width, data.cell.height, 'F');
-            doc.setTextColor(pos === 2 ? 0 : 255);
-            doc.text(data.cell.text, data.cell.x + data.cell.width / 2, data.cell.y + data.cell.height / 2, { align: 'center', baseline: 'middle' });
-            doc.setTextColor(0);
-          }
-        }
-      }
     });
 
     // Guardar PDF
     doc.save(`goleadores-torneo-${torneoId}-${fecha}.pdf`);
+  }
+
+  exportarTablaPosiciones(equipos: Equipo[], torneoId: number, nombreTorneo?: string): void {
+    const doc = new jsPDF();
+
+    // Título del documento
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Tabla de Posiciones', 14, 20);
+
+    // Nombre del torneo
+    if (nombreTorneo) {
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text(nombreTorneo, 14, 28);
+    }
+
+    // Información adicional
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    const fecha = new Date().toLocaleDateString('es-ES');
+    const startY = nombreTorneo ? 34 : 28;
+    doc.text(`Fecha: ${fecha}`, 14, startY);
+    doc.text(`Equipos participantes: ${equipos.length}`, 14, startY + 6);
+
+    // Preparar datos para la tabla
+    const headers = [['Pos', 'Equipo', 'PJ', 'PG', 'PE', 'PP', 'GF', 'GC', 'DG', 'Pts']];
+    const data = equipos.map((equipo, index) => [
+      (index + 1).toString(),
+      equipo.nombre,
+      (equipo.partidosJugados || 0).toString(),
+      (equipo.partidosGanados || 0).toString(),
+      (equipo.partidosEmpatados || 0).toString(),
+      (equipo.partidosPerdidos || 0).toString(),
+      (equipo.golesAFavor || 0).toString(),
+      (equipo.golesEnContra || 0).toString(),
+      ((equipo.diferenciaGoles || 0) > 0 ? '+' : '') + (equipo.diferenciaGoles || 0).toString(),
+      (equipo.puntos || 0).toString()
+    ]);
+
+    // Generar tabla
+    autoTable(doc, {
+      head: headers,
+      body: data,
+      startY: nombreTorneo ? 46 : 40,
+      theme: 'grid',
+      styles: {
+        fontSize: 8,
+        cellPadding: 2
+      },
+      headStyles: {
+        fillColor: [51, 65, 85], // slate-700
+        fontStyle: 'bold',
+        halign: 'center',
+        fontSize: 7
+      },
+      columnStyles: {
+        0: { halign: 'center', cellWidth: 12 },
+        1: { halign: 'center', cellWidth: 50 },
+        2: { halign: 'center', cellWidth: 12 },
+        3: { halign: 'center', cellWidth: 12 },
+        4: { halign: 'center', cellWidth: 12 },
+        5: { halign: 'center', cellWidth: 12 },
+        6: { halign: 'center', cellWidth: 12 },
+        7: { halign: 'center', cellWidth: 12 },
+        8: { halign: 'center', cellWidth: 12 },
+        9: { halign: 'center', cellWidth: 15, fontStyle: 'bold' }
+      }
+    });
+
+    // Guardar PDF
+    doc.save(`tabla-posiciones-torneo-${torneoId}-${fecha}.pdf`);
   }
 }
