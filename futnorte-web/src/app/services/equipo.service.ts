@@ -42,6 +42,11 @@ export class EquipoService {
       .pipe(catchError(this.handleError));
   }
 
+  obtenerEquiposOrdenadosPorNombre(torneoId: number): Observable<Equipo[]> {
+    return this.http.get<Equipo[]>(`${this.baseUrl}/torneo/${torneoId}/ordenados-por-nombre`)
+      .pipe(catchError(this.handleError));
+  }
+
   private handleError = (error: HttpErrorResponse): Observable<never> => {
     let errorMessage = 'Error desconocido';
     

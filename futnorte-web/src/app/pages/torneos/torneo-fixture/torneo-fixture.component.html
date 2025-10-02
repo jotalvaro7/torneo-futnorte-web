@@ -64,12 +64,11 @@
                 <!-- Title Section -->
                 <div>
                   <div class="flex items-center gap-2 mb-1">
-                    <div class="w-1 h-6 bg-gradient-to-b from-yellow-400 to-orange-500 rounded-full"></div>
                     <h1 class="text-xl lg:text-2xl font-black text-white tracking-tight drop-shadow-lg">
                       {{ torneo()?.nombre }}
                     </h1>
                   </div>
-                  <div class="flex items-center gap-2 ml-3">
+                  <div class="flex items-center gap-2">
                     <svg class="w-4 h-4 text-yellow-300" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
                     </svg>
@@ -82,10 +81,10 @@
             <!-- Right Section: Actions -->
             <div class="flex gap-3">
               <button type="button"
-                class="group flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2.5 rounded-xl font-bold shadow-lg shadow-green-500/30 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-green-500/40"
+                class="group flex items-center gap-2 bg-white hover:bg-gray-100 text-black rounded-xl px-4 py-2.5 font-bold shadow-lg transition-all duration-300"
                 (click)="mostrarFormularioCreacion()">
-                <div class="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center group-hover:rotate-90 transition-transform duration-300">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-6 h-6 bg-gray-100 group-hover:bg-gray-200 rounded-lg flex items-center justify-center group-hover:rotate-90 transition-all duration-300">
+                  <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
                   </svg>
                 </div>
@@ -100,6 +99,7 @@
           <svg class="w-full h-4" preserveAspectRatio="none" viewBox="0 0 1440 20" fill="none">
             <path d="M0,10 Q360,0 720,10 T1440,10 L1440,20 L0,20 Z" fill="white" fill-opacity="0.1"/>
           </svg>
+
         </div>
       </div>
 

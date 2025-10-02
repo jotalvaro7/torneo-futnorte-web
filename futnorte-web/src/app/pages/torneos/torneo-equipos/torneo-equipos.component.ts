@@ -61,7 +61,7 @@ export class TorneoEquiposComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
     
-    this.equipoService.buscarEquiposPorTorneo(torneoId).subscribe({
+    this.equipoService.obtenerEquiposOrdenadosPorNombre(torneoId).subscribe({
       next: (equipos) => {
         this.equipos.set(equipos);
         this.loading.set(false);
