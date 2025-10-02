@@ -21,7 +21,7 @@ export class EnfrentamientoEditModalComponent implements OnInit {
   updating = input<boolean>(false);
 
   // Outputs
-  update = output<ActualizarEnfrentamientoRequest>();
+  updateSubmit = output<ActualizarEnfrentamientoRequest>();
   cancel = output<void>();
 
   // State
@@ -164,6 +164,10 @@ export class EnfrentamientoEditModalComponent implements OnInit {
   }
 
   onSubmit(): void {
+    if (this.updating()) {
+      return; // Prevenir múltiples submits
+    }
+
     if (this.editForm.invalid) {
       this.editForm.markAllAsTouched();
       return;
@@ -196,7 +200,7 @@ export class EnfrentamientoEditModalComponent implements OnInit {
         : undefined
     };
 
-    this.update.emit(request);
+    this.updateSubmit.emit(request);
   }
 
   onCancel(): void {
