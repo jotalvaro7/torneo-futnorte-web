@@ -216,7 +216,7 @@
   [equipos]="equipos()"
   [creating]="creating()"
   [torneoId]="torneo()?.id || 0"
-  (submit)="crearEnfrentamiento($event)"
+  (createSubmit)="crearEnfrentamiento($event)"
   (cancel)="ocultarFormularioCreacion()">
 </app-enfrentamiento-create-form>
 }
@@ -228,7 +228,7 @@
   [jugadoresLocal]="jugadoresLocal()"
   [jugadoresVisitante]="jugadoresVisitante()"
   [updating]="updating()"
-  (update)="actualizarEnfrentamiento($event)"
+  (updateSubmit)="actualizarEnfrentamiento($event)"
   (cancel)="ocultarFormularioEdicion()">
 </app-enfrentamiento-edit-modal>
 }

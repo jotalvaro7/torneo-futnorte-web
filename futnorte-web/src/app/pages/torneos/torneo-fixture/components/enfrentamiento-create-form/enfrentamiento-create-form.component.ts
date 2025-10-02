@@ -19,7 +19,7 @@ export class EnfrentamientoCreateFormComponent implements OnInit {
   torneoId = input.required<number>();
 
   // Outputs
-  submit = output<CrearEnfrentamientoRequest>();
+  createSubmit = output<CrearEnfrentamientoRequest>();
   cancel = output<void>();
 
   createForm = this.fb.nonNullable.group({
@@ -60,6 +60,10 @@ export class EnfrentamientoCreateFormComponent implements OnInit {
   }
 
   onSubmit(): void {
+    if (this.creating()) {
+      return; // Prevenir múltiples submits
+    }
+
     if (this.createForm.invalid) {
       this.createForm.markAllAsTouched();
       return;
@@ -74,7 +78,7 @@ export class EnfrentamientoCreateFormComponent implements OnInit {
       cancha: formValue.cancha!
     };
 
-    this.submit.emit(request);
+    this.createSubmit.emit(request);
   }
 
   onCancel(): void {
