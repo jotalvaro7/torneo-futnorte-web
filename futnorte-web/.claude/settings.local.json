@@ -27,7 +27,8 @@
       "WebFetch(domain:www.premierleague.com)",
       "WebSearch",
       "Bash(git commit -m \"$(cat <<''EOF''\nrefactor: crear servicio de estado y componente de filtros\n\n- Crear TorneoFixtureStateService para centralizar lógica de negocio\n- Extraer toda la gestión de signals y computed al servicio\n- Implementar métodos async para operaciones CRUD\n- Crear componente FiltrosFechaComponent como presentacional\n- Usar patrón input/output signals para comunicación\n- Preparar arquitectura modular para componentes adicionales\n\nEste es el primer paso de la refactorización para reducir el tamaño\ndel componente principal de 713 líneas siguiendo principios SOLID.\nEOF\n)\")",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "WebFetch(domain:www.laliga.com)"
     ],
     "deny": [],
     "ask": []
