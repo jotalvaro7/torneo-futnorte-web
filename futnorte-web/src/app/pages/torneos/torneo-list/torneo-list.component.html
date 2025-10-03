@@ -100,26 +100,34 @@
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         @for (torneo of torneos(); track trackByTorneo($index, torneo)) {
         <a [routerLink]="['/torneos', torneo.id]"
-          class="group bg-white rounded-2xl border border-gray-200 hover:border-indigo-300 hover:shadow-lg hover:-translate-y-3 transition-all duration-300 overflow-hidden block">
+          class="group relative bg-white rounded-2xl border border-gray-200 hover:border-transparent hover:shadow-xl hover:-translate-y-3 transition-all duration-300 overflow-hidden block">
+
+          <!-- Gradient Background on Hover -->
+          <div class="absolute inset-0 bg-gradient-to-br from-orange-400 to-rose-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+          <!-- Decorative Circle (visible on hover) -->
+          <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-8 -mt-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
           <!-- Icon Section -->
-          <div class="bg-gradient-to-br from-gray-50 to-gray-100 group-hover:from-indigo-50 group-hover:to-indigo-100 flex items-center justify-center py-8 transition-all duration-300 relative">
-            <i class="fa-solid fa-trophy text-5xl text-gray-400 group-hover:text-indigo-600 transition-colors duration-300"></i>
+          <div class="relative flex items-center justify-center py-20 transition-all duration-300" [ngClass]="{
+            'bg-gradient-to-br from-gray-200 to-gray-300': true
+          }">
+            <i class="fa-solid fa-trophy text-6xl text-gray-600 group-hover:text-rose-500 transition-colors duration-300"></i>
             <!-- Status Indicator -->
             <span class="absolute top-3 right-3 w-2.5 h-2.5 rounded-full" [ngClass]="{
               'bg-blue-500': torneo.estado === EstadoTorneo.CREADO,
               'bg-green-500': torneo.estado === EstadoTorneo.EN_CURSO,
-              'bg-gray-500': torneo.estado === EstadoTorneo.FINALIZADO,
+              'bg-purple-500': torneo.estado === EstadoTorneo.FINALIZADO,
               'bg-red-500': torneo.estado === EstadoTorneo.CANCELADO
             }"></span>
           </div>
 
           <!-- Content Section -->
-          <div class="p-4 text-center border-t border-gray-100">
-            <h3 class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors mb-2 line-clamp-1">
+          <div class="relative p-4 text-center border-t border-gray-100 group-hover:border-transparent transition-colors duration-300">
+            <h3 class="font-bold text-gray-900 group-hover:text-white transition-colors mb-2 line-clamp-1">
               {{ torneo.nombre }}
             </h3>
-            <div class="flex items-center justify-center gap-1 text-xs text-gray-500 group-hover:text-indigo-600 transition-colors">
+            <div class="flex items-center justify-center gap-1 text-xs text-gray-500 group-hover:text-white/90 transition-colors">
               <span class="uppercase tracking-wide">Ver ficha del torneo</span>
               <svg class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
