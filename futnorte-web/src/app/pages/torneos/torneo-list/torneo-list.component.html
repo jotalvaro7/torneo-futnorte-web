@@ -97,115 +97,36 @@
       </div>
 
       <!-- Tournaments Grid -->
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         @for (torneo of torneos(); track trackByTorneo($index, torneo)) {
-        <div class="group bg-white rounded-2xl border border-gray-200 hover:border-indigo-300 hover:shadow-lg transition-all duration-300 overflow-hidden">
+        <a [routerLink]="['/torneos', torneo.id]"
+          class="group bg-white rounded-2xl border border-gray-200 hover:border-indigo-300 hover:shadow-lg hover:-translate-y-3 transition-all duration-300 overflow-hidden block">
 
-          <!-- Card Content -->
-          <a [routerLink]="['/torneos', torneo.id]" class="block p-6">
-            <div class="flex items-start justify-between mb-3">
-              <div class="flex-1 min-w-0">
-                <h3 class="text-lg font-bold text-gray-900 group-hover:text-indigo-700 transition-colors truncate">
-                  {{ torneo.nombre }}
-                </h3>
-              </div>
-              <span class="ml-3 inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold flex-shrink-0" [ngClass]="{
-                  'bg-blue-100 text-blue-800': torneo.estado === EstadoTorneo.CREADO,
-                  'bg-green-100 text-green-800': torneo.estado === EstadoTorneo.EN_CURSO,
-                  'bg-gray-100 text-gray-800': torneo.estado === EstadoTorneo.FINALIZADO,
-                  'bg-red-100 text-red-800': torneo.estado === EstadoTorneo.CANCELADO
-                }">
-                <span class="w-1.5 h-1.5 mr-1 rounded-full" [ngClass]="{
-                    'bg-blue-500': torneo.estado === EstadoTorneo.CREADO,
-                    'bg-green-500': torneo.estado === EstadoTorneo.EN_CURSO,
-                    'bg-gray-500': torneo.estado === EstadoTorneo.FINALIZADO,
-                    'bg-red-500': torneo.estado === EstadoTorneo.CANCELADO
-                  }"></span>
-                {{ torneo.estado.replace("_", " ") }}
-              </span>
-            </div>
-
-            @if (torneo.descripcion) {
-            <p class="text-sm text-gray-600 mb-3 line-clamp-2 leading-relaxed">
-              {{ torneo.descripcion }}
-            </p>
-            }
-
-            <!-- Dates -->
-            <div class="flex items-center gap-4 text-xs text-gray-500">
-              @if (torneo.fechaInicio) {
-              <div class="flex items-center gap-1">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
-                <span>{{ torneo.fechaInicio | date : "dd/MM/yyyy" }}</span>
-              </div>
-              }
-              @if (torneo.fechaFin) {
-              <div class="flex items-center gap-1">
-                <span>-</span>
-                <span>{{ torneo.fechaFin | date : "dd/MM/yyyy" }}</span>
-              </div>
-              }
-            </div>
-          </a>
-
-          <!-- Actions -->
-          <div class="px-6 pb-6 flex gap-2">
-            <button type="button" class="flex-1 btn btn-outline btn-sm gap-1.5"
-              [routerLink]="['/torneos', torneo.id, 'editar']" (click)="$event.stopPropagation()">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                </path>
-              </svg>
-              <span class="text-xs">Editar</span>
-            </button>
-
-            @if (torneo.estado === EstadoTorneo.CREADO) {
-            <button type="button" class="flex-1 btn btn-success btn-sm gap-1.5"
-              (click)="cambiarEstadoTorneo(torneo, 'iniciar'); $event.stopPropagation()">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8"></path>
-              </svg>
-              <span class="text-xs">Iniciar</span>
-            </button>
-            }
-
-            @if (torneo.estado === EstadoTorneo.EN_CURSO) {
-            <button type="button" class="flex-1 btn btn-warning btn-sm gap-1.5"
-              (click)="cambiarEstadoTorneo(torneo, 'finalizar'); $event.stopPropagation()">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <span class="text-xs">Finalizar</span>
-            </button>
-            }
-
-            @if (torneo.estado !== EstadoTorneo.FINALIZADO) {
-            <button type="button" class="btn btn-danger btn-sm"
-              (click)="cambiarEstadoTorneo(torneo, 'cancelar'); $event.stopPropagation()">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            </button>
-            }
-
-            @if (torneo.estado === EstadoTorneo.CANCELADO || torneo.estado === EstadoTorneo.FINALIZADO) {
-            <button type="button" class="btn btn-danger btn-sm"
-              (click)="eliminarTorneo(torneo.id!); $event.stopPropagation()">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                </path>
-              </svg>
-            </button>
-            }
+          <!-- Icon Section -->
+          <div class="bg-gradient-to-br from-gray-50 to-gray-100 group-hover:from-indigo-50 group-hover:to-indigo-100 flex items-center justify-center py-8 transition-all duration-300 relative">
+            <i class="fa-solid fa-trophy text-5xl text-gray-400 group-hover:text-indigo-600 transition-colors duration-300"></i>
+            <!-- Status Indicator -->
+            <span class="absolute top-3 right-3 w-2.5 h-2.5 rounded-full" [ngClass]="{
+              'bg-blue-500': torneo.estado === EstadoTorneo.CREADO,
+              'bg-green-500': torneo.estado === EstadoTorneo.EN_CURSO,
+              'bg-gray-500': torneo.estado === EstadoTorneo.FINALIZADO,
+              'bg-red-500': torneo.estado === EstadoTorneo.CANCELADO
+            }"></span>
           </div>
-        </div>
+
+          <!-- Content Section -->
+          <div class="p-4 text-center border-t border-gray-100">
+            <h3 class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors mb-2 line-clamp-1">
+              {{ torneo.nombre }}
+            </h3>
+            <div class="flex items-center justify-center gap-1 text-xs text-gray-500 group-hover:text-indigo-600 transition-colors">
+              <span class="uppercase tracking-wide">Ver ficha del torneo</span>
+              <svg class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </div>
+          </div>
+        </a>
         }
       </div>
     </div>
