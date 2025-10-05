@@ -38,6 +38,9 @@ export class EquipoDetailComponent implements OnInit {
   loadingEnfrentamientos = signal(false);
   mostrarHistorial = signal(false);
 
+  // Toggle para mostrar/ocultar estadísticas
+  mostrarEstadisticas = signal(false);
+
   equipoId = computed(() => {
     const id = this.route.snapshot.paramMap.get('id');
     return id ? +id : null;
@@ -165,5 +168,9 @@ export class EquipoDetailComponent implements OnInit {
 
   esEquipoLocal(enfrentamiento: EnfrentamientoResponse): boolean {
     return enfrentamiento.equipoLocal === this.equipo()?.nombre;
+  }
+
+  toggleEstadisticas(): void {
+    this.mostrarEstadisticas.update(value => !value);
   }
 }
