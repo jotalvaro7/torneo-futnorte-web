@@ -102,54 +102,15 @@
                 <span class="text-xs">Editar</span>
               </button>
 
-              <!-- State Actions -->
-              @if (canStart()) {
+              <!-- Toggle Acciones Button -->
               <button type="button"
-                class="flex items-center gap-1.5 bg-success-500 hover:bg-success-600 text-white px-3 py-2 rounded-xl font-bold shadow-lg transition-all duration-300"
-                (click)="cambiarEstadoTorneo('iniciar')">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8"></path>
-                </svg>
-                <span class="text-xs">Iniciar</span>
+                class="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-3 py-2 rounded-xl font-bold transition-all duration-300"
+                (click)="toggleAcciones()">
+                <i class="fa-solid fa-sliders text-xs"></i>
+                <span class="text-xs">Acciones</span>
+                <i class="fa-solid text-xs transition-transform duration-300"
+                  [ngClass]="mostrarAcciones() ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
               </button>
-              }
-
-              @if (canFinalize()) {
-              <button type="button"
-                class="flex items-center gap-1.5 bg-warning-500 hover:bg-warning-600 text-white px-3 py-2 rounded-xl font-bold shadow-lg transition-all duration-300"
-                (click)="cambiarEstadoTorneo('finalizar')">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <span class="text-xs">Finalizar</span>
-              </button>
-              }
-
-              @if (canCancel()) {
-              <button type="button"
-                class="flex items-center gap-1.5 bg-danger-500 hover:bg-danger-600 text-white px-3 py-2 rounded-xl font-bold shadow-lg transition-all duration-300"
-                (click)="cambiarEstadoTorneo('cancelar')">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-                <span class="text-xs">Cancelar</span>
-              </button>
-              }
-
-              @if (canDelete()) {
-              <button type="button"
-                class="flex items-center gap-1.5 bg-danger-500 hover:bg-danger-600 text-white px-3 py-2 rounded-xl font-bold shadow-lg transition-all duration-300"
-                (click)="eliminarTorneo()">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                  </path>
-                </svg>
-                <span class="text-xs">Eliminar</span>
-              </button>
-              }
             </div>
           </div>
 
@@ -161,6 +122,76 @@
           }
         </div>
       </div>
+
+      <!-- Acciones Section (Collapsible) -->
+      @if (mostrarAcciones()) {
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 animate-fade-in">
+        <div class="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
+          <!-- Header Bar -->
+          <div class="flex items-center justify-between bg-gradient-to-r from-neutral-50 to-neutral-100 px-4 py-3 border-b border-neutral-200">
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-sliders text-accent-600 text-lg"></i>
+              <h3 class="text-sm font-bold text-neutral-900">Acciones del Torneo</h3>
+            </div>
+          </div>
+
+          <!-- Actions Grid -->
+          <div class="p-4">
+            <div class="flex flex-wrap gap-3">
+              <!-- Iniciar -->
+              @if (canStart()) {
+              <button type="button"
+                class="flex items-center gap-2 bg-success-500 hover:bg-success-600 text-white px-4 py-3 rounded-xl font-bold shadow-sm hover:shadow-md transition-all duration-300"
+                (click)="cambiarEstadoTorneo('iniciar')">
+                <i class="fa-solid fa-play text-sm"></i>
+                <span class="text-sm">Iniciar Torneo</span>
+              </button>
+              }
+
+              <!-- Finalizar -->
+              @if (canFinalize()) {
+              <button type="button"
+                class="flex items-center gap-2 bg-warning-500 hover:bg-warning-600 text-white px-4 py-3 rounded-xl font-bold shadow-sm hover:shadow-md transition-all duration-300"
+                (click)="cambiarEstadoTorneo('finalizar')">
+                <i class="fa-solid fa-flag-checkered text-sm"></i>
+                <span class="text-sm">Finalizar Torneo</span>
+              </button>
+              }
+
+              <!-- Cancelar -->
+              @if (canCancel()) {
+              <button type="button"
+                class="flex items-center gap-2 bg-danger-500 hover:bg-danger-600 text-white px-4 py-3 rounded-xl font-bold shadow-sm hover:shadow-md transition-all duration-300"
+                (click)="cambiarEstadoTorneo('cancelar')">
+                <i class="fa-solid fa-ban text-sm"></i>
+                <span class="text-sm">Cancelar Torneo</span>
+              </button>
+              }
+
+              <!-- Eliminar -->
+              @if (canDelete()) {
+              <button type="button"
+                class="flex items-center gap-2 bg-danger-500 hover:bg-danger-600 text-white px-4 py-3 rounded-xl font-bold shadow-sm hover:shadow-md transition-all duration-300"
+                (click)="eliminarTorneo()">
+                <i class="fa-solid fa-trash text-sm"></i>
+                <span class="text-sm">Eliminar Torneo</span>
+              </button>
+              }
+
+              <!-- No actions available message -->
+              @if (!canStart() && !canFinalize() && !canCancel() && !canDelete()) {
+              <div class="w-full py-4 px-4 bg-neutral-50 rounded-lg border border-neutral-200">
+                <p class="text-sm text-neutral-600 text-center">
+                  <i class="fa-solid fa-info-circle text-info-500 mr-2"></i>
+                  No hay acciones disponibles para este torneo en su estado actual.
+                </p>
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+      }
 
       <!-- Quick Navigation Grid -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">

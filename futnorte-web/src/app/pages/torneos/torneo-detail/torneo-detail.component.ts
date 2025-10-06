@@ -46,6 +46,9 @@ export class TorneoDetailComponent implements OnInit {
     this.getEstadoDotColor(this.torneo()?.estado || '')
   );
 
+  // Toggle para mostrar/ocultar acciones
+  mostrarAcciones = signal(false);
+
   EstadoTorneo = EstadoTorneo;
 
   ngOnInit(): void {
@@ -144,5 +147,9 @@ export class TorneoDetailComponent implements OnInit {
       default:
         return 'bg-gray-500';
     }
+  }
+
+  toggleAcciones(): void {
+    this.mostrarAcciones.update(valor => !valor);
   }
 }

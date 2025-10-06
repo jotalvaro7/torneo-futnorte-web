@@ -90,7 +90,7 @@
             <span class="text-neutral-600">Activos: <span class="font-bold text-neutral-900">{{ torneosEnCurso() }}</span></span>
           </div>
           <div class="flex items-center gap-2">
-            <div class="w-2 h-2 bg-neutral-500 rounded-full"></div>
+            <div class="w-2 h-2 bg-danger-500 rounded-full"></div>
             <span class="text-neutral-600">Finalizados: <span class="font-bold text-neutral-900">{{ torneosFinalizados() }}</span></span>
           </div>
         </div>
@@ -114,11 +114,10 @@
           }">
             <i class="fa-solid fa-trophy text-6xl text-neutral-600 group-hover:text-hover transition-colors duration-300"></i>
             <!-- Status Indicator -->
-            <span class="absolute top-3 right-3 w-2.5 h-2.5 rounded-full" [ngClass]="{
+            <span class="absolute top-3 right-3 w-4 h-4 rounded-full shadow-lg" [ngClass]="{
               'bg-primary-500': torneo.estado === EstadoTorneo.CREADO,
               'bg-success-500': torneo.estado === EstadoTorneo.EN_CURSO,
-              'bg-accent-500': torneo.estado === EstadoTorneo.FINALIZADO,
-              'bg-danger-500': torneo.estado === EstadoTorneo.CANCELADO
+              'bg-danger-500': torneo.estado === EstadoTorneo.FINALIZADO || torneo.estado === EstadoTorneo.CANCELADO
             }"></span>
           </div>
 

@@ -165,6 +165,12 @@ export class TorneoFormComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.router.navigate(['/torneos']);
+    if (this.isEditMode() && this.torneoId()) {
+      // Si está editando, volver al detalle del torneo
+      this.router.navigate(['/torneos', this.torneoId()]);
+    } else {
+      // Si está creando, volver a la lista
+      this.router.navigate(['/torneos']);
+    }
   }
 }
