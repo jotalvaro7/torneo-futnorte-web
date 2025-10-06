@@ -92,13 +92,6 @@
             <!-- Right: Actions -->
             <div class="flex flex-wrap gap-2">
               <button type="button"
-                class="flex items-center gap-2 bg-success-500 hover:bg-success-600 text-white px-3 py-2 rounded-xl font-bold shadow-lg transition-all duration-300"
-                [routerLink]="['/equipos', equipoId(), 'jugadores', 'nuevo']">
-                <i class="fa-solid fa-user-plus text-xs"></i>
-                <span class="text-xs">Agregar Jugador</span>
-              </button>
-
-              <button type="button"
                 class="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-3 py-2 rounded-xl font-bold transition-all duration-300"
                 (click)="cargarHistorialEnfrentamientos()"
                 [disabled]="loadingEnfrentamientos()">
@@ -165,7 +158,22 @@
 
       <!-- Players Section (Desplegable) -->
       @if (mostrarJugadores()) {
-      <div class="mt-8 animate-fade-in">
+      <div class="mt-8 animate-fade-in space-y-4">
+        <!-- Barra de acciones para jugadores -->
+        <div class="flex items-center justify-between bg-white rounded-xl px-4 py-3 border border-neutral-200 shadow-sm">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-users text-primary-600"></i>
+            <h3 class="font-bold text-neutral-900">Plantel de Jugadores</h3>
+          </div>
+          <button type="button"
+            class="flex items-center gap-2 bg-success-500 hover:bg-success-600 text-white px-4 py-2 rounded-lg font-bold transition-all duration-300 shadow-sm hover:shadow-md"
+            [routerLink]="['/equipos', equipoId(), 'jugadores', 'nuevo']">
+            <i class="fa-solid fa-user-plus text-sm"></i>
+            <span class="text-sm">Agregar Jugador</span>
+          </button>
+        </div>
+
+        <!-- Componente de jugadores sin header -->
         <app-equipo-jugadores
           [equipoId]="equipoId()!"
           [equipoNombre]="equipo()?.nombre!"
