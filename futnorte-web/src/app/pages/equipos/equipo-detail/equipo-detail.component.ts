@@ -38,8 +38,9 @@ export class EquipoDetailComponent implements OnInit {
   loadingEnfrentamientos = signal(false);
   mostrarHistorial = signal(false);
 
-  // Toggle para mostrar/ocultar estadísticas
+  // Toggle para mostrar/ocultar estadísticas y jugadores
   mostrarEstadisticas = signal(false);
+  mostrarJugadores = signal(true); // Mostrar jugadores por defecto
 
   equipoId = computed(() => {
     const id = this.route.snapshot.paramMap.get('id');
@@ -127,6 +128,11 @@ export class EquipoDetailComponent implements OnInit {
   onBack(): void {
     const torneoId = this.equipo()?.torneoId;
     this.router.navigate(['/torneos', torneoId, 'equipos']);
+  }
+
+  // Método para toggle de jugadores
+  toggleJugadores(): void {
+    this.mostrarJugadores.update(valor => !valor);
   }
 
   // Métodos para historial de enfrentamientos

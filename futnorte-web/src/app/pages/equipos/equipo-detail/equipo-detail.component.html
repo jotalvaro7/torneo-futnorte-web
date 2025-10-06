@@ -4,9 +4,9 @@
     @if (loading()) {
     <div class="flex flex-col items-center justify-center py-16 animate-fade-in">
       <div class="relative">
-        <div class="w-12 h-12 border-4 border-success-200 border-t-green-600 rounded-full animate-spin"></div>
+        <div class="w-12 h-12 border-4 border-success-200 border-t-success-600 rounded-full animate-spin"></div>
         <div
-          class="absolute inset-0 w-12 h-12 border-4 border-transparent border-b-green-400 rounded-full animate-spin animation-delay-150">
+          class="absolute inset-0 w-12 h-12 border-4 border-transparent border-b-success-400 rounded-full animate-spin animation-delay-150">
         </div>
       </div>
       <p class="mt-4 text-neutral-600 font-medium">Cargando información del equipo...</p>
@@ -57,13 +57,9 @@
                   </svg>
                 </button>
                 <i class="fa-solid fa-shield-halved text-2xl text-white"></i>
-                <button type="button"
-                  class="text-xl lg:text-2xl font-black text-white hover:text-white/90 transition-colors duration-300 cursor-pointer text-left"
-                  (click)="toggleEstadisticas()">
+                <h1 class="text-xl lg:text-2xl font-black text-white">
                   {{ equipo()?.nombre }}
-                  <i class="fa-solid ml-2 text-sm transition-transform duration-300"
-                    [ngClass]="mostrarEstadisticas() ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-                </button>
+                </h1>
               </div>
 
               <div class="flex flex-wrap items-center gap-3 ml-11">
@@ -71,6 +67,25 @@
                   <i class="fa-solid fa-user-tie"></i>
                   {{ equipo()?.entrenador }}
                 </span>
+
+                <!-- Botones de toggle -->
+                <button type="button"
+                  class="text-white/80 hover:text-white text-xs flex items-center gap-1.5 bg-white/10 hover:bg-white/20 px-2 py-1 rounded-lg transition-all"
+                  (click)="toggleEstadisticas()">
+                  <i class="fa-solid fa-chart-simple"></i>
+                  Estadísticas
+                  <i class="fa-solid text-[10px] transition-transform duration-300"
+                    [ngClass]="mostrarEstadisticas() ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                </button>
+
+                <button type="button"
+                  class="text-white/80 hover:text-white text-xs flex items-center gap-1.5 bg-white/10 hover:bg-white/20 px-2 py-1 rounded-lg transition-all"
+                  (click)="toggleJugadores()">
+                  <i class="fa-solid fa-users"></i>
+                  Plantel
+                  <i class="fa-solid text-[10px] transition-transform duration-300"
+                    [ngClass]="mostrarJugadores() ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                </button>
               </div>
             </div>
 
@@ -141,11 +156,16 @@
       </div>
       }
 
-      <!-- Players Section -->
-      <div class="mt-8">
-        <app-equipo-jugadores [equipoId]="equipoId()!" [equipoNombre]="equipo()?.nombre!">
+      <!-- Players Section (Desplegable) -->
+      @if (mostrarJugadores()) {
+      <div class="mt-8 animate-fade-in">
+        <app-equipo-jugadores
+          [equipoId]="equipoId()!"
+          [equipoNombre]="equipo()?.nombre!"
+          [showHeader]="false">
         </app-equipo-jugadores>
       </div>
+      }
     </div>
     }
 
@@ -173,7 +193,7 @@
         <div class="flex-1 overflow-y-auto min-h-0">
           @if (loadingEnfrentamientos()) {
           <div class="p-8 text-center">
-            <div class="w-8 h-8 border-4 border-success-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4">
+            <div class="w-8 h-8 border-4 border-success-200 border-t-success-600 rounded-full animate-spin mx-auto mb-4">
             </div>
             <p class="text-neutral-600">Cargando historial de enfrentamientos...</p>
           </div>

@@ -15,6 +15,7 @@ import { DeleteConfirmationModalComponent } from '../../../shared/components/del
 export class EquipoJugadoresComponent implements OnInit {
   @Input({ required: true }) equipoId!: number;
   @Input() equipoNombre: string = '';
+  @Input() showHeader: boolean = true; // Control para mostrar/ocultar header
 
   private readonly jugadorService = inject(JugadorService);
 

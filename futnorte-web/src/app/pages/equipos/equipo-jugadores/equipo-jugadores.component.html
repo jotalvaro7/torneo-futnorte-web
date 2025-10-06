@@ -1,5 +1,6 @@
 <div class="space-y-6">
-  <!-- Modern Header -->
+  <!-- Modern Header (condicional) -->
+  @if (showHeader) {
   <div class="relative overflow-hidden rounded-3xl">
     <!-- Gradient Background -->
     <div class="absolute inset-0 bg-gradient-to-r from-primary-600 via-secondary-600 to-accent-700"></div>
@@ -46,6 +47,7 @@
       </div>
     </div>
   </div>
+  }
 
   <!-- Loading State -->
   @if (loading()) {
