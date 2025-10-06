@@ -4,10 +4,10 @@
 
     <!-- Modal Header -->
     <div
-      class="flex items-center justify-between p-6 border-b border-slate-200 bg-gradient-to-r from-purple-600 to-blue-600 rounded-t-2xl">
+      class="flex items-center justify-between p-6 border-b border-neutral-200 bg-gradient-to-r from-accent-600 to-primary-600 rounded-t-2xl">
       <div class="flex items-center gap-3">
         <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center">
-          <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-6 h-6 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
             </path>
@@ -15,7 +15,7 @@
         </div>
         <div>
           <h3 class="text-2xl font-black text-white">Detalles del Partido</h3>
-          <p class="text-purple-100 text-sm">{{ enfrentamiento().equipoLocal }} vs {{ enfrentamiento().equipoVisitante
+          <p class="text-accent-100 text-sm">{{ enfrentamiento().equipoLocal }} vs {{ enfrentamiento().equipoVisitante
             }}</p>
         </div>
       </div>
@@ -35,51 +35,51 @@
         <!-- Información del partido -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <label class="block text-sm font-bold text-slate-700 mb-2">Fecha y Hora</label>
+            <label class="block text-sm font-bold text-neutral-700 mb-2">Fecha y Hora</label>
             @if (editMode()) {
             <input type="datetime-local" formControlName="fechaHora"
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-colors">
+              class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-accent-500 focus:ring-2 focus:ring-accent-200 transition-colors">
             } @else {
-            <div class="px-4 py-3 bg-slate-50 rounded-lg text-slate-700 font-medium">
+            <div class="px-4 py-3 bg-neutral-50 rounded-lg text-neutral-700 font-medium">
               {{ formatDateTime(enfrentamiento().fechaHora) }}
             </div>
             }
           </div>
 
           <div>
-            <label class="block text-sm font-bold text-slate-700 mb-2">Cancha</label>
+            <label class="block text-sm font-bold text-neutral-700 mb-2">Cancha</label>
             @if (editMode()) {
             <input type="text" formControlName="cancha"
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-colors"
+              class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-accent-500 focus:ring-2 focus:ring-accent-200 transition-colors"
               placeholder="Cancha">
             } @else {
-            <div class="px-4 py-3 bg-slate-50 rounded-lg text-slate-700 font-medium">
+            <div class="px-4 py-3 bg-neutral-50 rounded-lg text-neutral-700 font-medium">
               {{ enfrentamiento().cancha }}
             </div>
             }
           </div>
 
           <div>
-            <label class="block text-sm font-bold text-slate-700 mb-2">Estado</label>
+            <label class="block text-sm font-bold text-neutral-700 mb-2">Estado</label>
             @if (editMode()) {
             <select formControlName="estado" (change)="onEstadoChange($event)"
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-colors">
+              class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-accent-500 focus:ring-2 focus:ring-accent-200 transition-colors">
               <option value="PROGRAMADO">PROGRAMADO</option>
               <option value="FINALIZADO">FINALIZADO</option>
               <option value="APLAZADO">APLAZADO</option>
             </select>
             } @else {
-            <div class="px-4 py-3 bg-slate-50 rounded-lg">
+            <div class="px-4 py-3 bg-neutral-50 rounded-lg">
               @if (enfrentamiento().estado === 'PROGRAMADO') {
-              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-100 text-blue-800">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-primary-100 text-primary-800">
                 Por Jugar
               </span>
               } @else if (enfrentamiento().estado === 'FINALIZADO') {
-              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-green-100 text-green-800">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-success-100 text-success-800">
                 Finalizado
               </span>
               } @else {
-              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-orange-100 text-orange-800">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-warning-100 text-warning-800">
                 Aplazado
               </span>
               }
@@ -90,33 +90,33 @@
 
         <!-- Campos de goles (solo si está FINALIZADO) -->
         @if (mostrarCamposGoles()) {
-        <div class="border-t border-slate-200 pt-6 mb-6">
-          <h4 class="text-lg font-black text-slate-900 mb-4">Resultado del Partido</h4>
+        <div class="border-t border-neutral-200 pt-6 mb-6">
+          <h4 class="text-lg font-black text-neutral-900 mb-4">Resultado del Partido</h4>
 
           <div class="grid grid-cols-2 gap-4 mb-6">
             <div>
-              <label class="block text-sm font-bold text-blue-700 mb-2">Goles {{ enfrentamiento().equipoLocal
+              <label class="block text-sm font-bold text-primary-700 mb-2">Goles {{ enfrentamiento().equipoLocal
                 }}</label>
               @if (editMode()) {
               <input type="number" formControlName="golesLocal"
-                class="w-full px-4 py-3 text-center text-2xl font-black border-2 border-blue-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
+                class="w-full px-4 py-3 text-center text-2xl font-black border-2 border-primary-300 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-colors"
                 min="0" max="50">
               } @else {
-              <div class="px-4 py-3 text-center text-2xl font-black text-blue-700 bg-blue-50 rounded-lg">
+              <div class="px-4 py-3 text-center text-2xl font-black text-primary-700 bg-primary-50 rounded-lg">
                 {{ enfrentamiento().golesLocal }}
               </div>
               }
             </div>
 
             <div>
-              <label class="block text-sm font-bold text-red-700 mb-2">Goles {{ enfrentamiento().equipoVisitante
+              <label class="block text-sm font-bold text-danger-700 mb-2">Goles {{ enfrentamiento().equipoVisitante
                 }}</label>
               @if (editMode()) {
               <input type="number" formControlName="golesVisitante"
-                class="w-full px-4 py-3 text-center text-2xl font-black border-2 border-red-300 rounded-lg focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors"
+                class="w-full px-4 py-3 text-center text-2xl font-black border-2 border-danger-300 rounded-lg focus:border-danger-500 focus:ring-2 focus:ring-danger-200 transition-colors"
                 min="0" max="50">
               } @else {
-              <div class="px-4 py-3 text-center text-2xl font-black text-red-700 bg-red-50 rounded-lg">
+              <div class="px-4 py-3 text-center text-2xl font-black text-danger-700 bg-danger-50 rounded-lg">
                 {{ enfrentamiento().golesVisitante }}
               </div>
               }
@@ -124,8 +124,8 @@
           </div>
 
           <!-- Goleadores por Jugador -->
-          <div class="border-t border-slate-200 pt-6">
-            <h4 class="text-lg font-black text-slate-900 mb-4">Goleadores</h4>
+          <div class="border-t border-neutral-200 pt-6">
+            <h4 class="text-lg font-black text-neutral-900 mb-4">Goleadores</h4>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <!-- Goleadores Equipo Local -->
@@ -154,11 +154,11 @@
             </div>
 
             @if (editMode() && (calcularSumaGolesLocal() !== editForm.value.golesLocal! || calcularSumaGolesVisitante() !== editForm.value.golesVisitante!)) {
-            <div class="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p class="text-red-700 text-sm font-medium">
+            <div class="mt-4 p-4 bg-danger-50 border border-danger-200 rounded-lg">
+              <p class="text-danger-700 text-sm font-medium">
                 ⚠️ La suma de los goles individuales debe coincidir con el total de goles del equipo
               </p>
-              <div class="mt-2 text-xs text-red-600">
+              <div class="mt-2 text-xs text-danger-600">
                 <p>{{ enfrentamiento().equipoLocal }}: {{ calcularSumaGolesLocal() }} / {{
                   editForm.value.golesLocal }}</p>
                 <p>{{ enfrentamiento().equipoVisitante }}: {{ calcularSumaGolesVisitante() }} / {{
@@ -173,10 +173,10 @@
       </div>
 
       <!-- Modal Footer -->
-      <div class="flex justify-between items-center gap-3 p-6 border-t border-slate-200 bg-slate-50 rounded-b-2xl">
+      <div class="flex justify-between items-center gap-3 p-6 border-t border-neutral-200 bg-neutral-50 rounded-b-2xl">
         @if (!editMode()) {
         <button type="button"
-          class="flex-1 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
+          class="flex-1 px-6 py-3 bg-accent-600 hover:bg-accent-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
           (click)="toggleEditMode()">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -187,12 +187,12 @@
         </button>
         } @else {
         <button type="button"
-          class="flex-1 px-6 py-3 bg-slate-300 hover:bg-slate-400 text-slate-700 font-bold rounded-lg transition-colors"
+          class="flex-1 px-6 py-3 bg-neutral-300 hover:bg-neutral-400 text-neutral-700 font-bold rounded-lg transition-colors"
           (click)="toggleEditMode()" [disabled]="updating()">
           Cancelar Edición
         </button>
         <button type="submit"
-          class="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="flex-1 px-6 py-3 bg-success-600 hover:bg-success-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           [disabled]="updating() || editForm.invalid">
           @if (updating()) {
           <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">

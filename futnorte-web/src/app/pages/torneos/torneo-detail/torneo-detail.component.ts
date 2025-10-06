@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { TorneoService } from '../../../services/torneo.service';
 import { Torneo, EstadoTorneo } from '../../../models';
@@ -7,7 +7,7 @@ import { Torneo, EstadoTorneo } from '../../../models';
 @Component({
   selector: 'app-torneo-detail',
   standalone: true,
-  imports: [DatePipe, RouterModule],
+  imports: [CommonModule, DatePipe, RouterModule],
   templateUrl: './torneo-detail.component.html',
   styleUrl: './torneo-detail.component.css'
 })
@@ -45,6 +45,9 @@ export class TorneoDetailComponent implements OnInit {
   statusDotColor = computed(() =>
     this.getEstadoDotColor(this.torneo()?.estado || '')
   );
+
+  // Toggle para mostrar/ocultar acciones
+  mostrarAcciones = signal(false);
 
   EstadoTorneo = EstadoTorneo;
 
@@ -144,5 +147,9 @@ export class TorneoDetailComponent implements OnInit {
       default:
         return 'bg-gray-500';
     }
+  }
+
+  toggleAcciones(): void {
+    this.mostrarAcciones.update(valor => !valor);
   }
 }

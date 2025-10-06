@@ -28,6 +28,21 @@ export class TorneoListComponent implements OnInit {
     return torneo.id || index;
   }
 
+  getGradientClass(estado: EstadoTorneo): string {
+    switch (estado) {
+      case EstadoTorneo.CREADO:
+        return 'bg-gradient-to-br from-blue-500 to-blue-600 group-hover:from-blue-600 group-hover:to-blue-700';
+      case EstadoTorneo.EN_CURSO:
+        return 'bg-gradient-to-br from-green-500 to-green-600 group-hover:from-green-600 group-hover:to-green-700';
+      case EstadoTorneo.FINALIZADO:
+        return 'bg-gradient-to-br from-purple-500 to-purple-600 group-hover:from-purple-600 group-hover:to-purple-700';
+      case EstadoTorneo.CANCELADO:
+        return 'bg-gradient-to-br from-red-500 to-red-600 group-hover:from-red-600 group-hover:to-red-700';
+      default:
+        return 'bg-gradient-to-br from-gray-500 to-gray-600 group-hover:from-gray-600 group-hover:to-gray-700';
+    }
+  }
+
   torneosCreados = computed(() => 
     this.torneos().filter(torneo => torneo.estado === EstadoTorneo.CREADO).length
   );

@@ -38,6 +38,10 @@ export class EquipoDetailComponent implements OnInit {
   loadingEnfrentamientos = signal(false);
   mostrarHistorial = signal(false);
 
+  // Toggle para mostrar/ocultar estadísticas y jugadores
+  mostrarEstadisticas = signal(false);
+  mostrarJugadores = signal(true); // Mostrar jugadores por defecto
+
   equipoId = computed(() => {
     const id = this.route.snapshot.paramMap.get('id');
     return id ? +id : null;
@@ -126,6 +130,11 @@ export class EquipoDetailComponent implements OnInit {
     this.router.navigate(['/torneos', torneoId, 'equipos']);
   }
 
+  // Método para toggle de jugadores
+  toggleJugadores(): void {
+    this.mostrarJugadores.update(valor => !valor);
+  }
+
   // Métodos para historial de enfrentamientos
   cargarHistorialEnfrentamientos(): void {
     const equipoId = this.equipoId();
@@ -165,5 +174,9 @@ export class EquipoDetailComponent implements OnInit {
 
   esEquipoLocal(enfrentamiento: EnfrentamientoResponse): boolean {
     return enfrentamiento.equipoLocal === this.equipo()?.nombre;
+  }
+
+  toggleEstadisticas(): void {
+    this.mostrarEstadisticas.update(value => !value);
   }
 }
