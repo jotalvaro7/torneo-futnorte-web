@@ -4,12 +4,12 @@
     @if (loading()) {
     <div class="flex flex-col items-center justify-center py-16 animate-fade-in">
       <div class="relative">
-        <div class="w-12 h-12 border-4 border-green-200 border-t-green-600 rounded-full animate-spin"></div>
+        <div class="w-12 h-12 border-4 border-success-200 border-t-green-600 rounded-full animate-spin"></div>
         <div
           class="absolute inset-0 w-12 h-12 border-4 border-transparent border-b-green-400 rounded-full animate-spin animation-delay-150">
         </div>
       </div>
-      <p class="mt-4 text-gray-600 font-medium">Cargando información del equipo...</p>
+      <p class="mt-4 text-neutral-600 font-medium">Cargando información del equipo...</p>
     </div>
     }
 
@@ -41,7 +41,7 @@
       <!-- Modern Header with Gradient -->
       <div class="relative overflow-hidden rounded-3xl mb-8">
         <!-- Gradient Background -->
-        <div class="absolute inset-0 bg-gradient-to-r from-emerald-600 via-green-600 to-teal-700"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-accent-800 via-accent-700 to-secondary-800"></div>
 
         <!-- Content -->
         <div class="relative z-10 px-6 py-5">
@@ -89,14 +89,14 @@
               </button>
 
               <button type="button"
-                class="flex items-center gap-2 bg-white hover:bg-gray-100 text-green-700 px-3 py-2 rounded-xl font-bold shadow-lg transition-all duration-300"
+                class="flex items-center gap-2 bg-white hover:bg-neutral-100 text-black px-3 py-2 rounded-xl font-bold shadow-lg transition-all duration-300"
                 (click)="onEdit()">
                 <i class="fa-solid fa-edit text-xs"></i>
                 <span class="text-xs">Editar</span>
               </button>
 
               <button type="button"
-                class="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-xl font-bold shadow-lg transition-all duration-300"
+                class="flex items-center gap-2 bg-danger-500 hover:bg-danger-600 text-white px-3 py-2 rounded-xl font-bold shadow-lg transition-all duration-300"
                 (click)="openDeleteModal()">
                 <i class="fa-solid fa-trash text-xs"></i>
                 <span class="text-xs">Eliminar</span>
@@ -113,27 +113,27 @@
         <div class="overflow-x-auto">
           <table class="w-full">
             <thead>
-              <tr class="border-b-2 border-gray-900">
-                <th class="py-3 px-3 text-left text-xs font-bold uppercase tracking-wider text-gray-500">PJ</th>
-                <th class="py-3 px-3 text-left text-xs font-bold uppercase tracking-wider text-gray-500">G</th>
-                <th class="py-3 px-3 text-left text-xs font-bold uppercase tracking-wider text-gray-500">E</th>
-                <th class="py-3 px-3 text-left text-xs font-bold uppercase tracking-wider text-gray-500">P</th>
-                <th class="py-3 px-3 text-left text-xs font-bold uppercase tracking-wider text-gray-500">GF</th>
-                <th class="py-3 px-3 text-left text-xs font-bold uppercase tracking-wider text-gray-500">GC</th>
-                <th class="py-3 px-3 text-left text-xs font-bold uppercase tracking-wider text-gray-500">DG</th>
-                <th class="py-3 px-3 text-left text-xs font-bold uppercase tracking-wider text-gray-500">PTS</th>
+              <tr class="border-b-2 border-neutral-900">
+                <th class="py-3 px-3 text-left text-xs font-bold uppercase tracking-wider text-neutral-500">PJ</th>
+                <th class="py-3 px-3 text-left text-xs font-bold uppercase tracking-wider text-neutral-500">G</th>
+                <th class="py-3 px-3 text-left text-xs font-bold uppercase tracking-wider text-neutral-500">E</th>
+                <th class="py-3 px-3 text-left text-xs font-bold uppercase tracking-wider text-neutral-500">P</th>
+                <th class="py-3 px-3 text-left text-xs font-bold uppercase tracking-wider text-neutral-500">GF</th>
+                <th class="py-3 px-3 text-left text-xs font-bold uppercase tracking-wider text-neutral-500">GC</th>
+                <th class="py-3 px-3 text-left text-xs font-bold uppercase tracking-wider text-neutral-500">DG</th>
+                <th class="py-3 px-3 text-left text-xs font-bold uppercase tracking-wider text-neutral-500">PTS</th>
               </tr>
             </thead>
             <tbody>
-              <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                <td class="py-4 px-3 text-lg font-black text-gray-900">{{ equipo()?.partidosJugados || 0 }}</td>
-                <td class="py-4 px-3 text-lg font-black text-gray-900">{{ equipo()?.partidosGanados || 0 }}</td>
-                <td class="py-4 px-3 text-lg font-black text-gray-900">{{ equipo()?.partidosEmpatados || 0 }}</td>
-                <td class="py-4 px-3 text-lg font-black text-gray-900">{{ equipo()?.partidosPerdidos || 0 }}</td>
-                <td class="py-4 px-3 text-lg font-black text-gray-900">{{ equipo()?.golesAFavor || 0 }}</td>
-                <td class="py-4 px-3 text-lg font-black text-gray-900">{{ equipo()?.golesEnContra || 0 }}</td>
-                <td class="py-4 px-3 text-lg font-black text-gray-900">{{ diferenciadeGoles() > 0 ? '+' : '' }}{{ diferenciadeGoles() }}</td>
-                <td class="py-4 px-3 text-lg font-black text-gray-900">{{ equipo()?.puntos || 0 }}</td>
+              <tr class="border-b border-neutral-200 hover:bg-neutral-50 transition-colors">
+                <td class="py-4 px-3 text-lg font-black text-neutral-900">{{ equipo()?.partidosJugados || 0 }}</td>
+                <td class="py-4 px-3 text-lg font-black text-neutral-900">{{ equipo()?.partidosGanados || 0 }}</td>
+                <td class="py-4 px-3 text-lg font-black text-neutral-900">{{ equipo()?.partidosEmpatados || 0 }}</td>
+                <td class="py-4 px-3 text-lg font-black text-neutral-900">{{ equipo()?.partidosPerdidos || 0 }}</td>
+                <td class="py-4 px-3 text-lg font-black text-neutral-900">{{ equipo()?.golesAFavor || 0 }}</td>
+                <td class="py-4 px-3 text-lg font-black text-neutral-900">{{ equipo()?.golesEnContra || 0 }}</td>
+                <td class="py-4 px-3 text-lg font-black text-neutral-900">{{ diferenciadeGoles() > 0 ? '+' : '' }}{{ diferenciadeGoles() }}</td>
+                <td class="py-4 px-3 text-lg font-black text-neutral-900">{{ equipo()?.puntos || 0 }}</td>
               </tr>
             </tbody>
           </table>
@@ -154,14 +154,14 @@
     <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div class="bg-white rounded-2xl shadow-xl max-w-5xl w-full h-[85vh] flex flex-col overflow-hidden">
         <!-- Header del Modal -->
-        <div class="bg-gradient-to-r from-green-600 to-green-700 text-white p-4 md:p-6 flex-shrink-0">
+        <div class="bg-gradient-to-r from-success-600 to-success-700 text-white p-4 md:p-6 flex-shrink-0">
           <div class="flex items-center justify-between">
             <div>
               <h3 class="text-xl md:text-2xl font-bold mb-1 md:mb-2">Historial de Enfrentamientos</h3>
-              <p class="text-green-100 text-sm md:text-base">{{ equipo()?.nombre }} - {{ totalEnfrentamientos() }}
+              <p class="text-success-100 text-sm md:text-base">{{ equipo()?.nombre }} - {{ totalEnfrentamientos() }}
                 partidos</p>
             </div>
-            <button type="button" class="text-white hover:text-green-200 transition-colors" (click)="cerrarHistorial()">
+            <button type="button" class="text-white hover:text-success-200 transition-colors" (click)="cerrarHistorial()">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
               </svg>
@@ -173,42 +173,42 @@
         <div class="flex-1 overflow-y-auto min-h-0">
           @if (loadingEnfrentamientos()) {
           <div class="p-8 text-center">
-            <div class="w-8 h-8 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4">
+            <div class="w-8 h-8 border-4 border-success-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4">
             </div>
-            <p class="text-gray-600">Cargando historial de enfrentamientos...</p>
+            <p class="text-neutral-600">Cargando historial de enfrentamientos...</p>
           </div>
           } @else if (enfrentamientosOrdenados().length === 0) {
           <div class="p-8 text-center">
-            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
                 </path>
               </svg>
             </div>
-            <h4 class="text-lg font-semibold text-gray-900 mb-2">Sin historial</h4>
-            <p class="text-gray-600">Este equipo aún no ha jugado ningún partido</p>
+            <h4 class="text-lg font-semibold text-neutral-900 mb-2">Sin historial</h4>
+            <p class="text-neutral-600">Este equipo aún no ha jugado ningún partido</p>
           </div>
           } @else {
           @for (enfrentamiento of enfrentamientosOrdenados(); track enfrentamiento.id) {
-          <div class="p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors">
+          <div class="p-4 border-b border-neutral-100 hover:bg-neutral-50 transition-colors">
             <div class="flex items-center justify-between">
               <div class="flex-1">
                 <div class="flex items-center justify-between mb-2">
                   <div class="flex items-center gap-4">
                     @if (esEquipoLocal(enfrentamiento)) {
-                    <div class="font-bold text-green-600">{{ enfrentamiento.equipoLocal }} </div>
-                    <div class="text-gray-500">vs</div>
-                    <div class="font-semibold text-gray-900">{{ enfrentamiento.equipoVisitante }}</div>
+                    <div class="font-bold text-success-600">{{ enfrentamiento.equipoLocal }} </div>
+                    <div class="text-neutral-500">vs</div>
+                    <div class="font-semibold text-neutral-900">{{ enfrentamiento.equipoVisitante }}</div>
                     } @else {
-                    <div class="font-semibold text-gray-900">{{ enfrentamiento.equipoLocal }}</div>
-                    <div class="text-gray-500">vs</div>
-                    <div class="font-bold text-green-600">{{ enfrentamiento.equipoVisitante }}</div>
+                    <div class="font-semibold text-neutral-900">{{ enfrentamiento.equipoLocal }}</div>
+                    <div class="text-neutral-500">vs</div>
+                    <div class="font-bold text-success-600">{{ enfrentamiento.equipoVisitante }}</div>
                     }
                   </div>
                   <div class="text-center">
                     @if (enfrentamiento.estado === 'FINALIZADO') {
-                    <span class="text-lg font-bold text-gray-900">
+                    <span class="text-lg font-bold text-neutral-900">
                       {{ enfrentamiento.golesLocal }} - {{ enfrentamiento.golesVisitante }}
                     </span>
                     } @else {
@@ -219,7 +219,7 @@
                     }
                   </div>
                 </div>
-                <div class="flex items-center justify-between text-sm text-gray-600">
+                <div class="flex items-center justify-between text-sm text-neutral-600">
                   <div class="flex items-center gap-4">
                     <div class="flex items-center gap-1">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -243,19 +243,19 @@
                   <div class="text-xs font-medium">
                     @if (esEquipoLocal(enfrentamiento)) {
                     @if ((enfrentamiento.golesLocal ?? 0) > (enfrentamiento.golesVisitante ?? 0)) {
-                    <span class="text-green-600">VICTORIA</span>
+                    <span class="text-success-600">VICTORIA</span>
                     } @else if ((enfrentamiento.golesLocal ?? 0) < (enfrentamiento.golesVisitante ?? 0)) { <span
-                      class="text-red-600">DERROTA</span>
+                      class="text-danger-600">DERROTA</span>
                       } @else {
-                      <span class="text-yellow-600">EMPATE</span>
+                      <span class="text-warning-600">EMPATE</span>
                       }
                       } @else {
                       @if ((enfrentamiento.golesVisitante ?? 0) > (enfrentamiento.golesLocal ?? 0)) {
-                      <span class="text-green-600">VICTORIA</span>
+                      <span class="text-success-600">VICTORIA</span>
                       } @else if ((enfrentamiento.golesVisitante ?? 0) < (enfrentamiento.golesLocal ?? 0)) { <span
-                        class="text-red-600">DERROTA</span>
+                        class="text-danger-600">DERROTA</span>
                         } @else {
-                        <span class="text-yellow-600">EMPATE</span>
+                        <span class="text-warning-600">EMPATE</span>
                         }
                         }
                   </div>

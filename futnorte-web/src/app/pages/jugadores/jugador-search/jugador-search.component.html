@@ -1,25 +1,25 @@
 <div class="max-w-5xl mx-auto px-4 py-8">
   <!-- Header con gradiente moderno -->
   <div class="text-center mb-8">
-    <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-lg mb-4">
+    <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary-500 to-accent-600 rounded-2xl shadow-lg mb-4">
       <i class="fas fa-search text-white text-2xl"></i>
     </div>
-    <h2 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+    <h2 class="text-3xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
       Buscar Jugador
     </h2>
-    <p class="text-gray-500 mt-2">Encuentra y gestiona información de jugadores</p>
+    <p class="text-neutral-500 mt-2">Encuentra y gestiona información de jugadores</p>
   </div>
 
   <!-- Card principal con sombra moderna -->
-  <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+  <div class="bg-white rounded-2xl shadow-xl border border-neutral-100 overflow-hidden">
     <div class="p-8">
 
       <!-- Formulario de búsqueda moderno -->
       <form [formGroup]="searchForm" (ngSubmit)="buscarJugador()" class="mb-8">
         <div class="flex flex-col md:flex-row gap-4">
           <div class="flex-1">
-            <label for="identificacion" class="block text-sm font-semibold text-gray-700 mb-3">
-              <i class="fas fa-id-card mr-2 text-blue-500"></i>
+            <label for="identificacion" class="block text-sm font-semibold text-neutral-700 mb-3">
+              <i class="fas fa-id-card mr-2 text-primary-500"></i>
               Número de Identificación
             </label>
             <div class="relative">
@@ -27,16 +27,16 @@
                 type="text"
                 id="identificacion"
                 formControlName="identificacion"
-                class="w-full px-4 py-3 pl-12 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-300"
-                [class.border-red-400]="searchForm.get('identificacion')?.invalid && searchForm.get('identificacion')?.touched"
-                [class.focus:ring-red-500]="searchForm.get('identificacion')?.invalid && searchForm.get('identificacion')?.touched"
+                class="w-full px-4 py-3 pl-12 border-2 border-neutral-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300"
+                [class.border-danger-400]="searchForm.get('identificacion')?.invalid && searchForm.get('identificacion')?.touched"
+                [class.focus:ring-danger-500]="searchForm.get('identificacion')?.invalid && searchForm.get('identificacion')?.touched"
                 placeholder="Ej: 1234567890">
               <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <i class="fas fa-id-badge text-gray-400"></i>
+                <i class="fas fa-id-badge text-neutral-400"></i>
               </div>
             </div>
             @if (searchForm.get('identificacion')?.invalid && searchForm.get('identificacion')?.touched) {
-              <p class="mt-2 text-sm text-red-600 flex items-center">
+              <p class="mt-2 text-sm text-danger-600 flex items-center">
                 <i class="fas fa-exclamation-circle mr-1"></i>
                 La identificación es requerida
               </p>
@@ -45,7 +45,7 @@
           <div class="w-full md:w-auto flex items-end">
             <button
               type="submit"
-              class="w-full md:w-auto px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              class="w-full md:w-auto px-8 py-3 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold rounded-xl hover:from-primary-700 hover:to-accent-700 focus:outline-none focus:ring-4 focus:ring-primary-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               [disabled]="!canSearch()">
               @if (isLoading()) {
                 <span class="inline-block animate-spin rounded-full h-5 w-5 border-2 border-white border-r-transparent mr-2"></span>
@@ -61,16 +61,16 @@
 
       <!-- Error de búsqueda con animación -->
       @if (searchError()) {
-        <div class="bg-gradient-to-r from-red-50 to-pink-50 border-l-4 border-red-500 rounded-xl p-5 mb-8 shadow-md animate-fadeIn">
+        <div class="bg-gradient-to-r from-danger-50 to-accent-pink-light border-l-4 border-danger-500 rounded-xl p-5 mb-8 shadow-md animate-fadeIn">
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                <i class="fas fa-exclamation-triangle text-red-600"></i>
+              <div class="w-10 h-10 bg-danger-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-exclamation-triangle text-danger-600"></i>
               </div>
             </div>
             <div class="ml-4">
-              <h3 class="text-sm font-semibold text-red-800">No se encontró el jugador</h3>
-              <p class="text-sm text-red-700 mt-1">{{ searchError() }}</p>
+              <h3 class="text-sm font-semibold text-danger-800">No se encontró el jugador</h3>
+              <p class="text-sm text-danger-700 mt-1">{{ searchError() }}</p>
             </div>
           </div>
         </div>
@@ -78,9 +78,9 @@
 
       <!-- Jugador encontrado con diseño moderno -->
       @if (hasJugador()) {
-        <div class="bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-2xl shadow-xl overflow-hidden animate-fadeIn">
+        <div class="bg-gradient-to-br from-white to-neutral-50 border border-neutral-200 rounded-2xl shadow-xl overflow-hidden animate-fadeIn">
           <!-- Header con gradiente de éxito -->
-          <div class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-5 flex justify-between items-center">
+          <div class="bg-gradient-to-r from-success-500 to-success-600 text-white px-6 py-5 flex justify-between items-center">
             <h5 class="text-xl font-bold flex items-center">
               <div class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3">
                 <i class="fas fa-user-check"></i>
@@ -98,7 +98,7 @@
                 </button>
                 <button
                   type="button"
-                  class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+                  class="px-4 py-2 bg-danger-500 hover:bg-danger-600 text-white font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
                   (click)="eliminarJugador()">
                   <i class="fas fa-trash-alt mr-2"></i>
                   Eliminar
@@ -112,51 +112,51 @@
             @if (!isEditing()) {
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Card Nombre -->
-                <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div class="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
                   <div class="flex items-center mb-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center mr-3">
-                      <i class="fas fa-user text-blue-600"></i>
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary-100 to-primary-200 rounded-lg flex items-center justify-center mr-3">
+                      <i class="fas fa-user text-primary-600"></i>
                     </div>
-                    <label class="text-sm font-semibold text-gray-500">Nombre Completo</label>
+                    <label class="text-sm font-semibold text-neutral-500">Nombre Completo</label>
                   </div>
-                  <p class="text-lg font-bold text-gray-900">{{ jugadorEncontrado()!.nombre }} {{ jugadorEncontrado()!.apellido }}</p>
+                  <p class="text-lg font-bold text-neutral-900">{{ jugadorEncontrado()!.nombre }} {{ jugadorEncontrado()!.apellido }}</p>
                 </div>
 
                 <!-- Card Identificación -->
-                <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div class="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
                   <div class="flex items-center mb-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg flex items-center justify-center mr-3">
-                      <i class="fas fa-id-card text-purple-600"></i>
+                    <div class="w-10 h-10 bg-gradient-to-br from-accent-100 to-accent-200 rounded-lg flex items-center justify-center mr-3">
+                      <i class="fas fa-id-card text-accent-600"></i>
                     </div>
-                    <label class="text-sm font-semibold text-gray-500">Identificación</label>
+                    <label class="text-sm font-semibold text-neutral-500">Identificación</label>
                   </div>
-                  <p class="text-lg font-bold text-gray-900">{{ jugadorEncontrado()!.identificacion }}</p>
+                  <p class="text-lg font-bold text-neutral-900">{{ jugadorEncontrado()!.identificacion }}</p>
                 </div>
 
                 <!-- Card Nacionalidad -->
-                <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div class="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
                   <div class="flex items-center mb-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-green-100 to-green-200 rounded-lg flex items-center justify-center mr-3">
-                      <i class="fas fa-flag text-green-600"></i>
+                    <div class="w-10 h-10 bg-gradient-to-br from-success-100 to-success-200 rounded-lg flex items-center justify-center mr-3">
+                      <i class="fas fa-flag text-success-600"></i>
                     </div>
-                    <label class="text-sm font-semibold text-gray-500">Nacionalidad</label>
+                    <label class="text-sm font-semibold text-neutral-500">Nacionalidad</label>
                   </div>
-                  <p class="text-lg font-bold text-gray-900">{{ jugadorEncontrado()!.nacionalidad }}</p>
+                  <p class="text-lg font-bold text-neutral-900">{{ jugadorEncontrado()!.nacionalidad }}</p>
                 </div>
 
                 <!-- Card Equipo -->
-                <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div class="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
                   <div class="flex items-center mb-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-orange-100 to-orange-200 rounded-lg flex items-center justify-center mr-3">
-                      <i class="fas fa-users text-orange-600"></i>
+                    <div class="w-10 h-10 bg-gradient-to-br from-warning-100 to-warning-200 rounded-lg flex items-center justify-center mr-3">
+                      <i class="fas fa-users text-warning-600"></i>
                     </div>
-                    <label class="text-sm font-semibold text-gray-500">Equipo</label>
+                    <label class="text-sm font-semibold text-neutral-500">Equipo</label>
                   </div>
-                  <p class="text-lg font-bold text-gray-900">{{ getEquipoNombre(jugadorEncontrado()!.equipoId) }}</p>
+                  <p class="text-lg font-bold text-neutral-900">{{ getEquipoNombre(jugadorEncontrado()!.equipoId) }}</p>
                 </div>
 
                 <!-- Card Goles -->
-                <div class="bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200 text-white">
+                <div class="bg-gradient-to-br from-primary-500 to-accent-600 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200 text-white">
                   <div class="flex items-center mb-3">
                     <div class="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mr-3">
                       <i class="fas fa-futbol"></i>
@@ -167,14 +167,14 @@
                 </div>
 
                 <!-- Card ID -->
-                <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div class="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
                   <div class="flex items-center mb-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center mr-3">
-                      <i class="fas fa-hashtag text-gray-600"></i>
+                    <div class="w-10 h-10 bg-gradient-to-br from-neutral-100 to-neutral-200 rounded-lg flex items-center justify-center mr-3">
+                      <i class="fas fa-hashtag text-neutral-600"></i>
                     </div>
-                    <label class="text-sm font-semibold text-gray-500">ID Jugador</label>
+                    <label class="text-sm font-semibold text-neutral-500">ID Jugador</label>
                   </div>
-                  <p class="text-lg font-bold text-gray-600">#{{ jugadorEncontrado()!.id }}</p>
+                  <p class="text-lg font-bold text-neutral-600">#{{ jugadorEncontrado()!.id }}</p>
                 </div>
               </div>
             }
@@ -185,16 +185,16 @@
 
                 <!-- Error de edición -->
                 @if (editError()) {
-                  <div class="bg-gradient-to-r from-red-50 to-pink-50 border-l-4 border-red-500 rounded-xl p-5 mb-6 shadow-md">
+                  <div class="bg-gradient-to-r from-danger-50 to-accent-pink-light border-l-4 border-danger-500 rounded-xl p-5 mb-6 shadow-md">
                     <div class="flex items-center">
                       <div class="flex-shrink-0">
-                        <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                          <i class="fas fa-exclamation-triangle text-red-600"></i>
+                        <div class="w-10 h-10 bg-danger-100 rounded-full flex items-center justify-center">
+                          <i class="fas fa-exclamation-triangle text-danger-600"></i>
                         </div>
                       </div>
                       <div class="ml-4">
-                        <h3 class="text-sm font-semibold text-red-800">Error al editar</h3>
-                        <p class="text-sm text-red-700 mt-1">{{ editError() }}</p>
+                        <h3 class="text-sm font-semibold text-danger-800">Error al editar</h3>
+                        <p class="text-sm text-danger-700 mt-1">{{ editError() }}</p>
                       </div>
                     </div>
                   </div>
@@ -204,19 +204,19 @@
                   <!-- Columna izquierda -->
                   <div class="space-y-5">
                     <div>
-                      <label for="nombre" class="block text-sm font-semibold text-gray-700 mb-3">
-                        <i class="fas fa-user mr-2 text-blue-500"></i>
+                      <label for="nombre" class="block text-sm font-semibold text-neutral-700 mb-3">
+                        <i class="fas fa-user mr-2 text-primary-500"></i>
                         Nombre
                       </label>
                       <input
                         type="text"
                         id="nombre"
                         formControlName="nombre"
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        [class.border-red-400]="editForm.get('nombre')?.invalid && editForm.get('nombre')?.touched"
+                        class="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                        [class.border-danger-400]="editForm.get('nombre')?.invalid && editForm.get('nombre')?.touched"
                         placeholder="Ingrese el nombre">
                       @if (editForm.get('nombre')?.invalid && editForm.get('nombre')?.touched) {
-                        <p class="mt-2 text-sm text-red-600 flex items-center">
+                        <p class="mt-2 text-sm text-danger-600 flex items-center">
                           <i class="fas fa-exclamation-circle mr-1"></i>
                           El nombre es requerido
                         </p>
@@ -224,19 +224,19 @@
                     </div>
 
                     <div>
-                      <label for="apellido" class="block text-sm font-semibold text-gray-700 mb-3">
-                        <i class="fas fa-user mr-2 text-blue-500"></i>
+                      <label for="apellido" class="block text-sm font-semibold text-neutral-700 mb-3">
+                        <i class="fas fa-user mr-2 text-primary-500"></i>
                         Apellido
                       </label>
                       <input
                         type="text"
                         id="apellido"
                         formControlName="apellido"
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        [class.border-red-400]="editForm.get('apellido')?.invalid && editForm.get('apellido')?.touched"
+                        class="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                        [class.border-danger-400]="editForm.get('apellido')?.invalid && editForm.get('apellido')?.touched"
                         placeholder="Ingrese el apellido">
                       @if (editForm.get('apellido')?.invalid && editForm.get('apellido')?.touched) {
-                        <p class="mt-2 text-sm text-red-600 flex items-center">
+                        <p class="mt-2 text-sm text-danger-600 flex items-center">
                           <i class="fas fa-exclamation-circle mr-1"></i>
                           El apellido es requerido
                         </p>
@@ -244,19 +244,19 @@
                     </div>
 
                     <div>
-                      <label for="editIdentificacion" class="block text-sm font-semibold text-gray-700 mb-3">
-                        <i class="fas fa-id-card mr-2 text-purple-500"></i>
+                      <label for="editIdentificacion" class="block text-sm font-semibold text-neutral-700 mb-3">
+                        <i class="fas fa-id-card mr-2 text-accent-500"></i>
                         Identificación
                       </label>
                       <input
                         type="text"
                         id="editIdentificacion"
                         formControlName="identificacion"
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        [class.border-red-400]="editForm.get('identificacion')?.invalid && editForm.get('identificacion')?.touched"
+                        class="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                        [class.border-danger-400]="editForm.get('identificacion')?.invalid && editForm.get('identificacion')?.touched"
                         placeholder="Número de identificación">
                       @if (editForm.get('identificacion')?.invalid && editForm.get('identificacion')?.touched) {
-                        <p class="mt-2 text-sm text-red-600 flex items-center">
+                        <p class="mt-2 text-sm text-danger-600 flex items-center">
                           <i class="fas fa-exclamation-circle mr-1"></i>
                           La identificación es requerida
                         </p>
@@ -267,19 +267,19 @@
                   <!-- Columna derecha -->
                   <div class="space-y-5">
                     <div>
-                      <label for="nacionalidad" class="block text-sm font-semibold text-gray-700 mb-3">
-                        <i class="fas fa-flag mr-2 text-green-500"></i>
+                      <label for="nacionalidad" class="block text-sm font-semibold text-neutral-700 mb-3">
+                        <i class="fas fa-flag mr-2 text-success-500"></i>
                         Nacionalidad
                       </label>
                       <input
                         type="text"
                         id="nacionalidad"
                         formControlName="nacionalidad"
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        [class.border-red-400]="editForm.get('nacionalidad')?.invalid && editForm.get('nacionalidad')?.touched"
+                        class="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                        [class.border-danger-400]="editForm.get('nacionalidad')?.invalid && editForm.get('nacionalidad')?.touched"
                         placeholder="Ej: Colombia">
                       @if (editForm.get('nacionalidad')?.invalid && editForm.get('nacionalidad')?.touched) {
-                        <p class="mt-2 text-sm text-red-600 flex items-center">
+                        <p class="mt-2 text-sm text-danger-600 flex items-center">
                           <i class="fas fa-exclamation-circle mr-1"></i>
                           La nacionalidad es requerida
                         </p>
@@ -287,22 +287,22 @@
                     </div>
 
                     <div>
-                      <label for="equipoId" class="block text-sm font-semibold text-gray-700 mb-3">
-                        <i class="fas fa-users mr-2 text-orange-500"></i>
+                      <label for="equipoId" class="block text-sm font-semibold text-neutral-700 mb-3">
+                        <i class="fas fa-users mr-2 text-warning-500"></i>
                         Equipo
                       </label>
                       <select
                         id="equipoId"
                         formControlName="equipoId"
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
-                        [class.border-red-400]="editForm.get('equipoId')?.invalid && editForm.get('equipoId')?.touched">
+                        class="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 bg-white"
+                        [class.border-danger-400]="editForm.get('equipoId')?.invalid && editForm.get('equipoId')?.touched">
                         <option value="0">Seleccione un equipo</option>
                         @for (equipo of equipos(); track equipo.id) {
                           <option [value]="equipo.id">{{ equipo.nombre }}</option>
                         }
                       </select>
                       @if (editForm.get('equipoId')?.invalid && editForm.get('equipoId')?.touched) {
-                        <p class="mt-2 text-sm text-red-600 flex items-center">
+                        <p class="mt-2 text-sm text-danger-600 flex items-center">
                           <i class="fas fa-exclamation-circle mr-1"></i>
                           Debe seleccionar un equipo
                         </p>
@@ -310,17 +310,17 @@
                     </div>
 
                     <div>
-                      <label class="block text-sm font-semibold text-gray-700 mb-3">
-                        <i class="fas fa-futbol mr-2 text-blue-500"></i>
+                      <label class="block text-sm font-semibold text-neutral-700 mb-3">
+                        <i class="fas fa-futbol mr-2 text-primary-500"></i>
                         Número de Goles
                       </label>
-                      <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-2 border-gray-200 rounded-xl px-4 py-3">
+                      <div class="bg-gradient-to-r from-neutral-50 to-neutral-100 border-2 border-neutral-200 rounded-xl px-4 py-3">
                         <div class="flex items-center justify-between">
-                          <span class="inline-flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg text-lg font-bold shadow-md">
+                          <span class="inline-flex items-center justify-center bg-gradient-to-br from-primary-500 to-accent-600 text-white px-4 py-2 rounded-lg text-lg font-bold shadow-md">
                             <i class="fas fa-futbol mr-2"></i>
                             {{ jugadorEncontrado()!.numeroGoles }}
                           </span>
-                          <small class="text-gray-500 italic">(Campo no editable)</small>
+                          <small class="text-neutral-500 italic">(Campo no editable)</small>
                         </div>
                       </div>
                     </div>
@@ -328,10 +328,10 @@
                 </div>
 
                 <!-- Botones de acción -->
-                <div class="flex flex-col sm:flex-row gap-3 justify-end mt-8 pt-6 border-t border-gray-200">
+                <div class="flex flex-col sm:flex-row gap-3 justify-end mt-8 pt-6 border-t border-neutral-200">
                   <button
                     type="button"
-                    class="px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                    class="px-6 py-3 border-2 border-neutral-300 text-neutral-700 font-semibold rounded-xl hover:bg-neutral-50 focus:outline-none focus:ring-4 focus:ring-neutral-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                     (click)="cancelarEdicion()"
                     [disabled]="isLoading()">
                     <i class="fas fa-times mr-2"></i>
@@ -339,7 +339,7 @@
                   </button>
                   <button
                     type="submit"
-                    class="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-xl hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-4 focus:ring-green-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
+                    class="px-6 py-3 bg-gradient-to-r from-success-500 to-success-600 text-white font-semibold rounded-xl hover:from-success-600 hover:to-success-700 focus:outline-none focus:ring-4 focus:ring-success-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
                     [disabled]="!canEdit()">
                     @if (isLoading()) {
                       <span class="inline-block animate-spin rounded-full h-5 w-5 border-2 border-white border-r-transparent mr-2"></span>

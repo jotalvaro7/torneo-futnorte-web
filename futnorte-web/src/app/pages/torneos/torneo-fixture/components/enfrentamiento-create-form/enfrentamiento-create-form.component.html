@@ -4,10 +4,10 @@
 
     <!-- Modal Header -->
     <div
-      class="flex items-center justify-between p-6 border-b border-slate-200 bg-gradient-to-r from-green-600 to-blue-600 rounded-t-2xl">
+      class="flex items-center justify-between p-6 border-b border-neutral-200 bg-gradient-to-r from-success-600 to-primary-600 rounded-t-2xl">
       <div class="flex items-center gap-3">
         <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center">
-          <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-6 h-6 text-success-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M12 4v16m8-8H4">
             </path>
@@ -15,7 +15,7 @@
         </div>
         <div>
           <h3 class="text-2xl font-black text-white">Nuevo Enfrentamiento</h3>
-          <p class="text-green-100 text-sm">Programa un nuevo partido del torneo</p>
+          <p class="text-success-100 text-sm">Programa un nuevo partido del torneo</p>
         </div>
       </div>
       <button type="button"
@@ -34,41 +34,41 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <!-- Equipo Local -->
           <div>
-            <label for="equipoLocal" class="block text-sm font-bold text-slate-700 mb-2">
+            <label for="equipoLocal" class="block text-sm font-bold text-neutral-700 mb-2">
               Equipo Local *
             </label>
             <select
               id="equipoLocal"
               formControlName="equipoLocalId"
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors"
-              [class.border-red-500]="getFieldError('equipoLocalId')">
+              class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-success-500 focus:ring-2 focus:ring-success-200 transition-colors"
+              [class.border-danger-500]="getFieldError('equipoLocalId')">
               <option value="">Seleccionar equipo local</option>
               @for (equipo of equiposDisponiblesLocal; track equipo.id) {
               <option [value]="equipo.id">{{ equipo.nombre }}</option>
               }
             </select>
             @if (getFieldError('equipoLocalId')) {
-            <p class="text-red-600 text-sm mt-2 font-medium">{{ getFieldError('equipoLocalId') }}</p>
+            <p class="text-danger-600 text-sm mt-2 font-medium">{{ getFieldError('equipoLocalId') }}</p>
             }
           </div>
 
           <!-- Equipo Visitante -->
           <div>
-            <label for="equipoVisitante" class="block text-sm font-bold text-slate-700 mb-2">
+            <label for="equipoVisitante" class="block text-sm font-bold text-neutral-700 mb-2">
               Equipo Visitante *
             </label>
             <select
               id="equipoVisitante"
               formControlName="equipoVisitanteId"
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors"
-              [class.border-red-500]="getFieldError('equipoVisitanteId')">
+              class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-success-500 focus:ring-2 focus:ring-success-200 transition-colors"
+              [class.border-danger-500]="getFieldError('equipoVisitanteId')">
               <option value="">Seleccionar equipo visitante</option>
               @for (equipo of equiposDisponiblesVisitante; track equipo.id) {
               <option [value]="equipo.id">{{ equipo.nombre }}</option>
               }
             </select>
             @if (getFieldError('equipoVisitanteId')) {
-            <p class="text-red-600 text-sm mt-2 font-medium">{{ getFieldError('equipoVisitanteId') }}</p>
+            <p class="text-danger-600 text-sm mt-2 font-medium">{{ getFieldError('equipoVisitanteId') }}</p>
             }
           </div>
         </div>
@@ -77,35 +77,35 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <!-- Fecha y Hora -->
           <div>
-            <label for="fechaHora" class="block text-sm font-bold text-slate-700 mb-2">
+            <label for="fechaHora" class="block text-sm font-bold text-neutral-700 mb-2">
               Fecha y Hora *
             </label>
             <input
               type="datetime-local"
               id="fechaHora"
               formControlName="fechaHora"
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors"
-              [class.border-red-500]="getFieldError('fechaHora')">
+              class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-success-500 focus:ring-2 focus:ring-success-200 transition-colors"
+              [class.border-danger-500]="getFieldError('fechaHora')">
             @if (getFieldError('fechaHora')) {
-            <p class="text-red-600 text-sm mt-2 font-medium">{{ getFieldError('fechaHora') }}</p>
+            <p class="text-danger-600 text-sm mt-2 font-medium">{{ getFieldError('fechaHora') }}</p>
             }
           </div>
 
           <!-- Cancha -->
           <div>
-            <label for="cancha" class="block text-sm font-bold text-slate-700 mb-2">
+            <label for="cancha" class="block text-sm font-bold text-neutral-700 mb-2">
               Cancha *
             </label>
             <input
               type="text"
               id="cancha"
               formControlName="cancha"
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors"
+              class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-success-500 focus:ring-2 focus:ring-success-200 transition-colors"
               placeholder="Nombre de la cancha"
               maxlength="100"
-              [class.border-red-500]="getFieldError('cancha')">
+              [class.border-danger-500]="getFieldError('cancha')">
             @if (getFieldError('cancha')) {
-            <p class="text-red-600 text-sm mt-2 font-medium">{{ getFieldError('cancha') }}</p>
+            <p class="text-danger-600 text-sm mt-2 font-medium">{{ getFieldError('cancha') }}</p>
             }
           </div>
         </div>
@@ -113,14 +113,14 @@
       </div>
 
       <!-- Modal Footer -->
-      <div class="flex justify-between items-center gap-3 p-6 border-t border-slate-200 bg-slate-50 rounded-b-2xl">
+      <div class="flex justify-between items-center gap-3 p-6 border-t border-neutral-200 bg-neutral-50 rounded-b-2xl">
         <button type="button"
-          class="flex-1 px-6 py-3 bg-slate-300 hover:bg-slate-400 text-slate-700 font-bold rounded-lg transition-colors"
+          class="flex-1 px-6 py-3 bg-neutral-300 hover:bg-neutral-400 text-neutral-700 font-bold rounded-lg transition-colors"
           (click)="onCancel()" [disabled]="creating()">
           Cancelar
         </button>
         <button type="submit"
-          class="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="flex-1 px-6 py-3 bg-success-600 hover:bg-success-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           [disabled]="creating() || createForm.invalid">
           @if (creating()) {
           <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
