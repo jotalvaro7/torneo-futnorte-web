@@ -8,6 +8,7 @@ import { EnfrentamientoCreateFormComponent } from './components/enfrentamiento-c
 import { EnfrentamientoEditModalComponent } from './components/enfrentamiento-edit-modal/enfrentamiento-edit-modal.component';
 import { EnfrentamientoListComponent } from './components/enfrentamiento-list/enfrentamiento-list.component';
 import { EnfrentamientoResponse, CrearEnfrentamientoRequest, ActualizarEnfrentamientoRequest, Jugador } from '../../../models';
+import { PdfExportService } from '../../../services/pdf-export.service';
 
 @Component({
   selector: 'app-torneo-fixture',
@@ -29,6 +30,7 @@ export class TorneoFixtureComponent implements OnInit {
   private readonly state = inject(TorneoFixtureStateService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly pdfExportService = inject(PdfExportService);
 
   // UI state
   showCreateForm = signal(false);
@@ -173,5 +175,23 @@ export class TorneoFixtureComponent implements OnInit {
 
   establecerFiltroMes(): void {
     this.state.establecerFiltroMes();
+  }
+
+  exportarFixturePDF(): void {
+    const enfrentamientos = this.state.enfrentamientosOrdenados();
+    const torneoId = this.torneo()?.id;
+    const nombreTorneo = this.torneo()?.nombre;
+    const fechaInicio = this.fechaInicio();
+    const fechaFin = this.fechaFin();
+
+    if (torneoId) {
+      this.pdfExportService.exportarFixture(
+        enfrentamientos,
+        torneoId,
+        nombreTorneo,
+        fechaInicio,
+        fechaFin
+      );
+    }
   }
 }
