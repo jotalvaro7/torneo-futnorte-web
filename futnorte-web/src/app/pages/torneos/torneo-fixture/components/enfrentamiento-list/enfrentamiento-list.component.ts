@@ -23,7 +23,17 @@ export class EnfrentamientoListComponent {
   eliminar = output<EnfrentamientoResponse>();
 
   formatDateTime(dateTime: string): string {
-    return new Date(dateTime).toLocaleString('es-CO');
+    const date = new Date(dateTime);
+    return date.toLocaleDateString('es-CO', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    }) + ' ' + date.toLocaleTimeString('es-CO', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
   }
 
   formatDate(date: string): string {
