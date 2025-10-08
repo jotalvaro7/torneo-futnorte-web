@@ -13,7 +13,7 @@
   left: 50%;
   width: 0;
   height: 3px;
-  background: linear-gradient(to right, #8b5cf6, #ec4899);
+  background: linear-gradient(to right, #dc2626, #ef4444);
   transform: translateX(-50%);
   transition: width 0.3s ease;
   border-radius: 2px;
@@ -35,7 +35,7 @@
 
 .nav-link-active .text-gray-600,
 .nav-link-active .text-gray-700 {
-  color: #9333ea !important;
+  color: #dc2626 !important;
 }
 
 /* Smooth transitions for all interactive elements */
