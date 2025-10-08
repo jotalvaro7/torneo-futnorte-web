@@ -1,10 +1,10 @@
 <div class="max-w-5xl mx-auto px-4 py-8">
   <!-- Header con gradiente moderno -->
   <div class="text-center mb-8">
-    <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-danger-600 to-white rounded-2xl shadow-lg mb-4">
-      <i class="fas fa-search text-danger-700 text-2xl"></i>
+    <div class="inline-flex items-center justify-center w-16 h-16 bg-neutral-600 rounded-2xl shadow-lg mb-4">
+      <i class="fas fa-search text-white text-2xl"></i>
     </div>
-    <h2 class="text-3xl font-bold bg-gradient-to-r from-danger-600 to-neutral-500 bg-clip-text text-transparent">
+    <h2 class="text-3xl font-bold text-black bg-clip-text">
       Buscar Jugador
     </h2>
     <p class="text-neutral-500 mt-2">Encuentra y gestiona información de jugadores</p>
@@ -45,7 +45,7 @@
           <div class="w-full md:w-auto flex items-end">
             <button
               type="submit"
-              class="w-full md:w-auto px-8 py-3 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold rounded-xl hover:from-primary-700 hover:to-accent-700 focus:outline-none focus:ring-4 focus:ring-primary-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              class="w-full md:w-auto px-8 py-3 bg-neutral-600 hover:bg-neutral-500 text-white font-semibold rounded-xl hover:from-primary-700 hover:to-accent-700 focus:outline-none focus:ring-4 focus:ring-primary-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               [disabled]="!canSearch()">
               @if (isLoading()) {
                 <span class="inline-block animate-spin rounded-full h-5 w-5 border-2 border-white border-r-transparent mr-2"></span>
@@ -80,7 +80,7 @@
       @if (hasJugador()) {
         <div class="bg-gradient-to-br from-white to-neutral-50 border border-neutral-200 rounded-2xl shadow-xl overflow-hidden animate-fadeIn">
           <!-- Header con gradiente de éxito -->
-          <div class="bg-gradient-to-r from-accent-800 via-accent-700 to-secondary-800 text-white px-6 py-5 flex justify-between items-center">
+          <div class="bg-gradient-to-br from-danger-700 via-danger-600 to-danger-500 text-white px-6 py-5 flex justify-between items-center">
             <h5 class="text-xl font-bold flex items-center">
               <div class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3">
                 <i class="fas fa-user-check"></i>
@@ -91,14 +91,14 @@
               <div class="flex gap-2">
                 <button
                   type="button"
-                  class="px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-semibold rounded-lg transition-all duration-200 backdrop-blur-sm shadow-md hover:shadow-lg"
+                  class="px-4 py-2 bg-white text-black hover:bg-neutral-600 font-semibold rounded-lg transition-all duration-200 backdrop-blur-sm shadow-md hover:shadow-lg"
                   (click)="iniciarEdicion()">
                   <i class="fas fa-edit mr-2"></i>
                   Editar
                 </button>
                 <button
                   type="button"
-                  class="px-4 py-2 bg-danger-500 hover:bg-danger-600 text-white font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+                  class="px-4 py-2 bg-white text-black hover:bg-neutral-600 font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
                   (click)="eliminarJugador()">
                   <i class="fas fa-trash-alt mr-2"></i>
                   Eliminar
@@ -156,7 +156,7 @@
                 </div>
 
                 <!-- Card Goles -->
-                <div class="bg-gradient-to-br from-primary-500 to-accent-600 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200 text-white">
+                <div class="bg-gradient-to-br from-neutral-600 to-neutral-300 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200 text-white">
                   <div class="flex items-center mb-3">
                     <div class="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mr-3">
                       <i class="fas fa-futbol"></i>
@@ -316,7 +316,7 @@
                       </label>
                       <div class="bg-gradient-to-r from-neutral-50 to-neutral-100 border-2 border-neutral-200 rounded-xl px-4 py-3">
                         <div class="flex items-center justify-between">
-                          <span class="inline-flex items-center justify-center bg-gradient-to-br from-primary-500 to-accent-600 text-white px-4 py-2 rounded-lg text-lg font-bold shadow-md">
+                          <span class="inline-flex items-center justify-center bg-neutral-600 text-white px-4 py-2 rounded-lg text-lg font-bold shadow-md">
                             <i class="fas fa-futbol mr-2"></i>
                             {{ jugadorEncontrado()!.numeroGoles }}
                           </span>
@@ -339,7 +339,7 @@
                   </button>
                   <button
                     type="submit"
-                    class="px-6 py-3 bg-gradient-to-r from-success-500 to-success-600 text-white font-semibold rounded-xl hover:from-success-600 hover:to-success-700 focus:outline-none focus:ring-4 focus:ring-success-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
+                    class="px-6 py-3 bg-danger-600 text-white font-semibold rounded-xl hover:bg-danger-800 focus:outline-none focus:ring-4 focus:ring-success-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
                     [disabled]="!canEdit()">
                     @if (isLoading()) {
                       <span class="inline-block animate-spin rounded-full h-5 w-5 border-2 border-white border-r-transparent mr-2"></span>
