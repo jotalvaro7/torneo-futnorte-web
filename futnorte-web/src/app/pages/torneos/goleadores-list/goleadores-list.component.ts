@@ -7,11 +7,12 @@ import { GoleadorResponse, Torneo } from '../../../models';
 import { JugadorService } from '../../../services/jugador.service';
 import { TorneoService } from '../../../services/torneo.service';
 import { PdfExportService } from '../../../services/pdf-export.service';
+import { PdfFechaModalComponent } from '../torneo-fixture/components/pdf-fecha-modal/pdf-fecha-modal.component';
 
 @Component({
   selector: 'app-goleadores-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PdfFechaModalComponent],
   templateUrl: './goleadores-list.component.html',
   styleUrl: './goleadores-list.component.css'
 })
@@ -33,6 +34,7 @@ export class GoleadoresListComponent {
   goleadores = signal<GoleadorResponse[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
+  showPdfFechaModal = signal(false);
 
   // Computed signal para estadísticas
   totalGoles = computed(() =>
@@ -81,9 +83,18 @@ export class GoleadoresListComponent {
     this.cargarDatos(this.torneoId());
   }
 
-  exportarPDF(): void {
+  mostrarModalFechaPDF(): void {
+    this.showPdfFechaModal.set(true);
+  }
+
+  ocultarModalFechaPDF(): void {
+    this.showPdfFechaModal.set(false);
+  }
+
+  exportarPDF(fechaProgramar: string): void {
     const nombreTorneo = this.torneo()?.nombre;
-    this.pdfExportService.exportarGoleadores(this.goleadores(), this.torneoId(), nombreTorneo);
+    this.pdfExportService.exportarGoleadores(this.goleadores(), this.torneoId(), nombreTorneo, fechaProgramar);
+    this.ocultarModalFechaPDF();
   }
 
   onBack(): void {
