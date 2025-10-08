@@ -74,6 +74,17 @@
             <!-- Right Section: Actions -->
             <div class="flex gap-3">
               <button type="button"
+                class="group flex items-center gap-2 bg-danger-600 hover:bg-danger-700 text-white rounded-xl px-4 py-2.5 font-bold border border-white/20 transition-all duration-300"
+                (click)="mostrarModalFechaPDF()"
+                title="Exportar Fixture a PDF">
+                <div class="w-6 h-6 bg-white/10 group-hover:bg-white/20 rounded-lg flex items-center justify-center transition-all duration-300">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                </div>
+                <span class="text-sm">Descargar PDF</span>
+              </button>
+              <button type="button"
                 class="group flex items-center gap-2 bg-white hover:bg-neutral-100 text-black rounded-xl px-4 py-2.5 font-bold shadow-lg transition-all duration-300"
                 (click)="mostrarFormularioCreacion()">
                 <div class="w-6 h-6 bg-neutral-100 group-hover:bg-neutral-200 rounded-lg flex items-center justify-center group-hover:rotate-90 transition-all duration-300">
@@ -265,3 +276,11 @@
   (confirm)="eliminarEnfrentamiento()"
   (cancel)="ocultarConfirmacionEliminar()">
 </app-delete-confirmation-modal>
+
+<!-- PDF Fecha Modal -->
+@if (showPdfFechaModal()) {
+<app-pdf-fecha-modal
+  (confirm)="exportarFixturePDF($event)"
+  (cancel)="ocultarModalFechaPDF()">
+</app-pdf-fecha-modal>
+}

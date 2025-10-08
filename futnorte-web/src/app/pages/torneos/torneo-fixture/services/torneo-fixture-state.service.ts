@@ -42,29 +42,45 @@ export class TorneoFixtureStateService {
   // Computed properties para enfrentamientos organizados
   enfrentamientosProgramados = computed(() => {
     const programados = this.enfrentamientos().filter(e => e.estado === 'PROGRAMADO');
-    return [...programados].sort((a, b) =>
-      new Date(a.fechaHora).getTime() - new Date(b.fechaHora).getTime()
-    );
+    return [...programados].sort((a, b) => {
+      // Ordenar primero por cancha
+      const canchaComparison = a.cancha.localeCompare(b.cancha);
+      if (canchaComparison !== 0) return canchaComparison;
+      // Luego por fecha/hora ascendente
+      return new Date(a.fechaHora).getTime() - new Date(b.fechaHora).getTime();
+    });
   });
 
   enfrentamientosFinalizados = computed(() => {
     const finalizados = this.enfrentamientos().filter(e => e.estado === 'FINALIZADO');
-    return [...finalizados].sort((a, b) =>
-      new Date(a.fechaHora).getTime() - new Date(b.fechaHora).getTime()
-    );
+    return [...finalizados].sort((a, b) => {
+      // Ordenar primero por cancha
+      const canchaComparison = a.cancha.localeCompare(b.cancha);
+      if (canchaComparison !== 0) return canchaComparison;
+      // Luego por fecha/hora ascendente
+      return new Date(a.fechaHora).getTime() - new Date(b.fechaHora).getTime();
+    });
   });
 
   enfrentamientosAplazados = computed(() => {
     const aplazados = this.enfrentamientos().filter(e => e.estado === 'APLAZADO');
-    return [...aplazados].sort((a, b) =>
-      new Date(a.fechaHora).getTime() - new Date(b.fechaHora).getTime()
-    );
+    return [...aplazados].sort((a, b) => {
+      // Ordenar primero por cancha
+      const canchaComparison = a.cancha.localeCompare(b.cancha);
+      if (canchaComparison !== 0) return canchaComparison;
+      // Luego por fecha/hora ascendente
+      return new Date(a.fechaHora).getTime() - new Date(b.fechaHora).getTime();
+    });
   });
 
   enfrentamientosOrdenados = computed(() => {
-    return [...this.enfrentamientos()].sort((a, b) =>
-      new Date(a.fechaHora).getTime() - new Date(b.fechaHora).getTime()
-    );
+    return [...this.enfrentamientos()].sort((a, b) => {
+      // Ordenar primero por cancha
+      const canchaComparison = a.cancha.localeCompare(b.cancha);
+      if (canchaComparison !== 0) return canchaComparison;
+      // Luego por fecha/hora ascendente
+      return new Date(a.fechaHora).getTime() - new Date(b.fechaHora).getTime();
+    });
   });
 
   constructor(
