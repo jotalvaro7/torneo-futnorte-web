@@ -9,7 +9,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
         </svg>
       </button>
-      <div class="w-14 h-14 bg-gradient-to-r from-success-500 to-success-500 rounded-xl flex items-center justify-center shadow-lg">
+      <div class="w-14 h-14 bg-neutral-500 rounded-xl flex items-center justify-center shadow-lg">
         <i class="fa-solid fa-ranking-star text-3xl text-white block"></i>
       </div>
       <div>
@@ -86,11 +86,11 @@
 
   <!-- Tabla de Posiciones -->
   @if (!loading() && !error() && equipos().length > 0) {
-  <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-neutral-200">
+  <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-neutral-200 cursor-pointer">
     <div class="overflow-x-auto">
       <table class="w-full">
         <thead>
-          <tr class="bg-gradient-to-r from-neutral-700 to-neutral-900">
+          <tr class="bg-danger-600">
             <th class="px-4 py-4 text-center text-xs font-black text-white uppercase tracking-wider w-16">
               Pos
             </th>
@@ -118,7 +118,7 @@
             <th class="px-4 py-4 text-center text-xs font-black text-white uppercase tracking-wider w-16">
               DG
             </th>
-            <th class="px-4 py-4 text-center text-xs font-black text-white uppercase tracking-wider w-20 bg-success-700">
+            <th class="px-4 py-4 text-center text-xs font-black text-white uppercase tracking-wider w-20 bg-neutral-500">
               Pts
             </th>
           </tr>
