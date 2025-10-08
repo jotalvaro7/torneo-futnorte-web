@@ -7,11 +7,12 @@ import { Equipo, Torneo } from '../../../models';
 import { EquipoService } from '../../../services/equipo.service';
 import { TorneoService } from '../../../services/torneo.service';
 import { PdfExportService } from '../../../services/pdf-export.service';
+import { PdfFechaModalComponent } from '../torneo-fixture/components/pdf-fecha-modal/pdf-fecha-modal.component';
 
 @Component({
   selector: 'app-tabla-posiciones',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PdfFechaModalComponent],
   templateUrl: './tabla-posiciones.component.html',
   styleUrl: './tabla-posiciones.component.css'
 })
@@ -33,6 +34,7 @@ export class TablaPosicionesComponent {
   equipos = signal<Equipo[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
+  showPdfFechaModal = signal(false);
 
   constructor() {
     // Effect para cargar datos cuando cambia el torneoId
@@ -76,9 +78,18 @@ export class TablaPosicionesComponent {
     this.cargarDatos(this.torneoId());
   }
 
-  exportarPDF(): void {
+  mostrarModalFechaPDF(): void {
+    this.showPdfFechaModal.set(true);
+  }
+
+  ocultarModalFechaPDF(): void {
+    this.showPdfFechaModal.set(false);
+  }
+
+  exportarPDF(fechaProgramar: string): void {
     const nombreTorneo = this.torneo()?.nombre;
-    this.pdfExportService.exportarTablaPosiciones(this.equipos(), this.torneoId(), nombreTorneo);
+    this.pdfExportService.exportarTablaPosiciones(this.equipos(), this.torneoId(), nombreTorneo, fechaProgramar);
+    this.ocultarModalFechaPDF();
   }
 
   onBack(): void {
