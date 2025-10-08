@@ -7,6 +7,7 @@ import { DeleteConfirmationModalComponent } from '../../../shared/components/del
 import { EnfrentamientoCreateFormComponent } from './components/enfrentamiento-create-form/enfrentamiento-create-form.component';
 import { EnfrentamientoEditModalComponent } from './components/enfrentamiento-edit-modal/enfrentamiento-edit-modal.component';
 import { EnfrentamientoListComponent } from './components/enfrentamiento-list/enfrentamiento-list.component';
+import { PdfFechaModalComponent } from './components/pdf-fecha-modal/pdf-fecha-modal.component';
 import { EnfrentamientoResponse, CrearEnfrentamientoRequest, ActualizarEnfrentamientoRequest, Jugador } from '../../../models';
 import { PdfExportService } from '../../../services/pdf-export.service';
 
@@ -20,7 +21,8 @@ import { PdfExportService } from '../../../services/pdf-export.service';
     DeleteConfirmationModalComponent,
     EnfrentamientoCreateFormComponent,
     EnfrentamientoEditModalComponent,
-    EnfrentamientoListComponent
+    EnfrentamientoListComponent,
+    PdfFechaModalComponent
   ],
   providers: [TorneoFixtureStateService],
   templateUrl: './torneo-fixture.component.html',
@@ -36,6 +38,7 @@ export class TorneoFixtureComponent implements OnInit {
   showCreateForm = signal(false);
   showEditModal = signal(false);
   showDeleteConfirm = signal(false);
+  showPdfFechaModal = signal(false);
   editingEnfrentamiento = signal<EnfrentamientoResponse | null>(null);
   enfrentamientoToDelete = signal<EnfrentamientoResponse | null>(null);
   jugadoresLocal = signal<Jugador[]>([]);
@@ -177,21 +180,27 @@ export class TorneoFixtureComponent implements OnInit {
     this.state.establecerFiltroMes();
   }
 
-  exportarFixturePDF(): void {
+  mostrarModalFechaPDF(): void {
+    this.showPdfFechaModal.set(true);
+  }
+
+  ocultarModalFechaPDF(): void {
+    this.showPdfFechaModal.set(false);
+  }
+
+  exportarFixturePDF(fechaProgramar: string): void {
     const enfrentamientos = this.state.enfrentamientosOrdenados();
     const torneoId = this.torneo()?.id;
     const nombreTorneo = this.torneo()?.nombre;
-    const fechaInicio = this.fechaInicio();
-    const fechaFin = this.fechaFin();
 
     if (torneoId) {
       this.pdfExportService.exportarFixture(
         enfrentamientos,
         torneoId,
         nombreTorneo,
-        fechaInicio,
-        fechaFin
+        fechaProgramar
       );
+      this.ocultarModalFechaPDF();
     }
   }
 }
