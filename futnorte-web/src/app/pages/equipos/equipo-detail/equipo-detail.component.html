@@ -92,29 +92,41 @@
             <!-- Right: Actions -->
             <div class="flex flex-wrap gap-2">
               <button type="button"
-                class="flex items-center gap-2 bg-white hover:bg-neutral-100 backdrop-blur-sm text-white px-3 py-2 rounded-xl font-bold transition-all duration-300"
+                class="group relative flex items-center gap-2 bg-white backdrop-blur-sm text-white px-3 py-2 rounded-xl font-bold overflow-hidden transition-all duration-300"
                 (click)="cargarHistorialEnfrentamientos()"
                 [disabled]="loadingEnfrentamientos()">
+                <!-- Animated background fill -->
+                <span class="absolute inset-0 bg-neutral-600 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
+
+                <!-- Content -->
                 @if (loadingEnfrentamientos()) {
-                <div class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <div class="relative z-10 w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 } @else {
-                <i class="fa-solid text-black fa-history text-xs"></i>
+                <i class="relative z-10 fa-solid text-black group-hover:text-white fa-history text-xs transition-colors duration-300"></i>
                 }
-                <span class="text-xs text-black">Historial</span>
+                <span class="relative z-10 text-xs text-black group-hover:text-white transition-colors duration-300">Historial</span>
               </button>
 
               <button type="button"
-                class="flex items-center gap-2 bg-white hover:bg-neutral-100 text-black px-3 py-2 rounded-xl font-bold shadow-lg transition-all duration-300"
+                class="group relative flex items-center gap-2 bg-white text-black px-3 py-2 rounded-xl font-bold shadow-lg overflow-hidden transition-all duration-300"
                 (click)="onEdit()">
-                <i class="fa-solid fa-edit text-xs"></i>
-                <span class="text-xs">Editar</span>
+                <!-- Animated background fill -->
+                <span class="absolute inset-0 bg-neutral-600 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
+
+                <!-- Content -->
+                <i class="relative z-10 fa-solid fa-edit text-xs group-hover:text-white transition-colors duration-300"></i>
+                <span class="relative z-10 text-xs group-hover:text-white transition-colors duration-300">Editar</span>
               </button>
 
               <button type="button"
-                class="flex items-center gap-2 bg-danger-500 hover:bg-danger-600 text-white px-3 py-2 rounded-xl font-bold shadow-lg transition-all duration-300"
+                class="group relative flex items-center gap-2 bg-danger-500 text-white px-3 py-2 rounded-xl font-bold shadow-lg overflow-hidden transition-all duration-300"
                 (click)="openDeleteModal()">
-                <i class="fa-solid fa-trash text-xs"></i>
-                <span class="text-xs">Eliminar</span>
+                <!-- Animated background fill -->
+                <span class="absolute inset-0 bg-danger-700 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
+
+                <!-- Content -->
+                <i class="relative z-10 fa-solid fa-trash text-xs"></i>
+                <span class="relative z-10 text-xs">Eliminar</span>
               </button>
             </div>
           </div>

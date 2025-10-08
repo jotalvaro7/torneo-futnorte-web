@@ -122,14 +122,18 @@
             <!-- Right Section: Action Button -->
             <div>
               <button type="button"
-                class="group flex items-center gap-2 bg-white hover:bg-neutral-100 text-black px-5 py-3 rounded-xl font-bold shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+                class="group relative flex items-center gap-2 bg-white text-black px-5 py-3 rounded-xl font-bold shadow-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl"
                 (click)="crearNuevoEquipo()">
-                <div class="w-6 h-6 bg-neutral-100 group-hover:bg-neutral-200 rounded-lg flex items-center justify-center group-hover:rotate-90 transition-transform duration-300">
-                  <svg class="w-4 h-4 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <!-- Animated background fill -->
+                <span class="absolute inset-0 bg-neutral-600 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
+
+                <!-- Content -->
+                <div class="relative z-10 w-6 h-6 bg-neutral-100 group-hover:bg-neutral-700 rounded-lg flex items-center justify-center group-hover:rotate-90 transition-all duration-300">
+                  <svg class="w-4 h-4 text-neutral-700 group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
                   </svg>
                 </div>
-                <span class="text-sm">Nuevo Equipo</span>
+                <span class="relative z-10 text-sm group-hover:text-white transition-colors duration-300">Nuevo Equipo</span>
               </button>
             </div>
           </div>

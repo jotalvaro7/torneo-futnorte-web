@@ -62,10 +62,10 @@
                     </h1>
                   </div>
                   <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-warning-300" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
                     </svg>
-                    <p class="text-warning-100 text-sm font-semibold">Fixture de Partidos</p>
+                    <p class="text-white text-sm font-semibold">Fixture de Partidos</p>
                   </div>
                 </div>
               </div>
@@ -74,25 +74,33 @@
             <!-- Right Section: Actions -->
             <div class="flex gap-3">
               <button type="button"
-                class="group flex items-center gap-2 bg-white hover:bg-neutral-100 text-black rounded-xl px-4 py-2.5 font-bold shadow-lg transition-all duration-300"
+                class="group relative flex items-center gap-2 bg-white text-black rounded-xl px-4 py-2.5 font-bold shadow-lg overflow-hidden transition-all duration-300"
                 (click)="mostrarModalFechaPDF()"
                 title="Exportar Fixture a PDF">
-                <div class="w-6 h-6 bg-neutral-100 group-hover:bg-neutral-200 rounded-lg flex items-center justify-center transition-all duration-300">
-                  <svg class="w-4 h-4 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <!-- Animated background fill -->
+                <span class="absolute inset-0 bg-neutral-600 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
+
+                <!-- Content -->
+                <div class="relative z-10 w-6 h-6 bg-neutral-100 group-hover:bg-neutral-700 rounded-lg flex items-center justify-center transition-all duration-300">
+                  <svg class="w-4 h-4 text-black group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                   </svg>
                 </div>
-                <span class="text-sm">Descargar PDF</span>
+                <span class="relative z-10 text-sm group-hover:text-white transition-colors duration-300">Descargar PDF</span>
               </button>
               <button type="button"
-                class="group flex items-center gap-2 bg-white hover:bg-neutral-100 text-black rounded-xl px-4 py-2.5 font-bold shadow-lg transition-all duration-300"
+                class="group relative flex items-center gap-2 bg-white text-black rounded-xl px-4 py-2.5 font-bold shadow-lg overflow-hidden transition-all duration-300"
                 (click)="mostrarFormularioCreacion()">
-                <div class="w-6 h-6 bg-neutral-100 group-hover:bg-neutral-200 rounded-lg flex items-center justify-center group-hover:rotate-90 transition-all duration-300">
-                  <svg class="w-4 h-4 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <!-- Animated background fill -->
+                <span class="absolute inset-0 bg-neutral-600 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
+
+                <!-- Content -->
+                <div class="relative z-10 w-6 h-6 bg-neutral-100 group-hover:bg-neutral-700 rounded-lg flex items-center justify-center group-hover:rotate-90 transition-all duration-300">
+                  <svg class="w-4 h-4 text-neutral-700 group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
                   </svg>
                 </div>
-                <span class="text-sm">Nuevo Partido</span>
+                <span class="relative z-10 text-sm group-hover:text-white transition-colors duration-300">Nuevo Partido</span>
               </button>
             </div>
           </div>
@@ -156,14 +164,14 @@
       @if (enfrentamientosFinalizados().length > 0 && !loading()) {
       <div class="border-b border-neutral-200">
         <div class="bg-gradient-to-r from-success-50 to-success-50 p-4">
-          <h3 class="text-xl font-black text-success-900 flex items-center gap-3">
-            <div class="w-10 h-10 bg-success-500 rounded-xl flex items-center justify-center">
+          <h3 class="text-xl font-black text-neutral-900 flex items-center gap-3">
+            <div class="w-10 h-10 bg-neutral-500 rounded-xl flex items-center justify-center">
               <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
               </svg>
             </div>
             <span>Partidos Finalizados</span>
-            <span class="ml-auto text-lg bg-success-500 text-white px-3 py-1 rounded-full">
+            <span class="ml-auto text-lg bg-neutral-500 text-white px-3 py-1 rounded-full">
               {{ enfrentamientosFinalizados().length }}
             </span>
           </h3>
