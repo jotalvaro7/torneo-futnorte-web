@@ -119,14 +119,14 @@
               </button>
 
               <button type="button"
-                class="group relative flex items-center gap-2 bg-danger-500 text-white px-3 py-2 rounded-xl font-bold shadow-lg overflow-hidden transition-all duration-300"
+                class="group relative flex items-center gap-2 bg-white text-black px-3 py-2 rounded-xl font-bold shadow-lg overflow-hidden transition-all duration-300"
                 (click)="openDeleteModal()">
                 <!-- Animated background fill -->
-                <span class="absolute inset-0 bg-danger-700 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
+                <span class="absolute inset-0 bg-neutral-600 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
 
                 <!-- Content -->
-                <i class="relative z-10 fa-solid fa-trash text-xs"></i>
-                <span class="relative z-10 text-xs">Eliminar</span>
+                <i class="relative z-10 fa-solid fa-trash text-xs group-hover:text-white transition-colors duration-300"></i>
+                <span class="relative z-10 text-xs group-hover:text-white transition-colors duration-300">Eliminar</span>
               </button>
             </div>
           </div>
