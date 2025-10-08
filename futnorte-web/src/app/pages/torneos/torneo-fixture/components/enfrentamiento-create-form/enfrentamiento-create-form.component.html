@@ -4,10 +4,10 @@
 
     <!-- Modal Header -->
     <div
-      class="flex items-center justify-between p-6 border-b border-neutral-200 bg-gradient-to-r from-success-600 to-primary-600 rounded-t-2xl">
+      class="flex items-center justify-between p-6 border-b border-neutral-200 bg-gradient-to-br from-danger-700 via-danger-600 to-white rounded-t-2xl">
       <div class="flex items-center gap-3">
         <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center">
-          <svg class="w-6 h-6 text-success-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-6 h-6 text-danger-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M12 4v16m8-8H4">
             </path>
@@ -15,7 +15,7 @@
         </div>
         <div>
           <h3 class="text-2xl font-black text-white">Nuevo Enfrentamiento</h3>
-          <p class="text-success-100 text-sm">Programa un nuevo partido del torneo</p>
+          <p class="text-white/80 text-sm">Programa un nuevo partido del torneo</p>
         </div>
       </div>
       <button type="button"
@@ -40,7 +40,7 @@
             <select
               id="equipoLocal"
               formControlName="equipoLocalId"
-              class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-success-500 focus:ring-2 focus:ring-success-200 transition-colors"
+              class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-danger-500 focus:ring-2 focus:ring-danger-200 transition-colors"
               [class.border-danger-500]="getFieldError('equipoLocalId')">
               <option value="">Seleccionar equipo local</option>
               @for (equipo of equiposDisponiblesLocal; track equipo.id) {
@@ -60,7 +60,7 @@
             <select
               id="equipoVisitante"
               formControlName="equipoVisitanteId"
-              class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-success-500 focus:ring-2 focus:ring-success-200 transition-colors"
+              class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-danger-500 focus:ring-2 focus:ring-danger-200 transition-colors"
               [class.border-danger-500]="getFieldError('equipoVisitanteId')">
               <option value="">Seleccionar equipo visitante</option>
               @for (equipo of equiposDisponiblesVisitante; track equipo.id) {
@@ -84,7 +84,7 @@
               type="datetime-local"
               id="fechaHora"
               formControlName="fechaHora"
-              class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-success-500 focus:ring-2 focus:ring-success-200 transition-colors"
+              class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-danger-500 focus:ring-2 focus:ring-danger-200 transition-colors"
               [class.border-danger-500]="getFieldError('fechaHora')">
             @if (getFieldError('fechaHora')) {
             <p class="text-danger-600 text-sm mt-2 font-medium">{{ getFieldError('fechaHora') }}</p>
@@ -100,7 +100,7 @@
               type="text"
               id="cancha"
               formControlName="cancha"
-              class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-success-500 focus:ring-2 focus:ring-success-200 transition-colors"
+              class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-danger-500 focus:ring-2 focus:ring-danger-200 transition-colors"
               placeholder="Nombre de la cancha"
               maxlength="100"
               [class.border-danger-500]="getFieldError('cancha')">
@@ -120,7 +120,7 @@
           Cancelar
         </button>
         <button type="submit"
-          class="flex-1 px-6 py-3 bg-success-600 hover:bg-success-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="flex-1 px-6 py-3 bg-danger-600 hover:bg-danger-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           [disabled]="creating() || createForm.invalid">
           @if (creating()) {
           <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">

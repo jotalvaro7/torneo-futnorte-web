@@ -5,8 +5,8 @@
     @if (loading()) {
     <div class="flex flex-col items-center justify-center py-16 animate-fade-in">
       <div class="relative">
-        <div class="w-12 h-12 border-4 border-accent-200 border-t-accent-600 rounded-full animate-spin"></div>
-        <div class="absolute inset-0 w-12 h-12 border-4 border-transparent border-b-primary-400 rounded-full animate-spin animation-delay-150"></div>
+        <div class="w-12 h-12 border-4 border-danger-200 border-t-danger-600 rounded-full animate-spin"></div>
+        <div class="absolute inset-0 w-12 h-12 border-4 border-transparent border-b-danger-400 rounded-full animate-spin animation-delay-150"></div>
       </div>
       <p class="mt-4 text-neutral-600 font-medium">Cargando equipos del torneo...</p>
       <p class="text-sm text-neutral-400">Preparando la información más reciente</p>
@@ -77,12 +77,12 @@
       <!-- Modern Header with Gradient -->
       <div class="relative overflow-hidden rounded-3xl">
         <!-- Gradient Background -->
-        <div class="absolute inset-0 bg-gradient-to-r from-accent-800 via-accent-700 to-secondary-800"></div>
+        <div class="absolute inset-0 bg-gradient-to-br from-danger-700 via-danger-600 to-white"></div>
 
         <!-- Animated Background Pattern -->
-        <div class="absolute inset-0 opacity-20">
-          <div class="absolute top-0 -right-10 w-64 h-64 bg-gradient-to-br from-accent-pink to-accent-500 rounded-full mix-blend-multiply filter blur-2xl"></div>
-          <div class="absolute -bottom-10 -left-10 w-64 h-64 bg-gradient-to-br from-primary-400 to-secondary-500 rounded-full mix-blend-multiply filter blur-2xl"></div>
+        <div class="absolute inset-0 opacity-10">
+          <div class="absolute top-0 -right-10 w-64 h-64 bg-gradient-to-br from-danger-400 to-danger-300 rounded-full mix-blend-multiply filter blur-2xl"></div>
+          <div class="absolute -bottom-10 -left-10 w-64 h-64 bg-gradient-to-br from-white to-neutral-100 rounded-full mix-blend-multiply filter blur-2xl"></div>
         </div>
 
         <!-- Content -->
@@ -122,14 +122,18 @@
             <!-- Right Section: Action Button -->
             <div>
               <button type="button"
-                class="group flex items-center gap-2 bg-white hover:bg-neutral-50 text-secondary-600 px-5 py-3 rounded-xl font-bold shadow-xl shadow-white/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-white/30"
+                class="group relative flex items-center gap-2 bg-white text-black px-5 py-3 rounded-xl font-bold shadow-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl"
                 (click)="crearNuevoEquipo()">
-                <div class="w-6 h-6 bg-secondary-100 rounded-lg flex items-center justify-center group-hover:rotate-90 transition-transform duration-300">
-                  <svg class="w-4 h-4 text-secondary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <!-- Animated background fill -->
+                <span class="absolute inset-0 bg-neutral-600 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
+
+                <!-- Content -->
+                <div class="relative z-10 w-6 h-6 bg-neutral-100 group-hover:bg-neutral-700 rounded-lg flex items-center justify-center group-hover:rotate-90 transition-all duration-300">
+                  <svg class="w-4 h-4 text-neutral-700 group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
                   </svg>
                 </div>
-                <span class="text-sm">Nuevo Equipo</span>
+                <span class="relative z-10 text-sm group-hover:text-white transition-colors duration-300">Nuevo Equipo</span>
               </button>
             </div>
           </div>
@@ -139,13 +143,13 @@
       <!-- Teams Grid -->
       <div class="grid gap-6 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
         @for (equipo of equipos(); track trackByEquipo($index, equipo)) {
-        <div class="group relative">
+        <div>
           <!-- Card clickable -->
           <a [routerLink]="['/equipos', equipo.id]"
-            class="block bg-white rounded-xl border border-neutral-200 hover:border-transparent hover:shadow-xl hover:-translate-y-3 transition-all duration-300 overflow-hidden">
+            class="group relative block bg-white rounded-xl border border-neutral-200 hover:border-transparent hover:shadow-xl hover:-translate-y-3 transition-all duration-300 overflow-hidden">
 
             <!-- Gradient Background on Hover -->
-            <div class="absolute inset-0 bg-gradient-to-br from-warning-400 to-hover opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="absolute inset-0 bg-gradient-to-br from-danger-700 to-danger-500 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in"></div>
 
             <!-- Decorative Circle (visible on hover) -->
             <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-8 -mt-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -153,7 +157,7 @@
             <!-- Escudo/Icono del equipo -->
             <div class="relative aspect-square bg-gradient-to-br from-neutral-200 to-neutral-300 flex items-center justify-center p-8 transition-all duration-300">
               <div class="w-full h-full flex items-center justify-center">
-                <i class="fa-solid fa-shield-halved text-6xl text-white group-hover:text-hover"></i>
+                <i class="fa-solid fa-shield-halved text-6xl text-white group-hover:text-danger-700"></i>
               </div>
             </div>
 

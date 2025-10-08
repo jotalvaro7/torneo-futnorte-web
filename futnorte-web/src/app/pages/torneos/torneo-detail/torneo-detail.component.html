@@ -3,7 +3,7 @@
   @if (loading()) {
   <div class="flex flex-col items-center justify-center min-h-screen animate-fade-in">
     <div class="relative">
-      <div class="w-12 h-12 border-4 border-accent-200 border-t-accent-600 rounded-full animate-spin"></div>
+      <div class="w-12 h-12 border-4 border-danger-200 border-t-danger-600 rounded-full animate-spin"></div>
     </div>
     <p class="mt-4 text-neutral-600 font-medium">Cargando torneo...</p>
   </div>
@@ -50,7 +50,7 @@
       <!-- Modern Header with Gradient -->
       <div class="relative overflow-hidden rounded-3xl mb-8">
         <!-- Gradient Background -->
-        <div class="absolute inset-0 bg-gradient-to-r from-accent-800 via-accent-700 to-secondary-800"></div>
+        <div class="absolute inset-0 bg-gradient-to-br from-danger-700 via-danger-600 to-white"></div>
 
         <!-- Content -->
         <div class="relative z-10 px-6 py-5">
@@ -92,23 +92,31 @@
             <div class="flex flex-wrap gap-2">
               <!-- Edit Button -->
               <button type="button"
-                class="flex items-center gap-2 bg-white hover:bg-neutral-100 text-accent-700 px-3 py-2 rounded-xl font-bold shadow-lg transition-all duration-300"
+                class="group relative flex items-center gap-2 bg-white text-black px-3 py-2 rounded-xl font-bold shadow-lg overflow-hidden transition-all duration-300"
                 [routerLink]="['/torneos', torneoId(), 'editar']">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <!-- Animated background fill -->
+                <span class="absolute inset-0 bg-neutral-600 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
+
+                <!-- Content -->
+                <svg class="relative z-10 w-3.5 h-3.5 group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
                   </path>
                 </svg>
-                <span class="text-xs">Editar</span>
+                <span class="relative z-10 text-xs group-hover:text-white transition-colors duration-300">Editar</span>
               </button>
 
               <!-- Toggle Acciones Button -->
               <button type="button"
-                class="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-3 py-2 rounded-xl font-bold transition-all duration-300"
+                class="group relative flex items-center gap-2 bg-white text-black px-3 py-2 rounded-xl font-bold shadow-lg overflow-hidden transition-all duration-300"
                 (click)="toggleAcciones()">
-                <i class="fa-solid fa-sliders text-xs"></i>
-                <span class="text-xs">Acciones</span>
-                <i class="fa-solid text-xs transition-transform duration-300"
+                <!-- Animated background fill -->
+                <span class="absolute inset-0 bg-neutral-600 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
+
+                <!-- Content -->
+                <i class="relative z-10 fa-solid fa-sliders text-xs group-hover:text-white transition-colors duration-300"></i>
+                <span class="relative z-10 text-xs group-hover:text-white transition-colors duration-300">Acciones</span>
+                <i class="relative z-10 fa-solid text-xs group-hover:text-white transition-all duration-300"
                   [ngClass]="mostrarAcciones() ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
               </button>
             </div>
@@ -197,19 +205,19 @@
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <!-- Equipos -->
         <button type="button"
-          class="group relative bg-gradient-to-br from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 rounded-2xl p-6 shadow-lg hover:shadow-xl hover:-translate-y-3 transition-all duration-300 text-left overflow-hidden"
+          class="group relative bg-[#d18776] hover:bg-[#c37361] rounded-2xl p-6 shadow-lg hover:shadow-xl hover:-translate-y-3 transition-all duration-300 text-left overflow-hidden"
           [routerLink]="['/torneos', torneoId(), 'equipos']">
           <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-8 -mt-8"></div>
           <div class="relative">
             <i class="fa-solid fa-shield-halved text-3xl text-white mb-3 block"></i>
             <h3 class="font-bold text-white mb-1">Equipos</h3>
-            <p class="text-xs text-primary-100">Gestiona participantes</p>
+            <p class="text-xs text-white/80">Gestiona participantes</p>
           </div>
         </button>
 
         <!-- Fixture -->
         <button type="button"
-          class="group relative bg-gradient-to-br from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 rounded-2xl p-6 shadow-lg hover:shadow-xl hover:-translate-y-3 transition-all duration-300 text-left overflow-hidden"
+          class="group relative bg-[#996b6a] hover:bg-[#463030] rounded-2xl p-6 shadow-lg hover:shadow-xl hover:-translate-y-3 transition-all duration-300 text-left overflow-hidden"
           [routerLink]="['/torneos', torneoId(), 'fixture']">
           <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-8 -mt-8"></div>
           <div class="relative">
@@ -221,7 +229,7 @@
 
         <!-- Posiciones -->
         <button type="button"
-          class="group relative bg-gradient-to-br from-success-500 to-success-600 hover:from-success-600 hover:to-success-700 rounded-2xl p-6 shadow-lg hover:shadow-xl hover:-translate-y-3 transition-all duration-300 text-left overflow-hidden"
+          class="group relative bg-[#A5AE9D] hover:bg-[#7F8B74] rounded-2xl p-6 shadow-lg hover:shadow-xl hover:-translate-y-3 transition-all duration-300 text-left overflow-hidden"
           [routerLink]="['/torneos', torneoId(), 'posiciones']">
           <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-8 -mt-8"></div>
           <div class="relative">
@@ -233,7 +241,7 @@
 
         <!-- Goleadores -->
         <button type="button"
-          class="group relative bg-gradient-to-br from-warning-500 to-warning-600 hover:from-warning-600 hover:to-warning-700 rounded-2xl p-6 shadow-lg hover:shadow-xl hover:-translate-y-3 transition-all duration-300 text-left overflow-hidden"
+          class="group relative bg-[#0075A3] hover:bg-[#005475] rounded-2xl p-6 shadow-lg hover:shadow-xl hover:-translate-y-3 transition-all duration-300 text-left overflow-hidden"
           [routerLink]="['/torneos', torneoId(), 'goleadores']">
           <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-8 -mt-8"></div>
           <div class="relative">

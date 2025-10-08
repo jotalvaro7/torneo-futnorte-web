@@ -5,7 +5,7 @@
     @if (loading()) {
     <div class="flex flex-col items-center justify-center py-16 animate-fade-in">
       <div class="relative">
-        <div class="w-12 h-12 border-4 border-accent-200 border-t-accent-600 rounded-full animate-spin"></div>
+        <div class="w-12 h-12 border-4 border-danger-200 border-t-danger-600 rounded-full animate-spin"></div>
       </div>
       <p class="mt-4 text-neutral-600 font-medium">Cargando torneos...</p>
     </div>
@@ -50,8 +50,8 @@
       <h3 class="text-xl font-bold text-neutral-900 mb-2">No hay torneos disponibles</h3>
       <p class="text-neutral-500 mb-6 max-w-sm mx-auto">Comienza creando tu primer torneo</p>
       <div class="flex gap-3 justify-center">
-        <button type="button" class="btn btn-primary btn-sm gap-2" routerLink="/torneos/nuevo">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button type="button" class="btn bg-neutral-600 btn-sm gap-2 text-white hover:bg-neutral-500" routerLink="/torneos/nuevo">
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
           </svg>
           Crear Primer Torneo
@@ -102,8 +102,8 @@
         <a [routerLink]="['/torneos', torneo.id]"
           class="group relative bg-white rounded-2xl border border-neutral-200 hover:border-transparent hover:shadow-xl hover:-translate-y-3 transition-all duration-300 overflow-hidden block">
 
-          <!-- Gradient Background on Hover -->
-          <div class="absolute inset-0 bg-gradient-to-br from-warning-400 to-hover opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <!-- Gradient Background on Hover - Slides from bottom to top -->
+          <div class="absolute inset-0 bg-gradient-to-br from-danger-700 to-danger-500 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out"></div>
 
           <!-- Decorative Circle (visible on hover) -->
           <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-8 -mt-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -112,7 +112,7 @@
           <div class="relative flex items-center justify-center py-20 transition-all duration-300" [ngClass]="{
             'bg-gradient-to-br from-neutral-200 to-neutral-300': true
           }">
-            <i class="fa-solid fa-trophy text-6xl text-neutral-600 group-hover:text-hover transition-colors duration-300"></i>
+            <i class="fa-solid fa-trophy text-6xl text-neutral-600 group-hover:text-danger-700 transition-colors duration-300"></i>
             <!-- Status Indicator -->
             <span class="absolute top-3 right-3 w-4 h-4 rounded-full shadow-lg" [ngClass]="{
               'bg-primary-500': torneo.estado === EstadoTorneo.CREADO,

@@ -3,8 +3,8 @@
     <!-- Form Card -->
     <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
 
-      <!-- Header con gradiente verde-azul -->
-      <div class="bg-gradient-to-r from-accent-800 via-accent-700 to-secondary-800 p-6 border-b border-neutral-200">
+      <!-- Header con gradiente rojo-blanco -->
+      <div class="bg-gradient-to-br from-danger-700 via-danger-600 to-white p-6 border-b border-neutral-200">
         <div class="flex items-center gap-3">
           <button type="button"
             class="w-10 h-10 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg flex items-center justify-center text-white transition-colors"
@@ -13,14 +13,14 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
             </svg>
           </button>
-          <div class="w-12 h-12 bg-accent-500 rounded-xl flex items-center justify-center">
+          <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
             </svg>
           </div>
           <div>
             <h3 class="text-2xl font-black text-white">{{ pageTitle() }}</h3>
-            <p class="text-success-100 text-sm">{{ isEditing() ? 'Modifica los datos del equipo' : 'Crea un nuevo equipo de fútbol' }}</p>
+            <p class="text-white/80 text-sm">{{ isEditing() ? 'Modifica los datos del equipo' : 'Crea un nuevo equipo de fútbol' }}</p>
           </div>
         </div>
       </div>
@@ -71,7 +71,7 @@
               id="nombre"
               type="text"
               formControlName="nombre"
-              class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-success-500 focus:ring-2 focus:ring-success-200 transition-colors"
+              class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-danger-500 focus:ring-2 focus:ring-danger-200 transition-colors"
               [class.border-danger-500]="isFieldInvalid('nombre')"
               placeholder="Ej: Real Madrid, Barcelona..."
             />
@@ -89,7 +89,7 @@
               id="entrenador"
               type="text"
               formControlName="entrenador"
-              class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-success-500 focus:ring-2 focus:ring-success-200 transition-colors"
+              class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-danger-500 focus:ring-2 focus:ring-danger-200 transition-colors"
               [class.border-danger-500]="isFieldInvalid('entrenador')"
               placeholder="Ej: Carlos Pérez, María González..."
             />
@@ -109,7 +109,7 @@
             <select
               id="torneoId"
               formControlName="torneoId"
-              class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-success-500 focus:ring-2 focus:ring-success-200 transition-colors"
+              class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-danger-500 focus:ring-2 focus:ring-danger-200 transition-colors"
               [class.border-danger-500]="isFieldInvalid('torneoId')"
               [class.bg-primary-50]="equipoForm.get('torneoId')?.disabled"
             >
@@ -136,7 +136,7 @@
             Cancelar
           </button>
           <button type="submit"
-            class="flex-1 px-6 py-3 bg-success-600 hover:bg-success-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="flex-1 px-6 py-3 bg-danger-600 hover:bg-danger-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             [disabled]="saving() || equipoForm.invalid">
             @if (saving()) {
             <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">

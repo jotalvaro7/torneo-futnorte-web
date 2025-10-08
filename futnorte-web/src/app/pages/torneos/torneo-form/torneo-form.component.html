@@ -3,8 +3,8 @@
     <!-- Form Card -->
     <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
 
-      <!-- Header con gradiente -->
-      <div class="bg-gradient-to-r from-accent-800 via-accent-700 to-secondary-800 p-6 border-b border-neutral-200">
+      <!-- Header con gradiente rojo-blanco -->
+      <div class="bg-gradient-to-br from-danger-700 via-danger-600 to-white p-6 border-b border-neutral-200">
         <div class="flex items-center gap-3">
           <button type="button"
             class="w-10 h-10 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg flex items-center justify-center text-white transition-colors"
@@ -13,12 +13,12 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
             </svg>
           </button>
-          <div class="w-12 h-12 bg-accent-500 rounded-xl flex items-center justify-center">
-            <i class="fa-solid fa-trophy text-white group-hover:text-accent-600 transition-colors"></i>
+          <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+            <i class="fa-solid fa-trophy text-white transition-colors"></i>
           </div>
           <div>
             <h3 class="text-2xl font-black text-white">{{ pageTitle() }}</h3>
-            <p class="text-success-100 text-sm">{{ isEditMode() ? 'Modifica los datos del torneo' : 'Crea un nuevo torneo de fútbol' }}</p>
+            <p class="text-white/80 text-sm">{{ isEditMode() ? 'Modifica los datos del torneo' : 'Crea un nuevo torneo de fútbol' }}</p>
           </div>
         </div>
       </div>
@@ -70,7 +70,7 @@
                 Nombre del Torneo *
               </label>
               <input type="text" id="nombre" formControlName="nombre" placeholder="Ej: Copa de Verano 2024"
-                class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-colors"
+                class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-danger-500 focus:ring-2 focus:ring-danger-200 transition-colors"
                 [class.border-danger-500]="isFieldInvalid('nombre')">
               @if (isFieldInvalid('nombre')) {
               <p class="mt-2 text-sm text-danger-600 font-medium">
@@ -86,7 +86,7 @@
               </label>
               <textarea id="descripcion" formControlName="descripcion" rows="4"
                 placeholder="Describe los detalles del torneo, reglas especiales, premios..."
-                class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-colors resize-none"
+                class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-danger-500 focus:ring-2 focus:ring-danger-200 transition-colors resize-none"
                 [class.border-danger-500]="isFieldInvalid('descripcion')"></textarea>
               @if (isFieldInvalid('descripcion')) {
               <p class="mt-2 text-sm text-danger-600 font-medium">
@@ -103,7 +103,7 @@
                   Fecha de Inicio *
                 </label>
                 <input type="date" id="fechaInicio" formControlName="fechaInicio"
-                  class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-colors"
+                  class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-danger-500 focus:ring-2 focus:ring-danger-200 transition-colors"
                   [class.border-danger-500]="isFieldInvalid('fechaInicio')">
                 @if (isFieldInvalid('fechaInicio')) {
                 <p class="mt-2 text-sm text-danger-600 font-medium">
@@ -118,7 +118,7 @@
                   Fecha de Fin
                 </label>
                 <input type="date" id="fechaFin" formControlName="fechaFin"
-                  class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-colors"
+                  class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-danger-500 focus:ring-2 focus:ring-danger-200 transition-colors"
                   [class.border-danger-500]="isFieldInvalid('fechaFin')">
                 @if (isFieldInvalid('fechaFin')) {
                 <p class="mt-2 text-sm text-danger-600 font-medium">
@@ -137,7 +137,7 @@
               Cancelar
             </button>
             <button type="submit"
-              class="flex-1 px-6 py-3 bg-success-600 hover:bg-success-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="flex-1 px-6 py-3 bg-danger-600 hover:bg-danger-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               [disabled]="loading() || torneoForm.invalid">
               @if (loading()) {
               <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
