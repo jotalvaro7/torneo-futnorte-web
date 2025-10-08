@@ -103,7 +103,7 @@
           class="group relative bg-white rounded-2xl border border-neutral-200 hover:border-transparent hover:shadow-xl hover:-translate-y-3 transition-all duration-300 overflow-hidden block">
 
           <!-- Gradient Background on Hover -->
-          <div class="absolute inset-0 bg-gradient-to-br from-warning-400 to-hover opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div class="absolute inset-0 bg-gradient-to-br from-danger-700 to-danger-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
           <!-- Decorative Circle (visible on hover) -->
           <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-8 -mt-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -112,7 +112,7 @@
           <div class="relative flex items-center justify-center py-20 transition-all duration-300" [ngClass]="{
             'bg-gradient-to-br from-neutral-200 to-neutral-300': true
           }">
-            <i class="fa-solid fa-trophy text-6xl text-neutral-600 group-hover:text-hover transition-colors duration-300"></i>
+            <i class="fa-solid fa-trophy text-6xl text-neutral-600 group-hover:text-danger-700 transition-colors duration-300"></i>
             <!-- Status Indicator -->
             <span class="absolute top-3 right-3 w-4 h-4 rounded-full shadow-lg" [ngClass]="{
               'bg-primary-500': torneo.estado === EstadoTorneo.CREADO,

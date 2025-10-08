@@ -2,7 +2,7 @@
   <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 animate-slide-up">
 
     <!-- Header -->
-    <div class="bg-gradient-to-r from-accent-800 via-accent-700 to-secondary-800 px-6 py-4 rounded-t-2xl">
+    <div class="bg-gradient-to-r from-danger-600 via-danger-500 to-white px-6 py-4 rounded-t-2xl">
       <h3 class="text-xl font-black text-white">Exportar Fixture a PDF</h3>
     </div>
 
@@ -18,7 +18,7 @@
         (input)="onInputChange($event)"
         (keydown)="onKeyPress($event)"
         placeholder="Ej: Fecha 1, Jornada 5, Semifinal..."
-        class="w-full px-4 py-3 bg-neutral-50 border-2 border-neutral-200 rounded-xl focus:border-accent-500 focus:ring-0 focus:bg-white transition-all duration-200 text-neutral-900 placeholder-neutral-400"
+        class="w-full px-4 py-3 bg-neutral-50 border-2 border-neutral-200 rounded-xl focus:border-danger-500 focus:ring-0 focus:bg-white transition-all duration-200 text-neutral-900 placeholder-neutral-400"
         autofocus>
       <p class="mt-2 text-xs text-neutral-500">
         Este texto aparecerá en el PDF en lugar del rango de fechas
@@ -35,7 +35,7 @@
       </button>
       <button
         type="button"
-        class="flex-1 px-4 py-3 bg-accent-800 hover:bg-accent-900 text-white rounded-xl font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="flex-1 px-4 py-3 bg-danger-600 hover:bg-danger-700 text-white rounded-xl font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         [disabled]="!fechaProgramar().trim()"
         (click)="onConfirm()">
         Generar PDF

@@ -41,7 +41,7 @@
       <!-- Modern Header with Gradient -->
       <div class="relative overflow-hidden rounded-3xl mb-8">
         <!-- Gradient Background -->
-        <div class="absolute inset-0 bg-gradient-to-r from-accent-800 via-accent-700 to-secondary-800"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-danger-600 via-danger-500 to-white"></div>
 
         <!-- Content -->
         <div class="relative z-10 px-6 py-5">
@@ -92,15 +92,15 @@
             <!-- Right: Actions -->
             <div class="flex flex-wrap gap-2">
               <button type="button"
-                class="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-3 py-2 rounded-xl font-bold transition-all duration-300"
+                class="flex items-center gap-2 bg-white hover:bg-neutral-100 backdrop-blur-sm text-white px-3 py-2 rounded-xl font-bold transition-all duration-300"
                 (click)="cargarHistorialEnfrentamientos()"
                 [disabled]="loadingEnfrentamientos()">
                 @if (loadingEnfrentamientos()) {
                 <div class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 } @else {
-                <i class="fa-solid fa-history text-xs"></i>
+                <i class="fa-solid text-black fa-history text-xs"></i>
                 }
-                <span class="text-xs">Historial</span>
+                <span class="text-xs text-black">Historial</span>
               </button>
 
               <button type="button"
