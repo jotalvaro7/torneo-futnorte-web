@@ -33,6 +33,7 @@ export class TorneoFixtureStateService {
   fechaInicio = signal<string>('');
   fechaFin = signal<string>('');
   filtrandoPorFecha = signal(false);
+  cargandoTodos = signal(false);
 
   // Estado de operaciones
   creating = signal(false);
@@ -158,6 +159,7 @@ export class TorneoFixtureStateService {
   }
 
   async cargarTodosLosEnfrentamientos(torneoId: number): Promise<void> {
+    this.cargandoTodos.set(true);
     try {
       const enfrentamientos = await firstValueFrom(
         this.enfrentamientoService.obtenerEnfrentamientosPorTorneo(torneoId)
@@ -165,6 +167,8 @@ export class TorneoFixtureStateService {
       this.enfrentamientos.set(enfrentamientos);
     } catch (error: any) {
       this.error.set('Error al cargar enfrentamientos: ' + error.message);
+    } finally {
+      this.cargandoTodos.set(false);
     }
   }
 
