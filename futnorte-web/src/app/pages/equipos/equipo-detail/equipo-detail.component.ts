@@ -109,7 +109,8 @@ export class EquipoDetailComponent implements OnInit {
     this.deleting.set(true);
     this.equipoService.eliminarEquipo(equipo.id).subscribe({
       next: () => {
-        this.router.navigate(['/equipos']);
+        const torneoId = equipo.torneoId;
+        this.router.navigate(['/torneos', torneoId, 'equipos']);
       },
       error: (error) => {
         this.error.set('Error al eliminar equipo: ' + error.message);

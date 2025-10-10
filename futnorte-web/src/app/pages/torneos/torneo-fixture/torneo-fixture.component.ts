@@ -64,6 +64,7 @@ export class TorneoFixtureComponent implements OnInit {
   fechaInicio = this.state.fechaInicio;
   fechaFin = this.state.fechaFin;
   filtrandoPorFecha = this.state.filtrandoPorFecha;
+  cargandoTodos = this.state.cargandoTodos;
 
   // Enfrentamientos organizados
   enfrentamientosProgramados = this.state.enfrentamientosProgramados;
