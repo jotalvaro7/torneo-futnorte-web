@@ -3,20 +3,23 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { EquipoService } from '../../../services/equipo.service';
 import { EnfrentamientoService } from '../../../services/enfrentamiento.service';
-import { Equipo, EnfrentamientoResponse } from '../../../models';
+import { JugadorService } from '../../../services/jugador.service';
+import { Equipo, EnfrentamientoResponse, ActualizarEnfrentamientoRequest, Jugador } from '../../../models';
 import { EquipoJugadoresComponent } from '../equipo-jugadores/equipo-jugadores.component';
 import { DeleteConfirmationModalComponent } from '../../../shared/components/delete-confirmation-modal/delete-confirmation-modal.component';
+import { EnfrentamientoEditModalComponent } from '../../torneos/torneo-fixture/components/enfrentamiento-edit-modal/enfrentamiento-edit-modal.component';
 
 @Component({
   selector: 'app-equipo-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, EquipoJugadoresComponent, DeleteConfirmationModalComponent],
+  imports: [CommonModule, RouterModule, EquipoJugadoresComponent, DeleteConfirmationModalComponent, EnfrentamientoEditModalComponent],
   templateUrl: './equipo-detail.component.html',
   styleUrl: './equipo-detail.component.css'
 })
 export class EquipoDetailComponent implements OnInit {
   private readonly equipoService = inject(EquipoService);
   private readonly enfrentamientoService = inject(EnfrentamientoService);
+  private readonly jugadorService = inject(JugadorService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
@@ -37,6 +40,13 @@ export class EquipoDetailComponent implements OnInit {
   enfrentamientos = signal<EnfrentamientoResponse[]>([]);
   loadingEnfrentamientos = signal(false);
   mostrarHistorial = signal(false);
+
+  // Modal de edición de enfrentamiento
+  showEditEnfrentamientoModal = signal(false);
+  editingEnfrentamiento = signal<EnfrentamientoResponse | null>(null);
+  jugadoresLocal = signal<Jugador[]>([]);
+  jugadoresVisitante = signal<Jugador[]>([]);
+  updatingEnfrentamiento = signal(false);
 
   // Toggle para mostrar/ocultar estadísticas y jugadores
   mostrarEstadisticas = signal(false);
@@ -179,5 +189,90 @@ export class EquipoDetailComponent implements OnInit {
 
   toggleEstadisticas(): void {
     this.mostrarEstadisticas.update(value => !value);
+  }
+
+  async navegarAEnfrentamiento(enfrentamiento: EnfrentamientoResponse): Promise<void> {
+    // Abrir modal de edición directamente
+    this.editingEnfrentamiento.set(enfrentamiento);
+    await this.cargarJugadoresParaEdicion(enfrentamiento);
+    this.showEditEnfrentamientoModal.set(true);
+  }
+
+  async cargarJugadoresParaEdicion(enfrentamiento: EnfrentamientoResponse): Promise<void> {
+    try {
+      // Cargar equipos del torneo para obtener IDs
+      const equipos = await new Promise<Equipo[]>((resolve, reject) => {
+        this.equipoService.buscarEquiposPorTorneo(enfrentamiento.torneoId).subscribe({
+          next: resolve,
+          error: reject
+        });
+      });
+
+      const equipoLocal = equipos.find(e => e.nombre === enfrentamiento.equipoLocal);
+      const equipoVisitante = equipos.find(e => e.nombre === enfrentamiento.equipoVisitante);
+
+      const promesas: Promise<void>[] = [];
+
+      if (equipoLocal) {
+        promesas.push(
+          new Promise<void>((resolve, reject) => {
+            this.jugadorService.buscarJugadoresPorEquipo(equipoLocal.id!).subscribe({
+              next: (jugadores) => {
+                this.jugadoresLocal.set(jugadores);
+                resolve();
+              },
+              error: reject
+            });
+          })
+        );
+      }
+
+      if (equipoVisitante) {
+        promesas.push(
+          new Promise<void>((resolve, reject) => {
+            this.jugadorService.buscarJugadoresPorEquipo(equipoVisitante.id!).subscribe({
+              next: (jugadores) => {
+                this.jugadoresVisitante.set(jugadores);
+                resolve();
+              },
+              error: reject
+            });
+          })
+        );
+      }
+
+      await Promise.all(promesas);
+    } catch (error) {
+      console.error('Error cargando jugadores:', error);
+    }
+  }
+
+  cerrarModalEditarEnfrentamiento(): void {
+    this.showEditEnfrentamientoModal.set(false);
+    this.editingEnfrentamiento.set(null);
+    this.jugadoresLocal.set([]);
+    this.jugadoresVisitante.set([]);
+  }
+
+  async actualizarEnfrentamiento(request: ActualizarEnfrentamientoRequest): Promise<void> {
+    const enfrentamiento = this.editingEnfrentamiento();
+    if (!enfrentamiento) return;
+
+    this.updatingEnfrentamiento.set(true);
+
+    this.enfrentamientoService.actualizarEnfrentamiento(enfrentamiento.id, request).subscribe({
+      next: (enfrentamientoActualizado) => {
+        // Actualizar en la lista de enfrentamientos
+        this.enfrentamientos.update(current =>
+          current.map(e => e.id === enfrentamiento.id ? enfrentamientoActualizado : e)
+        );
+        this.updatingEnfrentamiento.set(false);
+        this.cerrarModalEditarEnfrentamiento();
+      },
+      error: (error) => {
+        this.error.set('Error al actualizar enfrentamiento: ' + error.message);
+        this.updatingEnfrentamiento.set(false);
+      }
+    });
   }
 }
