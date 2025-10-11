@@ -250,7 +250,8 @@
           </div>
           } @else {
           @for (enfrentamiento of enfrentamientosOrdenados(); track enfrentamiento.id) {
-          <div class="p-4 border-b border-neutral-100 hover:bg-neutral-200 transition-colors">
+          <div class="p-4 border-b border-neutral-100 hover:bg-neutral-50 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer rounded-lg"
+               (click)="navegarAEnfrentamiento(enfrentamiento)">
             <div class="flex items-center justify-between">
               <div class="flex-1">
                 <div class="flex items-center justify-between mb-2">
@@ -341,5 +342,17 @@
       (confirm)="confirmarEliminar()"
       (cancel)="closeDeleteModal()">
     </app-delete-confirmation-modal>
+
+    <!-- Modal de Edición de Enfrentamiento -->
+    @if (showEditEnfrentamientoModal() && editingEnfrentamiento()) {
+    <app-enfrentamiento-edit-modal
+      [enfrentamiento]="editingEnfrentamiento()!"
+      [jugadoresLocal]="jugadoresLocal()"
+      [jugadoresVisitante]="jugadoresVisitante()"
+      [updating]="updatingEnfrentamiento()"
+      (updateSubmit)="actualizarEnfrentamiento($event)"
+      (cancel)="cerrarModalEditarEnfrentamiento()">
+    </app-enfrentamiento-edit-modal>
+    }
   </div>
 </div>
