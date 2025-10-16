@@ -27,11 +27,24 @@ export class EnfrentamientoEditModalComponent implements OnInit {
   // State
   editMode = signal(false);
   mostrarCamposGoles = signal(false);
+  mostrarCanchaPersonalizada = signal(false);
+
+  // Canchas predefinidas
+  readonly canchasPredefinidas = [
+    'Campo Santander',
+    'Porvenir',
+    'Tablazo',
+    'Cuchillas',
+    'Quebrada Arriba',
+    'Santa Barbara',
+    'Otra...'
+  ];
 
   // Form
   editForm = this.fb.nonNullable.group({
     fechaHora: ['', [Validators.required]],
-    cancha: ['', [Validators.required, Validators.maxLength(100)]],
+    canchaSeleccionada: ['', [Validators.required]],
+    canchaPersonalizada: [''],
     estado: ['', [Validators.required]],
     golesLocal: [0, [Validators.required, Validators.min(0)]],
     golesVisitante: [0, [Validators.required, Validators.min(0)]],
@@ -53,17 +66,47 @@ export class EnfrentamientoEditModalComponent implements OnInit {
       this.mostrarCamposGoles.set(true);
       this.prellenarGolesJugadores();
     }
+
+    // Suscribirse a cambios en la cancha seleccionada
+    this.editForm.get('canchaSeleccionada')?.valueChanges.subscribe((valor) => {
+      this.onCanchaSeleccionadaChange(valor);
+    });
   }
 
   cargarDatosEnFormulario(): void {
     const enfrentamiento = this.enfrentamiento();
+    const canchaActual = enfrentamiento.cancha;
+
+    // Verificar si la cancha actual está en las predefinidas
+    const esCanchaPredefinida = this.canchasPredefinidas.includes(canchaActual);
+
     this.editForm.patchValue({
       fechaHora: enfrentamiento.fechaHora,
-      cancha: enfrentamiento.cancha,
+      canchaSeleccionada: esCanchaPredefinida ? canchaActual : 'Otra...',
+      canchaPersonalizada: esCanchaPredefinida ? '' : canchaActual,
       estado: enfrentamiento.estado,
       golesLocal: enfrentamiento.golesLocal || 0,
       golesVisitante: enfrentamiento.golesVisitante || 0
     });
+
+    // Si no es predefinida, mostrar el campo personalizado
+    if (!esCanchaPredefinida) {
+      this.mostrarCanchaPersonalizada.set(true);
+      this.editForm.get('canchaPersonalizada')?.setValidators([Validators.required, Validators.maxLength(100)]);
+      this.editForm.get('canchaPersonalizada')?.updateValueAndValidity();
+    }
+  }
+
+  onCanchaSeleccionadaChange(valor: string): void {
+    if (valor === 'Otra...') {
+      this.mostrarCanchaPersonalizada.set(true);
+      this.editForm.get('canchaPersonalizada')?.setValidators([Validators.required, Validators.maxLength(100)]);
+    } else {
+      this.mostrarCanchaPersonalizada.set(false);
+      this.editForm.get('canchaPersonalizada')?.clearValidators();
+      this.editForm.get('canchaPersonalizada')?.setValue('');
+    }
+    this.editForm.get('canchaPersonalizada')?.updateValueAndValidity();
   }
 
   prellenarGolesJugadores(): void {
@@ -180,9 +223,14 @@ export class EnfrentamientoEditModalComponent implements OnInit {
 
     const formValue = this.editForm.getRawValue();
 
+    // Determinar qué valor de cancha usar
+    const cancha = formValue.canchaSeleccionada === 'Otra...'
+      ? formValue.canchaPersonalizada
+      : formValue.canchaSeleccionada;
+
     const request: ActualizarEnfrentamientoRequest = {
       fechaHora: formValue.fechaHora,
-      cancha: formValue.cancha,
+      cancha: cancha,
       estado: formValue.estado as 'PROGRAMADO' | 'FINALIZADO' | 'APLAZADO',
       golesLocal: formValue.estado === 'FINALIZADO' ? formValue.golesLocal : undefined,
       golesVisitante: formValue.estado === 'FINALIZADO' ? formValue.golesVisitante : undefined,

@@ -1,4 +1,4 @@
-import { Component, OnInit, input, output, inject } from '@angular/core';
+import { Component, OnInit, input, output, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Equipo, CrearEnfrentamientoRequest } from '../../../../../models';
@@ -22,11 +22,26 @@ export class EnfrentamientoCreateFormComponent implements OnInit {
   createSubmit = output<CrearEnfrentamientoRequest>();
   cancel = output<void>();
 
+  // Canchas predefinidas
+  readonly canchasPredefinidas = [
+    'Campo Santander',
+    'Porvenir',
+    'Tablazo',
+    'Cuchillas',
+    'Quebrada Arriba',
+    'Santa Barbara',
+    'Otra...'
+  ];
+
+  // Signal para controlar si se muestra el campo personalizado
+  mostrarCanchaPersonalizada = signal(false);
+
   createForm = this.fb.nonNullable.group({
     equipoLocalId: ['', [Validators.required]],
     equipoVisitanteId: ['', [Validators.required]],
     fechaHora: ['', [Validators.required]],
-    cancha: ['', [Validators.required, Validators.maxLength(100)]]
+    canchaSeleccionada: ['', [Validators.required]],
+    canchaPersonalizada: ['']
   });
 
   equiposDisponiblesLocal: Equipo[] = [];
@@ -44,6 +59,23 @@ export class EnfrentamientoCreateFormComponent implements OnInit {
     this.createForm.get('equipoVisitanteId')?.valueChanges.subscribe(() => {
       this.actualizarEquiposDisponibles();
     });
+
+    // Suscribirse a cambios en la cancha seleccionada
+    this.createForm.get('canchaSeleccionada')?.valueChanges.subscribe((valor) => {
+      this.onCanchaSeleccionadaChange(valor);
+    });
+  }
+
+  onCanchaSeleccionadaChange(valor: string): void {
+    if (valor === 'Otra...') {
+      this.mostrarCanchaPersonalizada.set(true);
+      this.createForm.get('canchaPersonalizada')?.setValidators([Validators.required, Validators.maxLength(100)]);
+    } else {
+      this.mostrarCanchaPersonalizada.set(false);
+      this.createForm.get('canchaPersonalizada')?.clearValidators();
+      this.createForm.get('canchaPersonalizada')?.setValue('');
+    }
+    this.createForm.get('canchaPersonalizada')?.updateValueAndValidity();
   }
 
   actualizarEquiposDisponibles(): void {
@@ -70,12 +102,18 @@ export class EnfrentamientoCreateFormComponent implements OnInit {
     }
 
     const formValue = this.createForm.value;
+
+    // Determinar qué valor de cancha usar
+    const cancha = formValue.canchaSeleccionada === 'Otra...'
+      ? formValue.canchaPersonalizada!
+      : formValue.canchaSeleccionada!;
+
     const request: CrearEnfrentamientoRequest = {
       torneoId: this.torneoId(),
       equipoLocalId: +formValue.equipoLocalId!,
       equipoVisitanteId: +formValue.equipoVisitanteId!,
       fechaHora: formValue.fechaHora!,
-      cancha: formValue.cancha!
+      cancha: cancha
     };
 
     this.createSubmit.emit(request);

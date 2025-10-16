@@ -49,9 +49,13 @@
           <div>
             <label class="block text-sm font-bold text-neutral-700 mb-2">Cancha</label>
             @if (editMode()) {
-            <input type="text" formControlName="cancha"
-              class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-danger-500 focus:ring-2 focus:ring-danger-200 transition-colors"
-              placeholder="Cancha">
+            <select formControlName="canchaSeleccionada"
+              class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-danger-500 focus:ring-2 focus:ring-danger-200 transition-colors">
+              <option value="">Seleccionar cancha</option>
+              @for (cancha of canchasPredefinidas; track cancha) {
+              <option [value]="cancha">{{ cancha }}</option>
+              }
+            </select>
             } @else {
             <div class="px-4 py-3 bg-neutral-50 rounded-lg text-neutral-700 font-medium">
               {{ enfrentamiento().cancha }}
@@ -87,6 +91,22 @@
             }
           </div>
         </div>
+
+        <!-- Campo personalizado de cancha (solo si selecciona "Otra..." y está en modo edición) -->
+        @if (mostrarCanchaPersonalizada() && editMode()) {
+        <div class="mb-6">
+          <label for="canchaPersonalizada" class="block text-sm font-bold text-neutral-700 mb-2">
+            Nombre de la cancha *
+          </label>
+          <input
+            type="text"
+            id="canchaPersonalizada"
+            formControlName="canchaPersonalizada"
+            class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-danger-500 focus:ring-2 focus:ring-danger-200 transition-colors"
+            placeholder="Ingrese el nombre de la cancha"
+            maxlength="100">
+        </div>
+        }
 
         <!-- Campos de goles (solo si está FINALIZADO) -->
         @if (mostrarCamposGoles()) {
