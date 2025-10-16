@@ -193,10 +193,22 @@ export class PdfExportService {
   ): void {
     const doc = new jsPDF();
 
-    // Título del documento
+    // Determinar el tipo de partidos para ajustar el título
+    const tienePartidosProgramados = enfrentamientos.some(e => e.estado === 'PROGRAMADO');
+    const tienePartidosFinalizadosOAplazados = enfrentamientos.some(e => e.estado === 'FINALIZADO' || e.estado === 'APLAZADO');
+
+    // Título del documento (dinámico según el estado de los partidos)
     doc.setFontSize(18);
     doc.setFont('helvetica', 'bold');
-    doc.text('Programación de Partidos', 14, 20);
+    let titulo: string;
+    if (tienePartidosProgramados && tienePartidosFinalizadosOAplazados) {
+      titulo = 'Programación y Resultados de Partidos';
+    } else if (tienePartidosProgramados) {
+      titulo = 'Programación de Partidos';
+    } else {
+      titulo = 'Resultados de Partidos';
+    }
+    doc.text(titulo, 14, 20);
 
     // Nombre del torneo
     if (nombreTorneo) {
@@ -232,7 +244,7 @@ export class PdfExportService {
     }
 
     // Preparar datos para la tabla
-    const headers = [['Fecha', 'Día', 'Hora', 'Local', 'vs', 'Visitante', 'Cancha']];
+    const headers = [['Fecha', 'Día', 'Hora', 'Local', 'Resultado', 'Visitante', 'Cancha']];
     const data = enfrentamientos.map((enfrentamiento) => {
       const date = new Date(enfrentamiento.fechaHora);
       const fecha = date.toLocaleDateString('es-ES', {
@@ -248,14 +260,27 @@ export class PdfExportService {
         minute: '2-digit',
         hour12: true
       });
-      const vs = 'vs';
+
+      // Determinar qué mostrar en la columna de resultado
+      let resultado: string;
+      if (enfrentamiento.estado === 'FINALIZADO' &&
+          enfrentamiento.golesLocal !== null &&
+          enfrentamiento.golesLocal !== undefined &&
+          enfrentamiento.golesVisitante !== null &&
+          enfrentamiento.golesVisitante !== undefined) {
+        resultado = `${enfrentamiento.golesLocal} - ${enfrentamiento.golesVisitante}`;
+      } else if (enfrentamiento.estado === 'APLAZADO') {
+        resultado = 'APLAZADO';
+      } else {
+        resultado = 'vs';
+      }
 
       return [
         fecha,
         dia,
         hora,
         enfrentamiento.equipoLocal,
-        vs,
+        resultado,
         enfrentamiento.equipoVisitante,
         enfrentamiento.cancha
       ];
@@ -287,6 +312,18 @@ export class PdfExportService {
         4: { halign: 'center', cellWidth: 20, fontStyle: 'bold' },  // Resultado
         5: { halign: 'center', cellWidth: 40 },  // Visitante
         6: { halign: 'center', cellWidth: 22 }   // Cancha
+      },
+      didParseCell: (data) => {
+        // Resaltar solo la celda de partidos aplazados
+        if (data.column.index === 4 && data.section === 'body') {
+          const enfrentamiento = enfrentamientos[data.row.index];
+          if (enfrentamiento.estado === 'APLAZADO') {
+            data.cell.styles.fillColor = [234, 179, 8]; // yellow-500
+            data.cell.styles.textColor = [255, 255, 255]; // Blanco
+            data.cell.styles.fontStyle = 'bold';
+            data.cell.styles.fontSize = 7;
+          }
+        }
       }
     });
 
