@@ -7,9 +7,28 @@ import { Equipo, GoleadorResponse, EnfrentamientoResponse } from '../models';
   providedIn: 'root'
 })
 export class PdfExportService {
+  private readonly logoUrl = 'assets/logo/futnorte.png';
+
+  private agregarLogo(doc: jsPDF): void {
+    try {
+      // Agregar logo en la esquina superior derecha
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const logoWidth = 20;
+      const logoHeight = 20;
+      const xPosition = pageWidth - logoWidth - 14; // 14px de margen desde la derecha
+      const yPosition = 10; // 10px desde arriba
+
+      doc.addImage(this.logoUrl, 'PNG', xPosition, yPosition, logoWidth, logoHeight);
+    } catch (error) {
+      console.warn('No se pudo agregar el logo al PDF:', error);
+    }
+  }
 
   exportarGoleadores(goleadores: GoleadorResponse[], torneoId: number, nombreTorneo?: string, fechaProgramar?: string): void {
     const doc = new jsPDF();
+
+    // Agregar logo
+    this.agregarLogo(doc);
 
     // Título del documento
     doc.setFontSize(18);
@@ -92,6 +111,9 @@ export class PdfExportService {
 
   exportarTablaPosiciones(equipos: Equipo[], torneoId: number, nombreTorneo?: string, fechaProgramar?: string): void {
     const doc = new jsPDF();
+
+    // Agregar logo
+    this.agregarLogo(doc);
 
     // Título del documento
     doc.setFontSize(18);
@@ -192,6 +214,9 @@ export class PdfExportService {
     fechaProgramar?: string
   ): void {
     const doc = new jsPDF();
+
+    // Agregar logo
+    this.agregarLogo(doc);
 
     // Determinar el tipo de partidos para ajustar el título
     const tienePartidosProgramados = enfrentamientos.some(e => e.estado === 'PROGRAMADO');
