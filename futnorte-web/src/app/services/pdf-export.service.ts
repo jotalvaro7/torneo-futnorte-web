@@ -226,6 +226,12 @@ export class PdfExportService {
         7: { halign: 'center', cellWidth: 12 },
         8: { halign: 'center', cellWidth: 12 },
         9: { halign: 'center', cellWidth: 15, fontStyle: 'bold' }
+      },
+      didParseCell: (data) => {
+        // Filas intercaladas: gris tenue para filas pares
+        if (data.section === 'body' && data.row.index % 2 === 1) {
+          data.cell.styles.fillColor = [235, 235, 235]; // gris oscuro
+        }
       }
     });
 
