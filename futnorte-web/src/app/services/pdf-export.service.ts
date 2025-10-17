@@ -8,17 +8,46 @@ import { Equipo, GoleadorResponse, EnfrentamientoResponse } from '../models';
 })
 export class PdfExportService {
   private readonly logoUrl = 'assets/logo/futnorte.png';
+  private logoBase64: string | null = null;
 
-  private agregarLogo(doc: jsPDF): void {
+  constructor() {
+    this.cargarLogo();
+  }
+
+  private cargarLogo(): void {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(img, 0, 0);
+        this.logoBase64 = canvas.toDataURL('image/png');
+      }
+    };
+    img.onerror = (error) => {
+      console.warn('No se pudo cargar el logo:', error);
+    };
+    img.src = this.logoUrl;
+  }
+
+  private agregarLogo(doc: jsPDF, ajusteX: number = 33): void {
     try {
-      // Agregar logo en la esquina superior derecha
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const logoWidth = 20;
-      const logoHeight = 20;
-      const xPosition = pageWidth - logoWidth - 14; // 14px de margen desde la derecha
-      const yPosition = 10; // 10px desde arriba
+      if (!this.logoBase64) {
+        console.warn('Logo no disponible todavía');
+        return;
+      }
 
-      doc.addImage(this.logoUrl, 'PNG', xPosition, yPosition, logoWidth, logoHeight);
+      // Agregar logo en la esquina superior derecha, alineado con la última columna de las tablas
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const logoWidth = 25;
+      const logoHeight = 25;
+      const xPosition = pageWidth - logoWidth - ajusteX; // Alineado con el margen derecho de las tablas
+      const yPosition = 14;
+
+      doc.addImage(this.logoBase64, 'PNG', xPosition, yPosition, logoWidth, logoHeight);
     } catch (error) {
       console.warn('No se pudo agregar el logo al PDF:', error);
     }
@@ -215,8 +244,8 @@ export class PdfExportService {
   ): void {
     const doc = new jsPDF();
 
-    // Agregar logo
-    this.agregarLogo(doc);
+    // Agregar logo con ajuste específico para fixture
+    this.agregarLogo(doc, 12);
 
     // Determinar el tipo de partidos para ajustar el título
     const tienePartidosProgramados = enfrentamientos.some(e => e.estado === 'PROGRAMADO');
