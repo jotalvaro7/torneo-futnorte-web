@@ -481,13 +481,11 @@ export class PdfExportService {
     doc.setLineWidth(0.1);
     doc.line(startX, y + rowHeight, startX + 182, y + rowHeight);
 
-    // Columna 1: Enfrentamiento
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(0, 0, 0);
+    // Columna 1: Enfrentamiento con alineación fija
+    const baselineY = y + 7;
 
-    const equipoLocalTruncado = this.truncarTexto(doc, enfrentamiento.equipoLocal, 45);
-    const equipoVisitanteTruncado = this.truncarTexto(doc, enfrentamiento.equipoVisitante, 45);
+    // Posición fija del vs/resultado en el centro de la columna
+    const resultadoCentroX = startX + colWidths.enfrentamiento / 2;
 
     // VS o Resultado
     let resultado: string;
@@ -512,40 +510,29 @@ export class PdfExportService {
       resultadoSize = 9;
     }
 
-    // Construir texto completo para calcular centrado
-    doc.setFontSize(10);
-    const textoLocal = `${equipoLocalTruncado}  `;
-    const localWidth = doc.getTextWidth(textoLocal);
-
+    // Calcular ancho del resultado para centrarlo
     doc.setFontSize(resultadoSize);
     const resultadoWidth = doc.getTextWidth(resultado);
+    const resultadoX = resultadoCentroX - (resultadoWidth / 2);
 
-    doc.setFontSize(10);
-    const textoVisitante = `  ${equipoVisitanteTruncado}`;
-    const visitanteWidth = doc.getTextWidth(textoVisitante);
-
-    const textoTotalWidth = localWidth + resultadoWidth + visitanteWidth;
-
-    // Centrar en la columna
-    const enfrentamientoX = startX + (colWidths.enfrentamiento - textoTotalWidth) / 2;
-
-    // Dibujar: Local  [resultado]  Visitante (todos en la misma línea base)
-    const baselineY = y + 7;
-
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(0, 0, 0);
-    doc.text(textoLocal, enfrentamientoX, baselineY);
-
-    doc.setFontSize(resultadoSize);
+    // Dibujar resultado/vs centrado (posición fija)
     doc.setTextColor(...resultadoColor);
     doc.setFont('helvetica', 'bold');
-    doc.text(resultado, enfrentamientoX + localWidth, baselineY, { baseline: 'alphabetic' });
+    doc.text(resultado, resultadoX, baselineY, { baseline: 'alphabetic' });
 
+    // Equipo Local - alineado a la derecha del resultado
     doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
     doc.setFont('helvetica', 'bold');
-    doc.text(textoVisitante, enfrentamientoX + localWidth + resultadoWidth, baselineY);
+    doc.setTextColor(0, 0, 0);
+    const maxWidthLocal = resultadoX - startX - 4; // 4px de margen
+    const equipoLocalTruncado = this.truncarTexto(doc, enfrentamiento.equipoLocal, maxWidthLocal);
+    const localWidth = doc.getTextWidth(equipoLocalTruncado);
+    doc.text(equipoLocalTruncado, resultadoX - localWidth - 2, baselineY); // 2px de espacio
+
+    // Equipo Visitante - alineado a la izquierda del resultado
+    const maxWidthVisitante = (startX + colWidths.enfrentamiento) - (resultadoX + resultadoWidth) - 4; // 4px de margen
+    const equipoVisitanteTruncado = this.truncarTexto(doc, enfrentamiento.equipoVisitante, maxWidthVisitante);
+    doc.text(equipoVisitanteTruncado, resultadoX + resultadoWidth + 2, baselineY); // 2px de espacio
 
     // Columna 2: Hora
     const date = new Date(enfrentamiento.fechaHora);
