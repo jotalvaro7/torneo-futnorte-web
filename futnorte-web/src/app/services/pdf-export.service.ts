@@ -78,22 +78,18 @@ export class PdfExportService {
     let startY = nombreTorneo ? 35 : 28;
 
     if (fechaProgramar) {
-      doc.setFontSize(12);
+      doc.setFontSize(10);
       doc.setFont('helvetica', 'bold');
-
-      // Calcular el ancho del texto
       const textWidth = doc.getTextWidth(fechaProgramar);
 
-      // Dibujar rectángulo amarillo de fondo (resaltador)
-      doc.setFillColor(255, 255, 0); // Amarillo
-      doc.rect(14, startY - 3.5, textWidth, 4.5, 'F'); // F = fill (relleno)
+      // Rectángulo rojo con esquinas redondeadas (estilo moderno)
+      doc.setFillColor(220, 38, 38); // red-600
+      doc.roundedRect(14, startY - 4, textWidth + 4, 6, 1, 1, 'F');
 
-      // Escribir el texto encima del fondo amarillo
-      doc.setTextColor(0, 0, 0); // Negro
-      doc.text(`${fechaProgramar}`, 14, startY);
+      doc.setTextColor(255, 255, 255); // Blanco
+      doc.text(fechaProgramar, 16, startY);
+      doc.setTextColor(0, 0, 0);
 
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
       startY += 10;
     }
 
@@ -163,22 +159,18 @@ export class PdfExportService {
     let startY = nombreTorneo ? 35 : 28;
 
     if (fechaProgramar) {
-      doc.setFontSize(12);
+      doc.setFontSize(10);
       doc.setFont('helvetica', 'bold');
-
-      // Calcular el ancho del texto
       const textWidth = doc.getTextWidth(fechaProgramar);
 
-      // Dibujar rectángulo amarillo de fondo (resaltador)
-      doc.setFillColor(255, 255, 0); // Amarillo
-      doc.rect(14, startY - 3.5, textWidth, 4.5, 'F'); // F = fill (relleno)
+      // Rectángulo rojo con esquinas redondeadas (estilo moderno)
+      doc.setFillColor(220, 38, 38); // red-600
+      doc.roundedRect(14, startY - 4, textWidth + 4, 6, 1, 1, 'F');
 
-      // Escribir el texto encima del fondo amarillo
-      doc.setTextColor(0, 0, 0); // Negro
-      doc.text(`${fechaProgramar}`, 14, startY);
+      doc.setTextColor(255, 255, 255); // Blanco
+      doc.text(fechaProgramar, 16, startY);
+      doc.setTextColor(0, 0, 0);
 
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
       startY += 10;
     }
 
