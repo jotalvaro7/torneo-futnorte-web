@@ -258,140 +258,269 @@ export class PdfExportService {
     const tienePartidosFinalizadosOAplazados = enfrentamientos.some(e => e.estado === 'FINALIZADO' || e.estado === 'APLAZADO');
 
     // Título del documento (dinámico según el estado de los partidos)
-    doc.setFontSize(18);
+    doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
     let titulo: string;
     if (tienePartidosProgramados && tienePartidosFinalizadosOAplazados) {
-      titulo = 'Programación y Resultados de Partidos';
+      titulo = 'Programación y Resultados';
     } else if (tienePartidosProgramados) {
       titulo = 'Programación de Partidos';
     } else {
       titulo = 'Resultados de Partidos';
     }
-    doc.text(titulo, 14, 20);
+    doc.text(titulo, 14, 22);
 
     // Nombre del torneo
     if (nombreTorneo) {
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.text(nombreTorneo, 14, 28);
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(80, 80, 80);
+      doc.text(nombreTorneo, 14, 29);
+      doc.setTextColor(0, 0, 0);
     }
 
-    // Información adicional
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    const fecha = new Date().toLocaleDateString('es-ES');
-    let startY = nombreTorneo ? 35 : 28;
+    let startY = nombreTorneo ? 36 : 29;
 
+    // Jornada/Fecha programar con diseño moderno
     if (fechaProgramar) {
-      doc.setFontSize(12);
+      doc.setFontSize(10);
       doc.setFont('helvetica', 'bold');
-
-      // Calcular el ancho del texto
       const textWidth = doc.getTextWidth(fechaProgramar);
 
-      // Dibujar rectángulo amarillo de fondo (resaltador)
-      doc.setFillColor(255, 255, 0); // Amarillo
-      doc.rect(14, startY - 3.5, textWidth, 4.5, 'F'); // F = fill (relleno)
+      // Rectángulo con esquinas más modernas
+      doc.setFillColor(220, 38, 38); // red-600
+      doc.roundedRect(14, startY - 4, textWidth + 4, 6, 1, 1, 'F');
 
-      // Escribir el texto encima del fondo amarillo
-      doc.setTextColor(0, 0, 0); // Negro
-      doc.text(`${fechaProgramar}`, 14, startY);
+      doc.setTextColor(255, 255, 255);
+      doc.text(fechaProgramar, 16, startY);
+      doc.setTextColor(0, 0, 0);
 
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
       startY += 10;
     }
 
-    // Preparar datos para la tabla
-    const headers = [['Fecha', 'Día', 'Hora', 'Local', 'Resultado', 'Visitante', 'Cancha']];
-    const data = enfrentamientos.map((enfrentamiento) => {
-      const date = new Date(enfrentamiento.fechaHora);
-      const fecha = date.toLocaleDateString('es-ES', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric'
-      });
-      const dia = date.toLocaleDateString('es-ES', {
-        weekday: 'short'
-      });
-      const hora = date.toLocaleTimeString('es-ES', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-      });
+    // Agrupar enfrentamientos por fecha
+    const enfrentamientosPorFecha = this.agruparEnfrentamientosPorFecha(enfrentamientos);
 
-      // Determinar qué mostrar en la columna de resultado
-      let resultado: string;
-      if (enfrentamiento.estado === 'FINALIZADO' &&
-          enfrentamiento.golesLocal !== null &&
-          enfrentamiento.golesLocal !== undefined &&
-          enfrentamiento.golesVisitante !== null &&
-          enfrentamiento.golesVisitante !== undefined) {
-        resultado = `${enfrentamiento.golesLocal} - ${enfrentamiento.golesVisitante}`;
-      } else if (enfrentamiento.estado === 'APLAZADO') {
-        resultado = 'APLAZADO';
-      } else {
-        resultado = 'vs';
+    let currentY = startY;
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const marginBottom = 20;
+
+    // Iterar sobre cada grupo de fecha
+    enfrentamientosPorFecha.forEach((grupo, indexGrupo) => {
+      // Verificar si necesitamos una nueva página para el encabezado de fecha
+      if (currentY + 15 > pageHeight - marginBottom) {
+        doc.addPage();
+        currentY = 20;
       }
 
-      return [
-        fecha,
-        dia,
-        hora,
-        enfrentamiento.equipoLocal,
-        resultado,
-        enfrentamiento.equipoVisitante,
-        enfrentamiento.cancha
-      ];
-    });
+      // Encabezado de fecha con diseño moderno
+      doc.setFillColor(245, 245, 245); // Gris muy claro
+      doc.roundedRect(14, currentY, 182, 8, 1, 1, 'F');
 
-    // Generar tabla con estilos condicionales
-    autoTable(doc, {
-      head: headers,
-      body: data,
-      startY: nombreTorneo ? 40 : 34,
-      theme: 'grid',
-      styles: {
-        fontSize: 8,
-        cellPadding: 2.5,
-        textColor: [0, 0, 0] // Negro
-      },
-      headStyles: {
-        fillColor: [220, 38, 38], // red-600
-        textColor: [255, 255, 255], // Blanco
-        fontStyle: 'bold',
-        halign: 'center',
-        fontSize: 8
-      },
-      columnStyles: {
-        0: { halign: 'center', cellWidth: 25 },  // Fecha
-        1: { halign: 'center', cellWidth: 15 },  // Día
-        2: { halign: 'center', cellWidth: 20 },  // Hora
-        3: { halign: 'center', cellWidth: 40 },  // Local
-        4: { halign: 'center', cellWidth: 20, fontStyle: 'bold' },  // Resultado
-        5: { halign: 'center', cellWidth: 40 },  // Visitante
-        6: { halign: 'center', cellWidth: 22 }   // Cancha
-      },
-      didParseCell: (data) => {
-        // Resaltar solo la celda de partidos aplazados
-        if (data.column.index === 4 && data.section === 'body') {
-          const enfrentamiento = enfrentamientos[data.row.index];
-          if (enfrentamiento.estado === 'APLAZADO') {
-            data.cell.styles.fillColor = [234, 179, 8]; // yellow-500
-            data.cell.styles.textColor = [255, 255, 255]; // Blanco
-            data.cell.styles.fontStyle = 'bold';
-            data.cell.styles.fontSize = 7;
-          }
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(60, 60, 60);
+      doc.text(grupo.fechaTexto, 18, currentY + 5.5);
+      doc.setTextColor(0, 0, 0);
+
+      currentY += 11;
+
+      // Dibujar cada partido como tarjeta
+      grupo.partidos.forEach((enfrentamiento, indexPartido) => {
+        const cardHeight = 13;
+
+        // Verificar si necesitamos una nueva página
+        if (currentY + cardHeight > pageHeight - marginBottom) {
+          doc.addPage();
+          currentY = 20;
         }
-      }
+
+        // Dibujar tarjeta de partido
+        this.dibujarTarjetaPartido(doc, enfrentamiento, currentY);
+
+        currentY += cardHeight + 2; // Espacio entre tarjetas
+      });
+
+      // Espacio entre grupos de fechas
+      currentY += 3;
     });
 
     // Guardar PDF
+    const fecha = new Date().toLocaleDateString('es-ES');
     const nombreArchivo = fechaProgramar
       ? `fixture-torneo-${torneoId}-${fechaProgramar.replace(/\s+/g, '-')}.pdf`
       : `fixture-torneo-${torneoId}-${fecha}.pdf`;
     doc.save(nombreArchivo);
+  }
+
+  private agruparEnfrentamientosPorFecha(enfrentamientos: EnfrentamientoResponse[]): Array<{fechaTexto: string, partidos: EnfrentamientoResponse[]}> {
+    const grupos = new Map<string, EnfrentamientoResponse[]>();
+
+    enfrentamientos.forEach(enfrentamiento => {
+      const date = new Date(enfrentamiento.fechaHora);
+      const fechaKey = date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
+
+      const fechaTexto = date.toLocaleDateString('es-ES', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+
+      if (!grupos.has(fechaKey)) {
+        grupos.set(fechaKey, []);
+      }
+      grupos.get(fechaKey)!.push(enfrentamiento);
+    });
+
+    // Convertir a array y ordenar por fecha
+    return Array.from(grupos.entries())
+      .sort((a, b) => {
+        const [diaA, mesA, añoA] = a[0].split('/').map(Number);
+        const [diaB, mesB, añoB] = b[0].split('/').map(Number);
+        const fechaA = new Date(añoA, mesA - 1, diaA);
+        const fechaB = new Date(añoB, mesB - 1, diaB);
+        return fechaA.getTime() - fechaB.getTime();
+      })
+      .map(([_, partidos]) => {
+        const primeraFecha = new Date(partidos[0].fechaHora);
+        const fechaTexto = primeraFecha.toLocaleDateString('es-ES', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        });
+        // Capitalizar primera letra
+        const fechaCapitalizada = fechaTexto.charAt(0).toUpperCase() + fechaTexto.slice(1);
+
+        return {
+          fechaTexto: fechaCapitalizada,
+          partidos: partidos.sort((a, b) =>
+            new Date(a.fechaHora).getTime() - new Date(b.fechaHora).getTime()
+          )
+        };
+      });
+  }
+
+  private dibujarTarjetaPartido(doc: jsPDF, enfrentamiento: EnfrentamientoResponse, y: number): void {
+    const cardX = 14;
+    const cardWidth = 182;
+    const cardHeight = 13;
+
+    // Determinar color de fondo según estado
+    let bgColor: [number, number, number];
+    let borderColor: [number, number, number];
+
+    if (enfrentamiento.estado === 'FINALIZADO') {
+      bgColor = [240, 253, 244]; // green-50
+      borderColor = [34, 197, 94]; // green-500
+    } else if (enfrentamiento.estado === 'APLAZADO') {
+      bgColor = [254, 252, 232]; // yellow-50
+      borderColor = [234, 179, 8]; // yellow-500
+    } else {
+      bgColor = [248, 250, 252]; // slate-50
+      borderColor = [148, 163, 184]; // slate-400
+    }
+
+    // Fondo de tarjeta con borde redondeado
+    doc.setFillColor(...bgColor);
+    doc.roundedRect(cardX, y, cardWidth, cardHeight, 1.5, 1.5, 'F');
+
+    // Borde izquierdo de color
+    doc.setFillColor(...borderColor);
+    doc.roundedRect(cardX, y, 2, cardHeight, 1.5, 1.5, 'F');
+
+    // Hora
+    const date = new Date(enfrentamiento.fechaHora);
+    const hora = date.toLocaleTimeString('es-ES', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(80, 80, 80);
+    doc.text(hora, cardX + 6, y + 6);
+
+    // Equipo Local
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(0, 0, 0);
+    const equipoLocalX = cardX + 28;
+    const equipoLocalMaxWidth = 50;
+    const equipoLocalTruncado = this.truncarTexto(doc, enfrentamiento.equipoLocal, equipoLocalMaxWidth);
+    doc.text(equipoLocalTruncado, equipoLocalX, y + 6);
+
+    // VS o Resultado
+    let resultado: string;
+    let resultadoColor: [number, number, number] = [100, 100, 100];
+
+    if (enfrentamiento.estado === 'FINALIZADO' &&
+        enfrentamiento.golesLocal !== null &&
+        enfrentamiento.golesLocal !== undefined &&
+        enfrentamiento.golesVisitante !== null &&
+        enfrentamiento.golesVisitante !== undefined) {
+      resultado = `${enfrentamiento.golesLocal} - ${enfrentamiento.golesVisitante}`;
+      resultadoColor = [220, 38, 38]; // red-600
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+    } else if (enfrentamiento.estado === 'APLAZADO') {
+      resultado = 'APLAZADO';
+      resultadoColor = [234, 179, 8]; // yellow-500
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7);
+    } else {
+      resultado = 'vs';
+      resultadoColor = [148, 163, 184]; // slate-400
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+    }
+
+    doc.setTextColor(...resultadoColor);
+    const resultadoWidth = doc.getTextWidth(resultado);
+    const resultadoX = cardX + 90 - (resultadoWidth / 2);
+    doc.text(resultado, resultadoX, y + 6.5);
+
+    // Equipo Visitante
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(0, 0, 0);
+    const equipoVisitanteX = cardX + 105;
+    const equipoVisitanteMaxWidth = 50;
+    const equipoVisitanteTruncado = this.truncarTexto(doc, enfrentamiento.equipoVisitante, equipoVisitanteMaxWidth);
+    doc.text(equipoVisitanteTruncado, equipoVisitanteX, y + 6);
+
+    // Cancha con ícono
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 100, 100);
+    const canchaTexto = `📍 ${enfrentamiento.cancha}`;
+    const canchaX = cardX + 160;
+    doc.text(canchaTexto, canchaX, y + 6);
+
+    // Línea inferior sutil
+    doc.setDrawColor(220, 220, 220);
+    doc.setLineWidth(0.1);
+    doc.line(cardX + 4, y + cardHeight - 0.5, cardX + cardWidth - 4, y + cardHeight - 0.5);
+  }
+
+  private truncarTexto(doc: jsPDF, texto: string, maxWidth: number): string {
+    const textWidth = doc.getTextWidth(texto);
+    if (textWidth <= maxWidth) {
+      return texto;
+    }
+
+    // Truncar y agregar puntos suspensivos
+    let truncado = texto;
+    while (doc.getTextWidth(truncado + '...') > maxWidth && truncado.length > 0) {
+      truncado = truncado.slice(0, -1);
+    }
+    return truncado + '...';
   }
 
   private formatearFecha(fecha: string): string {
