@@ -125,6 +125,12 @@ export class PdfExportService {
         2: { halign: 'center', cellWidth: 60 },
         3: { halign: 'center', cellWidth: 20, fontStyle: 'bold' }
       },
+      didParseCell: (data) => {
+        // Filas intercaladas: blanco/gris claro
+        if (data.section === 'body' && data.row.index % 2 === 1) {
+          data.cell.styles.fillColor = [243, 244, 246]; // gray-100
+        }
+      }
     });
 
     // Guardar PDF
@@ -220,9 +226,9 @@ export class PdfExportService {
         9: { halign: 'center', cellWidth: 15, fontStyle: 'bold' }
       },
       didParseCell: (data) => {
-        // Filas intercaladas: gris tenue para filas pares
+        // Filas intercaladas: blanco/gris claro
         if (data.section === 'body' && data.row.index % 2 === 1) {
-          data.cell.styles.fillColor = [235, 235, 235]; // gris oscuro
+          data.cell.styles.fillColor = [243, 244, 246]; // gray-100
         }
       }
     });
