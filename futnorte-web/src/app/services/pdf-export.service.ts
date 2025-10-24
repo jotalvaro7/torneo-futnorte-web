@@ -323,11 +323,11 @@ export class PdfExportService {
       doc.text(grupo.fechaTexto, 18, currentY + 5.5);
       doc.setTextColor(0, 0, 0);
 
-      currentY += 10;
-
-      // Headers de columnas
-      this.dibujarHeadersColumnas(doc, currentY);
       currentY += 8;
+
+      // Headers de columnas (pegado al header de fecha)
+      this.dibujarHeadersColumnas(doc, currentY);
+      currentY += 6;
 
       // Dibujar cada partido como fila
       grupo.partidos.forEach((enfrentamiento, indexPartido) => {
@@ -461,15 +461,15 @@ export class PdfExportService {
     };
     const rowHeight = 11;
 
-    // Determinar color de fondo según estado (filas intercaladas + estado)
+    // Determinar color de fondo según estado (filas intercaladas)
     let bgColor: [number, number, number];
 
-    if (enfrentamiento.estado === 'FINALIZADO') {
-      bgColor = index % 2 === 0 ? [240, 253, 244] : [220, 252, 231]; // green-50 / green-100
-    } else if (enfrentamiento.estado === 'APLAZADO') {
+    if (enfrentamiento.estado === 'APLAZADO') {
+      // Partidos aplazados: fondo amarillo intercalado
       bgColor = index % 2 === 0 ? [254, 252, 232] : [254, 249, 195]; // yellow-50 / yellow-100
     } else {
-      bgColor = index % 2 === 0 ? [255, 255, 255] : [248, 250, 252]; // white / slate-50
+      // Partidos finalizados y programados: blanco/gris intercalado
+      bgColor = index % 2 === 0 ? [255, 255, 255] : [243, 244, 246]; // white / gray-100
     }
 
     // Fondo de fila
