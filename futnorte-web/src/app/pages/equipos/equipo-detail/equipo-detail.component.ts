@@ -7,13 +7,12 @@ import { JugadorService } from '../../../services/jugador.service';
 import { AlertService } from '../../../services/alert.service';
 import { Equipo, EnfrentamientoResponse, ActualizarEnfrentamientoRequest, Jugador } from '../../../models';
 import { EquipoJugadoresComponent } from '../equipo-jugadores/equipo-jugadores.component';
-import { DeleteConfirmationModalComponent } from '../../../shared/components/delete-confirmation-modal/delete-confirmation-modal.component';
 import { EnfrentamientoEditModalComponent } from '../../torneos/torneo-fixture/components/enfrentamiento-edit-modal/enfrentamiento-edit-modal.component';
 
 @Component({
   selector: 'app-equipo-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, EquipoJugadoresComponent, DeleteConfirmationModalComponent, EnfrentamientoEditModalComponent],
+  imports: [CommonModule, RouterModule, EquipoJugadoresComponent, EnfrentamientoEditModalComponent],
   templateUrl: './equipo-detail.component.html',
   styleUrl: './equipo-detail.component.css'
 })
@@ -28,14 +27,6 @@ export class EquipoDetailComponent implements OnInit {
   equipo = signal<Equipo | null>(null);
   loading = signal(false);
   deleting = signal(false);
-
-  // Modal de confirmación
-  showDeleteModal = signal(false);
-  deleteModalMessage = computed(() => {
-    const equipo = this.equipo();
-    if (!equipo) return '';
-    return `¿Está seguro de que desea eliminar el equipo <span class="font-bold text-slate-900">"${equipo.nombre}"</span>?`;
-  });
 
   // Historial de enfrentamientos
   enfrentamientos = signal<EnfrentamientoResponse[]>([]);
@@ -101,17 +92,12 @@ export class EquipoDetailComponent implements OnInit {
     });
   }
 
-  openDeleteModal(): void {
-    this.showDeleteModal.set(true);
-  }
-
-  closeDeleteModal(): void {
-    this.showDeleteModal.set(false);
-  }
-
-  confirmarEliminar(): void {
+  async confirmarEliminar(): Promise<void> {
     const equipo = this.equipo();
     if (!equipo?.id) return;
+
+    const confirmed = await this.alertService.confirmDelete(`el equipo "${equipo.nombre}"`);
+    if (!confirmed) return;
 
     this.deleting.set(true);
     this.equipoService.eliminarEquipo(equipo.id).subscribe({

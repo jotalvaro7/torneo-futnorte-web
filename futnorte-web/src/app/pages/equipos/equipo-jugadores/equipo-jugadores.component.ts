@@ -4,12 +4,11 @@ import { RouterModule } from '@angular/router';
 import { JugadorService } from '../../../services/jugador.service';
 import { AlertService } from '../../../services/alert.service';
 import { Jugador } from '../../../models';
-import { DeleteConfirmationModalComponent } from '../../../shared/components/delete-confirmation-modal/delete-confirmation-modal.component';
 
 @Component({
   selector: 'app-equipo-jugadores',
   standalone: true,
-  imports: [CommonModule, RouterModule, DeleteConfirmationModalComponent],
+  imports: [CommonModule, RouterModule],
   templateUrl: './equipo-jugadores.component.html',
   styleUrl: './equipo-jugadores.component.css'
 })
@@ -24,15 +23,6 @@ export class EquipoJugadoresComponent implements OnInit {
   jugadores = signal<Jugador[]>([]);
   loading = signal(false);
   deleting = signal<number | null>(null);
-
-  // Modal de confirmación
-  showDeleteModal = signal(false);
-  jugadorToDelete = signal<Jugador | null>(null);
-  deleteModalMessage = computed(() => {
-    const jugador = this.jugadorToDelete();
-    if (!jugador) return '';
-    return `¿Estás seguro de que deseas eliminar al jugador <span class="font-bold text-slate-900">${jugador.nombre} ${jugador.apellido}</span>?`;
-  });
 
   totalJugadores = computed(() => this.jugadores().length);
   totalGoles = computed(() => this.jugadores().reduce((acc, j) => acc + j.numeroGoles, 0));
@@ -56,19 +46,9 @@ export class EquipoJugadoresComponent implements OnInit {
       });
   }
 
-  openDeleteModal(jugador: Jugador) {
-    this.jugadorToDelete.set(jugador);
-    this.showDeleteModal.set(true);
-  }
-
-  closeDeleteModal() {
-    this.showDeleteModal.set(false);
-    this.jugadorToDelete.set(null);
-  }
-
-  confirmarEliminar() {
-    const jugador = this.jugadorToDelete();
-    if (!jugador) return;
+  async confirmarEliminar(jugador: Jugador): Promise<void> {
+    const confirmed = await this.alertService.confirmDelete(`al jugador "${jugador.nombre} ${jugador.apellido}"`);
+    if (!confirmed) return;
 
     this.deleting.set(jugador.id);
 
@@ -80,7 +60,6 @@ export class EquipoJugadoresComponent implements OnInit {
           );
           this.alertService.toast('success', 'Jugador eliminado exitosamente');
           this.deleting.set(null);
-          this.closeDeleteModal();
         },
         error: () => {
           this.deleting.set(null);

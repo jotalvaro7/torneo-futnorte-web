@@ -99,7 +99,8 @@
           <button
             type="button"
             class="flex items-center justify-center w-8 h-8 bg-danger-500 hover:bg-danger-600 text-white rounded-lg transition-all duration-300"
-            (click)="openDeleteModal(jugador)">
+            (click)="confirmarEliminar(jugador)"
+            [disabled]="deleting() === jugador.id">
             <i class="fa-solid fa-trash text-xs"></i>
           </button>
         </div>
@@ -132,16 +133,4 @@
     </div>
   </div>
   }
-
-  <!-- Modal de Confirmación de Eliminación -->
-  <app-delete-confirmation-modal
-    [show]="showDeleteModal()"
-    [title]="'Confirmar Eliminación'"
-    [message]="deleteModalMessage()"
-    [warningMessage]="'Se perderán todos los registros de goles y estadísticas asociadas a este jugador.'"
-    [confirmButtonText]="'Eliminar'"
-    [isDeleting]="deleting() !== null"
-    (confirm)="confirmarEliminar()"
-    (cancel)="closeDeleteModal()">
-  </app-delete-confirmation-modal>
 </div>
