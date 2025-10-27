@@ -27,7 +27,6 @@ export class TorneoFixtureStateService {
   jugadoresLocal = signal<Jugador[]>([]);
   jugadoresVisitante = signal<Jugador[]>([]);
   loading = signal(false);
-  error = signal<string | null>(null);
 
   // Filtros de fecha
   fechaInicio = signal<string>('');
@@ -98,7 +97,6 @@ export class TorneoFixtureStateService {
 
   async cargarDatos(torneoId: number): Promise<void> {
     this.loading.set(true);
-    this.error.set(null);
 
     try {
       const [torneo, equipos] = await Promise.all([
@@ -114,7 +112,6 @@ export class TorneoFixtureStateService {
 
       this.loading.set(false);
     } catch (error: any) {
-      this.error.set('Error al cargar datos: ' + error.message);
       this.loading.set(false);
     }
   }
@@ -166,7 +163,7 @@ export class TorneoFixtureStateService {
       );
       this.enfrentamientos.set(enfrentamientos);
     } catch (error: any) {
-      this.error.set('Error al cargar enfrentamientos: ' + error.message);
+      // El interceptor manejará el error
     } finally {
       this.cargandoTodos.set(false);
     }
@@ -174,17 +171,14 @@ export class TorneoFixtureStateService {
 
   async filtrarPorFecha(torneoId: number): Promise<void> {
     if (!this.fechaInicio() || !this.fechaFin()) {
-      this.error.set('Por favor selecciona ambas fechas');
       return;
     }
 
     if (new Date(this.fechaInicio()) > new Date(this.fechaFin())) {
-      this.error.set('La fecha de inicio debe ser anterior a la fecha de fin');
       return;
     }
 
     this.filtrandoPorFecha.set(true);
-    this.error.set(null);
 
     const fechaInicioCompleta = this.fechaInicio() + 'T00:00:00';
     const fechaFinDate = new Date(this.fechaFin());
@@ -203,7 +197,6 @@ export class TorneoFixtureStateService {
       this.enfrentamientos.set(enfrentamientosFiltrados);
       this.filtrandoPorFecha.set(false);
     } catch (error: any) {
-      this.error.set('Error al filtrar enfrentamientos: ' + error.message);
       this.filtrandoPorFecha.set(false);
     }
   }
@@ -255,7 +248,6 @@ export class TorneoFixtureStateService {
       this.enfrentamientos.update(current => [...current, enfrentamiento]);
       this.creating.set(false);
     } catch (error: any) {
-      this.error.set('Error al crear enfrentamiento: ' + error.message);
       this.creating.set(false);
       throw error;
     }
@@ -276,7 +268,6 @@ export class TorneoFixtureStateService {
       );
       this.updating.set(false);
     } catch (error: any) {
-      this.error.set('Error al actualizar enfrentamiento: ' + error.message);
       this.updating.set(false);
       throw error;
     }
@@ -294,7 +285,6 @@ export class TorneoFixtureStateService {
       );
       this.deleting.set(false);
     } catch (error: any) {
-      this.error.set('Error al eliminar enfrentamiento: ' + error.message);
       this.deleting.set(false);
       throw error;
     }

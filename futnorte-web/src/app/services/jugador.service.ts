@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { Jugador, JugadorRequest, GoleadorResponse } from '../models';
 import { environment } from '../../environments/environment';
 
@@ -13,69 +12,30 @@ export class JugadorService {
   private readonly baseUrl = `${environment.apiUrl}/jugadores`;
 
   buscarJugadorPorId(id: number): Observable<Jugador> {
-    return this.http.get<Jugador>(`${this.baseUrl}/${id}`)
-      .pipe(catchError(this.handleError));
+    return this.http.get<Jugador>(`${this.baseUrl}/${id}`);
   }
 
   buscarJugadoresPorEquipo(equipoId: number): Observable<Jugador[]> {
-    return this.http.get<Jugador[]>(`${this.baseUrl}/equipo/${equipoId}`)
-      .pipe(catchError(this.handleError));
+    return this.http.get<Jugador[]>(`${this.baseUrl}/equipo/${equipoId}`);
   }
 
   buscarJugadorPorIdentificacion(identificacion: string): Observable<Jugador> {
-    return this.http.get<Jugador>(`${this.baseUrl}/identificacion/${identificacion}`)
-      .pipe(catchError(this.handleError));
+    return this.http.get<Jugador>(`${this.baseUrl}/identificacion/${identificacion}`);
   }
 
   obtenerGoleadoresPorTorneo(torneoId: number): Observable<GoleadorResponse[]> {
-    return this.http.get<GoleadorResponse[]>(`${this.baseUrl}/goleadores/torneo/${torneoId}`)
-      .pipe(catchError(this.handleError));
+    return this.http.get<GoleadorResponse[]>(`${this.baseUrl}/goleadores/torneo/${torneoId}`);
   }
 
   crearJugador(jugador: JugadorRequest): Observable<Jugador> {
-    return this.http.post<Jugador>(this.baseUrl, jugador)
-      .pipe(catchError(this.handleError));
+    return this.http.post<Jugador>(this.baseUrl, jugador);
   }
 
   actualizarJugador(id: number, jugador: JugadorRequest): Observable<Jugador> {
-    return this.http.put<Jugador>(`${this.baseUrl}/${id}`, jugador)
-      .pipe(catchError(this.handleError));
+    return this.http.put<Jugador>(`${this.baseUrl}/${id}`, jugador);
   }
 
   eliminarJugador(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`)
-      .pipe(catchError(this.handleError));
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
-
-  private handleError = (error: HttpErrorResponse): Observable<never> => {
-    let errorMessage = 'Error desconocido';
-    
-    if (error.error instanceof ErrorEvent) {
-      errorMessage = `Error del cliente: ${error.error.message}`;
-    } else {
-      if (error.error && error.error.message) {
-        errorMessage = error.error.message;
-      } else {
-        switch (error.status) {
-          case 400:
-            errorMessage = 'Solicitud inválida';
-            break;
-          case 404:
-            errorMessage = 'Jugador no encontrado';
-            break;
-          case 409:
-            errorMessage = 'Conflicto: El jugador ya existe';
-            break;
-          case 500:
-            errorMessage = 'Error interno del servidor';
-            break;
-          default:
-            errorMessage = `Error del servidor: ${error.status}`;
-        }
-      }
-    }
-
-    console.error('Error en JugadorService:', error);
-    return throwError(() => new Error(errorMessage));
-  };
 }

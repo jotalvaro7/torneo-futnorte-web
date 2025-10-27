@@ -13,27 +13,6 @@
     </div>
     }
 
-    <!-- Error State -->
-    @if (error()) {
-    <div class="mb-6 animate-slide-up">
-      <div class="bg-danger-50 border border-danger-200 rounded-xl p-6 text-center">
-        <div class="flex flex-col items-center">
-          <div class="w-12 h-12 bg-danger-100 rounded-full flex items-center justify-center mb-4">
-            <svg class="w-6 h-6 text-danger-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          </div>
-          <h3 class="text-lg font-semibold text-danger-800 mb-2">Error al cargar equipo</h3>
-          <p class="text-sm text-danger-700 mb-4">{{ error() }}</p>
-          <button type="button" class="btn btn-danger btn-sm" (click)="onBack()">
-            Volver a Equipos
-          </button>
-        </div>
-      </div>
-    </div>
-    }
-
     <!-- Team Detail Content -->
     @if (equipo() && !loading()) {
     <div class="animate-fade-in space-y-6">
@@ -120,7 +99,8 @@
 
               <button type="button"
                 class="group relative flex items-center gap-2 bg-white text-black px-3 py-2 rounded-xl font-bold shadow-lg overflow-hidden transition-all duration-300"
-                (click)="openDeleteModal()">
+                (click)="confirmarEliminar()"
+                [disabled]="deleting()">
                 <!-- Animated background fill -->
                 <span class="absolute inset-0 bg-neutral-600 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
 
@@ -330,18 +310,6 @@
       </div>
     </div>
     }
-
-    <!-- Modal de Confirmación de Eliminación -->
-    <app-delete-confirmation-modal
-      [show]="showDeleteModal()"
-      [title]="'Confirmar Eliminación'"
-      [message]="deleteModalMessage()"
-      [warningMessage]="'Se perderán todos los jugadores y estadísticas asociadas a este equipo.'"
-      [confirmButtonText]="'Eliminar'"
-      [isDeleting]="deleting()"
-      (confirm)="confirmarEliminar()"
-      (cancel)="closeDeleteModal()">
-    </app-delete-confirmation-modal>
 
     <!-- Modal de Edición de Enfrentamiento -->
     @if (showEditEnfrentamientoModal() && editingEnfrentamiento()) {

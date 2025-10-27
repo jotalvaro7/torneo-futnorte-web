@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { TorneoService } from '../../../services/torneo.service';
+import { AlertService } from '../../../services/alert.service';
 import { Torneo, EstadoTorneo } from '../../../models';
 
 @Component({
@@ -15,10 +16,10 @@ export class TorneoDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly torneoService = inject(TorneoService);
+  private readonly alertService = inject(AlertService);
 
   torneo = signal<Torneo | null>(null);
   loading = signal(false);
-  error = signal<string | null>(null);
 
   torneoId = computed(() => this.torneo()?.id);
   canStart = computed(() =>
@@ -62,15 +63,13 @@ export class TorneoDetailComponent implements OnInit {
 
   cargarTorneo(id: number): void {
     this.loading.set(true);
-    this.error.set(null);
 
     this.torneoService.obtenerTorneo(id).subscribe({
       next: (torneo) => {
         this.torneo.set(torneo);
         this.loading.set(false);
       },
-      error: (error) => {
-        this.error.set('Error al cargar el torneo: ' + error.message);
+      error: () => {
         this.loading.set(false);
       }
     });
@@ -81,39 +80,41 @@ export class TorneoDetailComponent implements OnInit {
     if (!tournamentId) return;
 
     let observable;
+    let mensajeExito;
     switch (accion) {
       case 'iniciar':
         observable = this.torneoService.iniciarTorneo(tournamentId);
+        mensajeExito = 'Torneo iniciado exitosamente';
         break;
       case 'cancelar':
         observable = this.torneoService.cancelarTorneo(tournamentId);
+        mensajeExito = 'Torneo cancelado';
         break;
       case 'finalizar':
         observable = this.torneoService.finalizarTorneo(tournamentId);
+        mensajeExito = 'Torneo finalizado exitosamente';
         break;
     }
 
     observable.subscribe({
       next: () => {
+        this.alertService.toast('success', mensajeExito);
         this.cargarTorneo(tournamentId);
-      },
-      error: (error) => {
-        this.error.set(`Error al ${accion} torneo: ` + error.message);
       }
     });
   }
 
-  eliminarTorneo(): void {
+  async eliminarTorneo(): Promise<void> {
     const tournamentId = this.torneoId();
     if (!tournamentId) return;
 
-    if (confirm('¿Está seguro de que desea eliminar este torneo?')) {
+    const confirmado = await this.alertService.confirmDelete('este torneo');
+
+    if (confirmado) {
       this.torneoService.eliminarTorneo(tournamentId).subscribe({
         next: () => {
+          this.alertService.toast('success', 'Torneo eliminado exitosamente');
           this.router.navigate(['/torneos']);
-        },
-        error: (error) => {
-          this.error.set('Error al eliminar torneo: ' + error.message);
         }
       });
     }

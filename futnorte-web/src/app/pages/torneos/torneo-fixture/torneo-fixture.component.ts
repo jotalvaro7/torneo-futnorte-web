@@ -3,13 +3,13 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TorneoFixtureStateService } from './services/torneo-fixture-state.service';
 import { FiltrosFechaComponent } from './components/filtros-fecha/filtros-fecha.component';
-import { DeleteConfirmationModalComponent } from '../../../shared/components/delete-confirmation-modal/delete-confirmation-modal.component';
 import { EnfrentamientoCreateFormComponent } from './components/enfrentamiento-create-form/enfrentamiento-create-form.component';
 import { EnfrentamientoEditModalComponent } from './components/enfrentamiento-edit-modal/enfrentamiento-edit-modal.component';
 import { EnfrentamientoListComponent } from './components/enfrentamiento-list/enfrentamiento-list.component';
 import { PdfFechaModalComponent } from './components/pdf-fecha-modal/pdf-fecha-modal.component';
 import { EnfrentamientoResponse, CrearEnfrentamientoRequest, ActualizarEnfrentamientoRequest, Jugador } from '../../../models';
 import { PdfExportService } from '../../../services/pdf-export.service';
+import { AlertService } from '../../../services/alert.service';
 
 @Component({
   selector: 'app-torneo-fixture',
@@ -18,7 +18,6 @@ import { PdfExportService } from '../../../services/pdf-export.service';
     CommonModule,
     RouterModule,
     FiltrosFechaComponent,
-    DeleteConfirmationModalComponent,
     EnfrentamientoCreateFormComponent,
     EnfrentamientoEditModalComponent,
     EnfrentamientoListComponent,
@@ -33,29 +32,20 @@ export class TorneoFixtureComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly pdfExportService = inject(PdfExportService);
+  private readonly alertService = inject(AlertService);
 
   // UI state
   showCreateForm = signal(false);
   showEditModal = signal(false);
-  showDeleteConfirm = signal(false);
   showPdfFechaModal = signal(false);
   editingEnfrentamiento = signal<EnfrentamientoResponse | null>(null);
-  enfrentamientoToDelete = signal<EnfrentamientoResponse | null>(null);
   jugadoresLocal = signal<Jugador[]>([]);
   jugadoresVisitante = signal<Jugador[]>([]);
-
-  // Computed para el mensaje del modal de eliminación
-  deleteModalMessage = computed(() => {
-    const enfrentamiento = this.enfrentamientoToDelete();
-    if (!enfrentamiento) return '';
-    return `¿Está seguro de que desea eliminar el partido <span class="font-bold text-slate-900">${enfrentamiento.equipoLocal} vs ${enfrentamiento.equipoVisitante}</span>?`;
-  });
 
   // Exponer state del servicio
   torneo = this.state.torneo;
   equipos = this.state.equipos;
   loading = this.state.loading;
-  error = this.state.error;
   creating = this.state.creating;
   updating = this.state.updating;
   deleting = this.state.deleting;
@@ -79,8 +69,6 @@ export class TorneoFixtureComponent implements OnInit {
       this.state.cargarDatos(torneoId).then(() => {
         this.state.cargarPartidosSemanaActual(torneoId);
       });
-    } else {
-      this.state.error.set('ID de torneo inválido');
     }
   }
 
@@ -132,22 +120,11 @@ export class TorneoFixtureComponent implements OnInit {
   }
 
   // Eliminar enfrentamiento
-  mostrarConfirmacionEliminar(enfrentamiento: EnfrentamientoResponse): void {
-    this.enfrentamientoToDelete.set(enfrentamiento);
-    this.showDeleteConfirm.set(true);
-  }
-
-  ocultarConfirmacionEliminar(): void {
-    this.showDeleteConfirm.set(false);
-    this.enfrentamientoToDelete.set(null);
-  }
-
-  async eliminarEnfrentamiento(): Promise<void> {
-    const enfrentamiento = this.enfrentamientoToDelete();
-    if (!enfrentamiento) return;
+  async eliminarEnfrentamiento(enfrentamiento: EnfrentamientoResponse): Promise<void> {
+    const confirmed = await this.alertService.confirmDelete(`el partido "${enfrentamiento.equipoLocal} vs ${enfrentamiento.equipoVisitante}"`);
+    if (!confirmed) return;
 
     await this.state.eliminarEnfrentamiento(enfrentamiento.id);
-    this.ocultarConfirmacionEliminar();
   }
 
   // Filtros de fecha

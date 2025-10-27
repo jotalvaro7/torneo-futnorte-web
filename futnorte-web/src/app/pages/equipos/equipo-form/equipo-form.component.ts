@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { EquipoService } from '../../../services/equipo.service';
 import { TorneoService } from '../../../services/torneo.service';
+import { AlertService } from '../../../services/alert.service';
 import { Equipo, EquipoRequest, Torneo } from '../../../models';
 
 @Component({
@@ -17,13 +18,13 @@ export class EquipoFormComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   private readonly equipoService = inject(EquipoService);
   private readonly torneoService = inject(TorneoService);
+  private readonly alertService = inject(AlertService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
   equipoId = signal<number | null>(null);
   loading = signal(false);
   saving = signal(false);
-  error = signal<string | null>(null);
   torneos = signal<Torneo[]>([]);
   torneoId = signal<string | null>(null);
   
@@ -55,9 +56,6 @@ export class EquipoFormComponent implements OnInit {
     this.torneoService.obtenerTodosTorneos().subscribe({
       next: (torneos) => {
         this.torneos.set(torneos.filter(t => t.estado === 'CREADO' || t.estado === 'EN_CURSO'));
-      },
-      error: (error) => {
-        this.error.set('Error al cargar torneos: ' + error.message);
       }
     });
   }
@@ -74,8 +72,7 @@ export class EquipoFormComponent implements OnInit {
         this.actualizarTorneoId(equipo.torneoId.toString());
         this.loading.set(false);
       },
-      error: (error) => {
-        this.error.set('Error al cargar equipo: ' + error.message);
+      error: () => {
         this.loading.set(false);
       }
     });
@@ -110,13 +107,12 @@ export class EquipoFormComponent implements OnInit {
     }
 
     this.saving.set(true);
-    this.error.set(null);
 
     const torneoControl = this.equipoForm.get('torneoId');
     const equipoData: EquipoRequest = {
       ...this.equipoForm.value,
-      torneoId: torneoControl?.disabled 
-        ? +this.torneoId()! 
+      torneoId: torneoControl?.disabled
+        ? +this.torneoId()!
         : torneoControl?.value
     };
 
@@ -124,13 +120,17 @@ export class EquipoFormComponent implements OnInit {
       ? this.equipoService.actualizarEquipo(this.equipoId()!, equipoData)
       : this.equipoService.crearEquipo(equipoData);
 
+    const mensajeExito = this.isEditing()
+      ? 'Equipo actualizado exitosamente'
+      : 'Equipo creado exitosamente';
+
     operation.subscribe({
       next: () => {
+        this.alertService.toast('success', mensajeExito);
         this.actualizarTorneoId(this.equipoForm.get('torneoId')?.value);
         this.router.navigate(['/torneos', this.torneoId(), "equipos"]);
       },
-      error: (error) => {
-        this.error.set('Error al guardar equipo: ' + error.message);
+      error: () => {
         this.saving.set(false);
       }
     });

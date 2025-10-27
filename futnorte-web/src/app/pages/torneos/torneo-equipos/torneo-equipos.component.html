@@ -13,30 +13,6 @@
     </div>
     }
 
-    <!-- Error State -->
-    @if (error()) {
-    <div class="mb-6 animate-slide-up">
-      <div class="bg-danger-50 border border-danger-200 rounded-xl p-4">
-        <div class="flex items-start">
-          <div class="flex-shrink-0">
-            <svg class="w-5 h-5 text-danger-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          </div>
-          <div class="ml-3 flex-1">
-            <h3 class="text-sm font-semibold text-danger-800">Ha ocurrido un error</h3>
-            <p class="mt-1 text-sm text-danger-700">{{ error() }}</p>
-          </div>
-          <button type="button" class="ml-auto flex-shrink-0 text-danger-400 hover:text-danger-600 transition-colors" (click)="error.set(null)">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-    }
-
     <!-- Empty State -->
     @if (!loading() && equipos().length === 0) {
     <div class="text-center py-16 animate-fade-in">

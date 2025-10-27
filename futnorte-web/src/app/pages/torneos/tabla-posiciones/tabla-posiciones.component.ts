@@ -33,7 +33,6 @@ export class TablaPosicionesComponent {
   torneo = signal<Torneo | null>(null);
   equipos = signal<Equipo[]>([]);
   loading = signal(false);
-  error = signal<string | null>(null);
   showPdfFechaModal = signal(false);
 
   constructor() {
@@ -48,15 +47,11 @@ export class TablaPosicionesComponent {
 
   private cargarDatos(torneoId: number): void {
     this.loading.set(true);
-    this.error.set(null);
 
     // Cargar torneo
     this.torneoService.obtenerTorneo(torneoId).subscribe({
       next: (torneo) => {
         this.torneo.set(torneo);
-      },
-      error: (err) => {
-        console.error('Error cargando torneo:', err);
       }
     });
 
@@ -66,10 +61,8 @@ export class TablaPosicionesComponent {
         this.equipos.set(equipos);
         this.loading.set(false);
       },
-      error: (err) => {
-        this.error.set(err.message || 'Error al cargar la tabla de posiciones');
+      error: () => {
         this.loading.set(false);
-        console.error('Error cargando equipos:', err);
       }
     });
   }

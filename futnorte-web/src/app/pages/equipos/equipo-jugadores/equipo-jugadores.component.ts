@@ -2,13 +2,13 @@ import { Component, Input, inject, signal, computed, OnInit } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { JugadorService } from '../../../services/jugador.service';
+import { AlertService } from '../../../services/alert.service';
 import { Jugador } from '../../../models';
-import { DeleteConfirmationModalComponent } from '../../../shared/components/delete-confirmation-modal/delete-confirmation-modal.component';
 
 @Component({
   selector: 'app-equipo-jugadores',
   standalone: true,
-  imports: [CommonModule, RouterModule, DeleteConfirmationModalComponent],
+  imports: [CommonModule, RouterModule],
   templateUrl: './equipo-jugadores.component.html',
   styleUrl: './equipo-jugadores.component.css'
 })
@@ -18,20 +18,11 @@ export class EquipoJugadoresComponent implements OnInit {
   @Input() showHeader: boolean = true; // Control para mostrar/ocultar header
 
   private readonly jugadorService = inject(JugadorService);
+  private readonly alertService = inject(AlertService);
 
   jugadores = signal<Jugador[]>([]);
   loading = signal(false);
-  error = signal<string | null>(null);
   deleting = signal<number | null>(null);
-
-  // Modal de confirmación
-  showDeleteModal = signal(false);
-  jugadorToDelete = signal<Jugador | null>(null);
-  deleteModalMessage = computed(() => {
-    const jugador = this.jugadorToDelete();
-    if (!jugador) return '';
-    return `¿Estás seguro de que deseas eliminar al jugador <span class="font-bold text-slate-900">${jugador.nombre} ${jugador.apellido}</span>?`;
-  });
 
   totalJugadores = computed(() => this.jugadores().length);
   totalGoles = computed(() => this.jugadores().reduce((acc, j) => acc + j.numeroGoles, 0));
@@ -42,34 +33,22 @@ export class EquipoJugadoresComponent implements OnInit {
 
   cargarJugadores() {
     this.loading.set(true);
-    this.error.set(null);
-    
+
     this.jugadorService.buscarJugadoresPorEquipo(this.equipoId)
       .subscribe({
         next: (jugadores) => {
           this.jugadores.set(jugadores);
           this.loading.set(false);
         },
-        error: (error) => {
-          this.error.set(error.message);
+        error: () => {
           this.loading.set(false);
         }
       });
   }
 
-  openDeleteModal(jugador: Jugador) {
-    this.jugadorToDelete.set(jugador);
-    this.showDeleteModal.set(true);
-  }
-
-  closeDeleteModal() {
-    this.showDeleteModal.set(false);
-    this.jugadorToDelete.set(null);
-  }
-
-  confirmarEliminar() {
-    const jugador = this.jugadorToDelete();
-    if (!jugador) return;
+  async confirmarEliminar(jugador: Jugador): Promise<void> {
+    const confirmed = await this.alertService.confirmDelete(`al jugador "${jugador.nombre} ${jugador.apellido}"`);
+    if (!confirmed) return;
 
     this.deleting.set(jugador.id);
 
@@ -79,11 +58,10 @@ export class EquipoJugadoresComponent implements OnInit {
           this.jugadores.update(jugadores =>
             jugadores.filter(j => j.id !== jugador.id)
           );
+          this.alertService.toast('success', 'Jugador eliminado exitosamente');
           this.deleting.set(null);
-          this.closeDeleteModal();
         },
-        error: (error) => {
-          this.error.set(error.message);
+        error: () => {
           this.deleting.set(null);
         }
       });
