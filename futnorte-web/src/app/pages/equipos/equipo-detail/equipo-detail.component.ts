@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { EquipoService } from '../../../services/equipo.service';
 import { EnfrentamientoService } from '../../../services/enfrentamiento.service';
 import { JugadorService } from '../../../services/jugador.service';
+import { AlertService } from '../../../services/alert.service';
 import { Equipo, EnfrentamientoResponse, ActualizarEnfrentamientoRequest, Jugador } from '../../../models';
 import { EquipoJugadoresComponent } from '../equipo-jugadores/equipo-jugadores.component';
 import { DeleteConfirmationModalComponent } from '../../../shared/components/delete-confirmation-modal/delete-confirmation-modal.component';
@@ -20,12 +21,12 @@ export class EquipoDetailComponent implements OnInit {
   private readonly equipoService = inject(EquipoService);
   private readonly enfrentamientoService = inject(EnfrentamientoService);
   private readonly jugadorService = inject(JugadorService);
+  private readonly alertService = inject(AlertService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
   equipo = signal<Equipo | null>(null);
   loading = signal(false);
-  error = signal<string | null>(null);
   deleting = signal(false);
 
   // Modal de confirmación
@@ -83,22 +84,18 @@ export class EquipoDetailComponent implements OnInit {
     const id = this.equipoId();
     if (id) {
       this.cargarEquipo(id);
-    } else {
-      this.error.set('ID de equipo inválido');
     }
   }
 
   cargarEquipo(id: number): void {
     this.loading.set(true);
-    this.error.set(null);
-    
+
     this.equipoService.buscarEquipoPorId(id).subscribe({
       next: (equipo) => {
         this.equipo.set(equipo);
         this.loading.set(false);
       },
-      error: (error) => {
-        this.error.set('Error al cargar equipo: ' + error.message);
+      error: () => {
         this.loading.set(false);
       }
     });
@@ -120,10 +117,10 @@ export class EquipoDetailComponent implements OnInit {
     this.equipoService.eliminarEquipo(equipo.id).subscribe({
       next: () => {
         const torneoId = equipo.torneoId;
+        this.alertService.toast('success', 'Equipo eliminado exitosamente');
         this.router.navigate(['/torneos', torneoId, 'equipos']);
       },
-      error: (error) => {
-        this.error.set('Error al eliminar equipo: ' + error.message);
+      error: () => {
         this.deleting.set(false);
       }
     });
@@ -159,8 +156,7 @@ export class EquipoDetailComponent implements OnInit {
         this.loadingEnfrentamientos.set(false);
         this.mostrarHistorial.set(true);
       },
-      error: (error) => {
-        this.error.set('Error al cargar historial: ' + error.message);
+      error: () => {
         this.loadingEnfrentamientos.set(false);
       }
     });
@@ -266,11 +262,11 @@ export class EquipoDetailComponent implements OnInit {
         this.enfrentamientos.update(current =>
           current.map(e => e.id === enfrentamiento.id ? enfrentamientoActualizado : e)
         );
+        this.alertService.toast('success', 'Enfrentamiento actualizado exitosamente');
         this.updatingEnfrentamiento.set(false);
         this.cerrarModalEditarEnfrentamiento();
       },
-      error: (error) => {
-        this.error.set('Error al actualizar enfrentamiento: ' + error.message);
+      error: () => {
         this.updatingEnfrentamiento.set(false);
       }
     });

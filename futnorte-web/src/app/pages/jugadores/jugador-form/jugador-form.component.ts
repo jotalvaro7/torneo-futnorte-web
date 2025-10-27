@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { Router, ActivatedRoute } from '@angular/router';
 import { JugadorService } from '../../../services/jugador.service';
 import { EquipoService } from '../../../services/equipo.service';
+import { AlertService } from '../../../services/alert.service';
 import { Jugador, JugadorRequest, Equipo } from '../../../models';
 
 @Component({
@@ -19,6 +20,7 @@ export class JugadorFormComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly jugadorService = inject(JugadorService);
   private readonly equipoService = inject(EquipoService);
+  private readonly alertService = inject(AlertService);
 
   form = this.fb.group({
     nombre: ['', [Validators.required, Validators.minLength(2)]],
@@ -33,7 +35,6 @@ export class JugadorFormComponent implements OnInit {
   equipos = signal<Equipo[]>([]);
   loading = signal(false);
   saving = signal(false);
-  error = signal<string | null>(null);
 
   equipoId = signal<number | null>(null);
   jugadorId = signal<number | null>(null);
@@ -68,9 +69,6 @@ export class JugadorFormComponent implements OnInit {
       .subscribe({
         next: (equipo) => {
           this.equipo.set(equipo);
-        },
-        error: (error) => {
-          this.error.set(error.message);
         }
       });
   }
@@ -89,7 +87,7 @@ export class JugadorFormComponent implements OnInit {
 
   cargarJugador(jugadorId: number) {
     this.loading.set(true);
-    
+
     this.jugadorService.buscarJugadorPorId(jugadorId)
       .subscribe({
         next: (jugador) => {
@@ -103,8 +101,7 @@ export class JugadorFormComponent implements OnInit {
           });
           this.loading.set(false);
         },
-        error: (error) => {
-          this.error.set(error.message);
+        error: () => {
           this.loading.set(false);
         }
       });
@@ -117,7 +114,6 @@ export class JugadorFormComponent implements OnInit {
     }
 
     this.saving.set(true);
-    this.error.set(null);
 
     const formValue = this.form.value as JugadorRequest;
 
@@ -125,13 +121,17 @@ export class JugadorFormComponent implements OnInit {
       ? this.jugadorService.actualizarJugador(this.jugadorId()!, formValue)
       : this.jugadorService.crearJugador(formValue);
 
+    const mensajeExito = this.isEditing()
+      ? 'Jugador actualizado exitosamente'
+      : 'Jugador creado exitosamente';
+
     operation.subscribe({
       next: () => {
         this.saving.set(false);
+        this.alertService.toast('success', mensajeExito);
         this.router.navigate(['/equipos', this.equipoId()]);
       },
-      error: (error) => {
-        this.error.set(error.message);
+      error: () => {
         this.saving.set(false);
       }
     });

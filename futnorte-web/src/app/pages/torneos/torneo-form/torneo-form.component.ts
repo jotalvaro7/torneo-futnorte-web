@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TorneoService } from '../../../services/torneo.service';
+import { AlertService } from '../../../services/alert.service';
 import { EstadoTorneo } from '../../../models';
 
 @Component({
@@ -16,13 +17,12 @@ export class TorneoFormComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly torneoService = inject(TorneoService);
+  private readonly alertService = inject(AlertService);
 
   torneoForm!: FormGroup;
   isEditMode = signal(false);
   torneoId = signal<number | null>(null);
   loading = signal(false);
-  error = signal<string | null>(null);
-  success = signal(false);
   
   pageTitle = computed(() => 
     this.isEditMode() ? 'Editar Torneo' : 'Crear Nuevo Torneo'
@@ -59,7 +59,7 @@ export class TorneoFormComponent implements OnInit {
 
   private cargarTorneo(id: number | null): void {
     if (!id) return;
-    
+
     this.loading.set(true);
     this.torneoService.obtenerTorneo(id).subscribe({
       next: (torneo) => {
@@ -71,8 +71,7 @@ export class TorneoFormComponent implements OnInit {
         });
         this.loading.set(false);
       },
-      error: (error) => {
-        this.error.set('Error al cargar el torneo: ' + error.message);
+      error: () => {
         this.loading.set(false);
       }
     });
@@ -94,8 +93,6 @@ export class TorneoFormComponent implements OnInit {
   onSubmit(): void {
     if (this.torneoForm.valid) {
       this.loading.set(true);
-      this.error.set(null);
-      this.success.set(false);
 
       const formData = this.torneoForm.value;
       const torneoData = {
@@ -108,16 +105,19 @@ export class TorneoFormComponent implements OnInit {
         ? this.torneoService.actualizarTorneo(this.torneoId()!, torneoData)
         : this.torneoService.crearTorneo(torneoData);
 
+      const mensajeExito = this.isEditMode()
+        ? 'Torneo actualizado exitosamente'
+        : 'Torneo creado exitosamente';
+
       request.subscribe({
         next: () => {
-          this.success.set(true);
           this.loading.set(false);
+          this.alertService.success('¡Éxito!', mensajeExito);
           setTimeout(() => {
             this.router.navigate(['/torneos']);
           }, 1500);
         },
-        error: (error) => {
-          this.error.set(`Error al ${this.isEditMode() ? 'actualizar' : 'crear'} el torneo: ` + error.message);
+        error: () => {
           this.loading.set(false);
         }
       });

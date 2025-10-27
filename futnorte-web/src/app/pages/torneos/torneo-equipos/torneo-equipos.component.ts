@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { EquipoService } from '../../../services/equipo.service';
 import { TorneoService } from '../../../services/torneo.service';
+import { AlertService } from '../../../services/alert.service';
 import { Equipo, Torneo } from '../../../models';
 
 @Component({
@@ -15,13 +16,13 @@ import { Equipo, Torneo } from '../../../models';
 export class TorneoEquiposComponent implements OnInit {
   private readonly equipoService = inject(EquipoService);
   private readonly torneoService = inject(TorneoService);
+  private readonly alertService = inject(AlertService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
   torneo = signal<Torneo | null>(null);
   equipos = signal<Equipo[]>([]);
   loading = signal(false);
-  error = signal<string | null>(null);
 
   torneoId = computed(() => {
     const id = this.route.snapshot.paramMap.get('id');
@@ -41,8 +42,6 @@ export class TorneoEquiposComponent implements OnInit {
     if (id) {
       this.cargarTorneo(id);
       this.cargarEquiposPorTorneo(id);
-    } else {
-      this.error.set('ID de torneo inválido');
     }
   }
 
@@ -50,24 +49,19 @@ export class TorneoEquiposComponent implements OnInit {
     this.torneoService.obtenerTorneo(id).subscribe({
       next: (torneo) => {
         this.torneo.set(torneo);
-      },
-      error: (error) => {
-        this.error.set('Error al cargar torneo: ' + error.message);
       }
     });
   }
 
   cargarEquiposPorTorneo(torneoId: number): void {
     this.loading.set(true);
-    this.error.set(null);
-    
+
     this.equipoService.obtenerEquiposOrdenadosPorNombre(torneoId).subscribe({
       next: (equipos) => {
         this.equipos.set(equipos);
         this.loading.set(false);
       },
-      error: (error) => {
-        this.error.set('Error al cargar equipos: ' + error.message);
+      error: () => {
         this.loading.set(false);
       }
     });
@@ -77,17 +71,17 @@ export class TorneoEquiposComponent implements OnInit {
     return equipo.id || index;
   }
 
-  eliminarEquipo(id: number): void {
-    if (confirm('¿Está seguro de que desea eliminar este equipo? También se eliminarán todos sus jugadores.')) {
+  async eliminarEquipo(id: number): Promise<void> {
+    const confirmado = await this.alertService.confirmDelete('este equipo y todos sus jugadores');
+
+    if (confirmado) {
       this.equipoService.eliminarEquipo(id).subscribe({
         next: () => {
+          this.alertService.toast('success', 'Equipo eliminado exitosamente');
           const torneoId = this.torneoId();
           if (torneoId) {
             this.cargarEquiposPorTorneo(torneoId);
           }
-        },
-        error: (error) => {
-          this.error.set('Error al eliminar equipo: ' + error.message);
         }
       });
     }

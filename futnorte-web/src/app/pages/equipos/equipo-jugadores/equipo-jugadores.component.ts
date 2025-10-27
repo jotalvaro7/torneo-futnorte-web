@@ -2,6 +2,7 @@ import { Component, Input, inject, signal, computed, OnInit } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { JugadorService } from '../../../services/jugador.service';
+import { AlertService } from '../../../services/alert.service';
 import { Jugador } from '../../../models';
 import { DeleteConfirmationModalComponent } from '../../../shared/components/delete-confirmation-modal/delete-confirmation-modal.component';
 
@@ -18,10 +19,10 @@ export class EquipoJugadoresComponent implements OnInit {
   @Input() showHeader: boolean = true; // Control para mostrar/ocultar header
 
   private readonly jugadorService = inject(JugadorService);
+  private readonly alertService = inject(AlertService);
 
   jugadores = signal<Jugador[]>([]);
   loading = signal(false);
-  error = signal<string | null>(null);
   deleting = signal<number | null>(null);
 
   // Modal de confirmación
@@ -42,16 +43,14 @@ export class EquipoJugadoresComponent implements OnInit {
 
   cargarJugadores() {
     this.loading.set(true);
-    this.error.set(null);
-    
+
     this.jugadorService.buscarJugadoresPorEquipo(this.equipoId)
       .subscribe({
         next: (jugadores) => {
           this.jugadores.set(jugadores);
           this.loading.set(false);
         },
-        error: (error) => {
-          this.error.set(error.message);
+        error: () => {
           this.loading.set(false);
         }
       });
@@ -79,11 +78,11 @@ export class EquipoJugadoresComponent implements OnInit {
           this.jugadores.update(jugadores =>
             jugadores.filter(j => j.id !== jugador.id)
           );
+          this.alertService.toast('success', 'Jugador eliminado exitosamente');
           this.deleting.set(null);
           this.closeDeleteModal();
         },
-        error: (error) => {
-          this.error.set(error.message);
+        error: () => {
           this.deleting.set(null);
         }
       });

@@ -55,7 +55,6 @@ export class TorneoFixtureComponent implements OnInit {
   torneo = this.state.torneo;
   equipos = this.state.equipos;
   loading = this.state.loading;
-  error = this.state.error;
   creating = this.state.creating;
   updating = this.state.updating;
   deleting = this.state.deleting;
@@ -79,8 +78,6 @@ export class TorneoFixtureComponent implements OnInit {
       this.state.cargarDatos(torneoId).then(() => {
         this.state.cargarPartidosSemanaActual(torneoId);
       });
-    } else {
-      this.state.error.set('ID de torneo inválido');
     }
   }
 

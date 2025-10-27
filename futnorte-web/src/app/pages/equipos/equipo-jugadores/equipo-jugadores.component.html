@@ -59,27 +59,8 @@
   </div>
   }
 
-  <!-- Error State -->
-  @if (error()) {
-  <div class="bg-white rounded-xl p-6 border border-danger-200 shadow-sm">
-    <div class="bg-danger-50 border border-danger-200 rounded-lg p-4">
-      <div class="flex">
-        <div class="flex-shrink-0">
-          <svg class="h-5 w-5 text-danger-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-        </div>
-        <div class="ml-3">
-          <h3 class="text-sm font-medium text-danger-800">Error al cargar jugadores</h3>
-          <p class="mt-1 text-sm text-danger-700">{{ error() }}</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  }
-
   <!-- Players List -->
-  @if (!loading() && !error() && jugadores().length > 0) {
+  @if (!loading() && jugadores().length > 0) {
   <div class="space-y-2">
     @for (jugador of jugadores(); track jugador.id) {
     <div class="bg-white rounded-lg border border-neutral-200 p-3 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
@@ -129,7 +110,7 @@
   }
 
   <!-- Empty State -->
-  @if (!loading() && !error() && jugadores().length === 0) {
+  @if (!loading() && jugadores().length === 0) {
   <div class="bg-white rounded-xl p-8 border border-neutral-200 shadow-sm">
     <div class="text-center py-8">
       <div class="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
