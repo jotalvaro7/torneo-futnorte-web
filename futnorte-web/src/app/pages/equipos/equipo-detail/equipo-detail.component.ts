@@ -130,22 +130,45 @@ export class EquipoDetailComponent implements OnInit {
   }
 
   // Métodos para historial de enfrentamientos
-  cargarHistorialEnfrentamientos(): void {
+  async cargarHistorialEnfrentamientos(): Promise<void> {
     const equipoId = this.equipoId();
     if (!equipoId) return;
 
     this.loadingEnfrentamientos.set(true);
 
-    this.enfrentamientoService.obtenerEnfrentamientosPorEquipo(equipoId).subscribe({
-      next: (enfrentamientos) => {
-        this.enfrentamientos.set(enfrentamientos);
-        this.loadingEnfrentamientos.set(false);
-        this.mostrarHistorial.set(true);
-      },
-      error: () => {
-        this.loadingEnfrentamientos.set(false);
-      }
-    });
+    try {
+      // Primero cargar todos los equipos del torneo para mapear nombres
+      const equipo = this.equipo();
+      if (!equipo?.torneoId) return;
+
+      const [enfrentamientos, equipos] = await Promise.all([
+        new Promise<EnfrentamientoResponse[]>((resolve, reject) => {
+          this.enfrentamientoService.obtenerEnfrentamientosPorEquipo(equipoId).subscribe({
+            next: resolve,
+            error: reject
+          });
+        }),
+        new Promise<Equipo[]>((resolve, reject) => {
+          this.equipoService.buscarEquiposPorTorneo(equipo.torneoId).subscribe({
+            next: resolve,
+            error: reject
+          });
+        })
+      ]);
+
+      // Mapear IDs a nombres
+      const enfrentamientosConNombres = enfrentamientos.map(enf => ({
+        ...enf,
+        equipoLocal: equipos.find(e => e.id === enf.equipoLocalId)?.nombre || 'Equipo Local',
+        equipoVisitante: equipos.find(e => e.id === enf.equipoVisitanteId)?.nombre || 'Equipo Visitante'
+      }));
+
+      this.enfrentamientos.set(enfrentamientosConNombres);
+      this.loadingEnfrentamientos.set(false);
+      this.mostrarHistorial.set(true);
+    } catch (error) {
+      this.loadingEnfrentamientos.set(false);
+    }
   }
 
   cerrarHistorial(): void {
@@ -242,19 +265,41 @@ export class EquipoDetailComponent implements OnInit {
 
     this.updatingEnfrentamiento.set(true);
 
-    this.enfrentamientoService.actualizarEnfrentamiento(enfrentamiento.id, request).subscribe({
-      next: (enfrentamientoActualizado) => {
+    try {
+      const enfrentamientoActualizado = await new Promise<EnfrentamientoResponse>((resolve, reject) => {
+        this.enfrentamientoService.actualizarEnfrentamiento(enfrentamiento.id, request).subscribe({
+          next: resolve,
+          error: reject
+        });
+      });
+
+      // Cargar equipos para mapear nombres si es necesario
+      const equipo = this.equipo();
+      if (equipo?.torneoId) {
+        const equipos = await new Promise<Equipo[]>((resolve, reject) => {
+          this.equipoService.buscarEquiposPorTorneo(equipo.torneoId).subscribe({
+            next: resolve,
+            error: reject
+          });
+        });
+
+        const enfrentamientoConNombres = {
+          ...enfrentamientoActualizado,
+          equipoLocal: equipos.find(e => e.id === enfrentamientoActualizado.equipoLocalId)?.nombre || 'Equipo Local',
+          equipoVisitante: equipos.find(e => e.id === enfrentamientoActualizado.equipoVisitanteId)?.nombre || 'Equipo Visitante'
+        };
+
         // Actualizar en la lista de enfrentamientos
         this.enfrentamientos.update(current =>
-          current.map(e => e.id === enfrentamiento.id ? enfrentamientoActualizado : e)
+          current.map(e => e.id === enfrentamiento.id ? enfrentamientoConNombres : e)
         );
-        this.alertService.toast('success', 'Enfrentamiento actualizado exitosamente');
-        this.updatingEnfrentamiento.set(false);
-        this.cerrarModalEditarEnfrentamiento();
-      },
-      error: () => {
-        this.updatingEnfrentamiento.set(false);
       }
-    });
+
+      this.alertService.toast('success', 'Enfrentamiento actualizado exitosamente');
+      this.updatingEnfrentamiento.set(false);
+      this.cerrarModalEditarEnfrentamiento();
+    } catch (error) {
+      this.updatingEnfrentamiento.set(false);
+    }
   }
 }

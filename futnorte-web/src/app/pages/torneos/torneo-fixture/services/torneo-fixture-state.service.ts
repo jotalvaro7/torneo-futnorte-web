@@ -95,6 +95,19 @@ export class TorneoFixtureStateService {
     this.jugadorService = jugadorService;
   }
 
+  /**
+   * Mapea los IDs de equipos a nombres en los enfrentamientos
+   * El backend envía equipoLocalId/equipoVisitanteId, necesitamos los nombres
+   */
+  private mapearNombresEquipos(enfrentamientos: EnfrentamientoResponse[]): EnfrentamientoResponse[] {
+    const equipos = this.equipos();
+    return enfrentamientos.map(enf => ({
+      ...enf,
+      equipoLocal: equipos.find(e => e.id === enf.equipoLocalId)?.nombre || 'Equipo Local',
+      equipoVisitante: equipos.find(e => e.id === enf.equipoVisitanteId)?.nombre || 'Equipo Visitante'
+    }));
+  }
+
   async cargarDatos(torneoId: number): Promise<void> {
     this.loading.set(true);
 
@@ -149,7 +162,8 @@ export class TorneoFixtureStateService {
       );
 
       const enfrentamientosFiltrados = enfrentamientos.filter(e => e.torneoId === torneoId);
-      this.enfrentamientos.set(enfrentamientosFiltrados);
+      const enfrentamientosConNombres = this.mapearNombresEquipos(enfrentamientosFiltrados);
+      this.enfrentamientos.set(enfrentamientosConNombres);
     } catch (error) {
       await this.cargarTodosLosEnfrentamientos(torneoId);
     }
@@ -161,7 +175,8 @@ export class TorneoFixtureStateService {
       const enfrentamientos = await firstValueFrom(
         this.enfrentamientoService.obtenerEnfrentamientosPorTorneo(torneoId)
       );
-      this.enfrentamientos.set(enfrentamientos);
+      const enfrentamientosConNombres = this.mapearNombresEquipos(enfrentamientos);
+      this.enfrentamientos.set(enfrentamientosConNombres);
     } catch (error: any) {
       // El interceptor manejará el error
     } finally {
@@ -194,7 +209,8 @@ export class TorneoFixtureStateService {
       );
 
       const enfrentamientosFiltrados = enfrentamientos.filter(e => e.torneoId === torneoId);
-      this.enfrentamientos.set(enfrentamientosFiltrados);
+      const enfrentamientosConNombres = this.mapearNombresEquipos(enfrentamientosFiltrados);
+      this.enfrentamientos.set(enfrentamientosConNombres);
       this.filtrandoPorFecha.set(false);
     } catch (error: any) {
       this.filtrandoPorFecha.set(false);
@@ -245,7 +261,8 @@ export class TorneoFixtureStateService {
       const enfrentamiento = await firstValueFrom(
         this.enfrentamientoService.crearEnfrentamiento(request)
       );
-      this.enfrentamientos.update(current => [...current, enfrentamiento]);
+      const enfrentamientoConNombres = this.mapearNombresEquipos([enfrentamiento])[0];
+      this.enfrentamientos.update(current => [...current, enfrentamientoConNombres]);
       this.creating.set(false);
     } catch (error: any) {
       this.creating.set(false);
@@ -263,8 +280,9 @@ export class TorneoFixtureStateService {
       const enfrentamientoActualizado = await firstValueFrom(
         this.enfrentamientoService.actualizarEnfrentamiento(enfrentamientoId, request)
       );
+      const enfrentamientoConNombres = this.mapearNombresEquipos([enfrentamientoActualizado])[0];
       this.enfrentamientos.update(current =>
-        current.map(e => e.id === enfrentamientoId ? enfrentamientoActualizado : e)
+        current.map(e => e.id === enfrentamientoId ? enfrentamientoConNombres : e)
       );
       this.updating.set(false);
     } catch (error: any) {

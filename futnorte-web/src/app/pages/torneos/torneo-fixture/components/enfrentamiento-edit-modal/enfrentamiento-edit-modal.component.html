@@ -150,7 +150,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <!-- Goleadores Equipo Local -->
               <app-goleadores-form
-                [equipoNombre]="enfrentamiento().equipoLocal"
+                [equipoNombre]="enfrentamiento().equipoLocal || 'Equipo Local'"
                 [jugadores]="jugadoresLocal()"
                 [golesExistentes]="golesExistentesLocal()"
                 [editMode]="editMode()"
@@ -162,7 +162,7 @@
 
               <!-- Goleadores Equipo Visitante -->
               <app-goleadores-form
-                [equipoNombre]="enfrentamiento().equipoVisitante"
+                [equipoNombre]="enfrentamiento().equipoVisitante || 'Equipo Visitante'"
                 [jugadores]="jugadoresVisitante()"
                 [golesExistentes]="golesExistentesVisitante()"
                 [editMode]="editMode()"
