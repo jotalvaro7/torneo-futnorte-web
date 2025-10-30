@@ -4,6 +4,7 @@ import { EnfrentamientoService } from '../../../../services/enfrentamiento.servi
 import { EquipoService } from '../../../../services/equipo.service';
 import { TorneoService } from '../../../../services/torneo.service';
 import { JugadorService } from '../../../../services/jugador.service';
+import { AlertService } from '../../../../services/alert.service';
 import {
   EnfrentamientoResponse,
   CrearEnfrentamientoRequest,
@@ -19,6 +20,7 @@ export class TorneoFixtureStateService {
   private readonly equipoService: EquipoService;
   private readonly torneoService: TorneoService;
   private readonly jugadorService: JugadorService;
+  private readonly alertService: AlertService;
 
   // Estado principal
   torneo = signal<Torneo | null>(null);
@@ -87,12 +89,14 @@ export class TorneoFixtureStateService {
     enfrentamientoService: EnfrentamientoService,
     equipoService: EquipoService,
     torneoService: TorneoService,
-    jugadorService: JugadorService
+    jugadorService: JugadorService,
+    alertService: AlertService
   ) {
     this.enfrentamientoService = enfrentamientoService;
     this.equipoService = equipoService;
     this.torneoService = torneoService;
     this.jugadorService = jugadorService;
+    this.alertService = alertService;
   }
 
   /**
@@ -263,6 +267,7 @@ export class TorneoFixtureStateService {
       );
       const enfrentamientoConNombres = this.mapearNombresEquipos([enfrentamiento])[0];
       this.enfrentamientos.update(current => [...current, enfrentamientoConNombres]);
+      this.alertService.toast('success', 'Enfrentamiento creado exitosamente');
       this.creating.set(false);
     } catch (error: any) {
       this.creating.set(false);
@@ -284,6 +289,7 @@ export class TorneoFixtureStateService {
       this.enfrentamientos.update(current =>
         current.map(e => e.id === enfrentamientoId ? enfrentamientoConNombres : e)
       );
+      this.alertService.toast('success', 'Enfrentamiento actualizado exitosamente');
       this.updating.set(false);
     } catch (error: any) {
       this.updating.set(false);
@@ -301,6 +307,7 @@ export class TorneoFixtureStateService {
       this.enfrentamientos.update(current =>
         current.filter(e => e.id !== enfrentamientoId)
       );
+      this.alertService.toast('success', 'Enfrentamiento eliminado exitosamente');
       this.deleting.set(false);
     } catch (error: any) {
       this.deleting.set(false);
