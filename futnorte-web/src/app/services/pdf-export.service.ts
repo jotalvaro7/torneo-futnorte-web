@@ -523,13 +523,13 @@ export class PdfExportService {
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(0, 0, 0);
     const maxWidthLocal = resultadoX - startX - 4; // 4px de margen
-    const equipoLocalTruncado = this.truncarTexto(doc, enfrentamiento.equipoLocal, maxWidthLocal);
+    const equipoLocalTruncado = this.truncarTexto(doc, enfrentamiento.equipoLocal || 'Equipo Local', maxWidthLocal);
     const localWidth = doc.getTextWidth(equipoLocalTruncado);
     doc.text(equipoLocalTruncado, resultadoX - localWidth - 2, baselineY); // 2px de espacio
 
     // Equipo Visitante - alineado a la izquierda del resultado
     const maxWidthVisitante = (startX + colWidths.enfrentamiento) - (resultadoX + resultadoWidth) - 4; // 4px de margen
-    const equipoVisitanteTruncado = this.truncarTexto(doc, enfrentamiento.equipoVisitante, maxWidthVisitante);
+    const equipoVisitanteTruncado = this.truncarTexto(doc, enfrentamiento.equipoVisitante || 'Equipo Visitante', maxWidthVisitante);
     doc.text(equipoVisitanteTruncado, resultadoX + resultadoWidth + 2, baselineY); // 2px de espacio
 
     // Columna 2: Hora

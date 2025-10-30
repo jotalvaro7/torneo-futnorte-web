@@ -13,8 +13,10 @@ export interface Enfrentamiento {
 export interface EnfrentamientoResponse {
   id: number;
   torneoId: number;
-  equipoLocal: string;
-  equipoVisitante: string;
+  equipoLocalId: number;
+  equipoVisitanteId: number;
+  equipoLocal?: string;  // Opcional por compatibilidad
+  equipoVisitante?: string;  // Opcional por compatibilidad
   fechaHora: string;
   cancha: string;
   estado: EstadoEnfrentamiento;
